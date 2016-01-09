@@ -11,7 +11,12 @@ const int GREEN =1;
 const int BLACK = 0;
 const int screenWidth = 160;	// width to downscale camera image to 
 const int screenHeight = 120;   // height to downscale camera image to
-const int minSizePx = 500;		// threshold for an object to be reported
+const int minSizePx = 500;		// threshold for an object to be reported. TODO: Need to tune
+
+const int cropStartFromXCoordinate = 10;  
+const int cropStarFromYCoordinate = 20;
+const int cropWidth = 140;
+const int cropHeight = 100;
 
 int floodFillUtil(int x, int y, int currColor,int pxCount,int& maxY,int& maxX);
 void detectObject(int i, int j);
@@ -25,7 +30,9 @@ int main(int argc, char** argv)
 {     
     int c;
     Mat img;
+    Mat origImg;
     int i, j;
+    
       
     VideoCapture capture(0);
     namedWindow("mainWin", CV_WINDOW_AUTOSIZE);
@@ -36,13 +43,16 @@ int main(int argc, char** argv)
     while (capture.isOpened()) {
 
         // read a frame from the webcam
-        readOk = capture.read(img);
+        readOk = capture.read(origImg);
 
         // make sure we grabbed the frame successfully 
         if (!readOk) {
             std::cout << "No frame" << std::endl;
             break;
         }
+        
+        // crop image
+        Mat img = origImg(Rect(cropStartFromXCoordinate,cropStarFromYCoordinate,cropWidth,cropHeight));
 
         // some boilerplate code
         int nChannels = img.channels();
@@ -99,17 +109,17 @@ void detectObject(int i, int j)
 	   pxCount = floodFillUtil( j, i, color,pxCount,maxY,maxX);
 	   if (pxCount >= minSizePx)			// determine if the size of the object is above the reporting threshold
 	   {
-	   int width = maxX - j;
-	   int height = maxY -i;
-	   int center = width / 2;		// center of the object
-	   int distanceFromCenter = (j + center) - (screenWidth / 2);	// distance of objects horizontal center from  center of image
-	   int distance = screenHeight-maxY;    // distance of lowermost point from the bottom of the screen
+		   int width = maxX - j;
+		   int height = maxY -i;
+		   int center = width / 2;		// center of the object
+		   int distanceFromCenter = (j + center) - (cropWidth / 2);	// distance of objects horizontal center from  center of image
+		   int distance = cropHeight-maxY;    // distance of lowermost point from the bottom of the screen
 		
-		std::cout << "Found a "  << getColorName(color) << " object";
-		std::cout << " of size: " << pxCount <<  " and distance " << distance << std::endl;
-		std::cout << " width: " << width <<  " and height " << height <<  std::endl;
-		std::cout << " distanceFromCenter: " << distanceFromCenter << std::endl;
-		std::cout << "===========================================================";
+			std::cout << "Found a "  << getColorName(color) << " object";
+			std::cout << " of size: " << pxCount <<  " and distance " << distance << std::endl;
+			std::cout << " width: " << width <<  " and height " << height <<  std::endl;
+			std::cout << " distanceFromCenter: " << distanceFromCenter << std::endl;
+			std::cout << "===========================================================";
 		}
 	}
 }
@@ -120,13 +130,13 @@ int floodFillUtil( int x, int y, int currColor, int pxCount, int& maxY, int& max
     // count the number of contiguous pixels found as well as the maximum x and y values (Which are returned by reference)
     
     // Base cases
-    if (x < 0 || x >= screenWidth || y < 0 || y >= screenHeight)
+    if (x < 0 || x >= cropWidth || y < 0 || y >= cropHeight)
         return pxCount;
     if (getColor(y,x) != currColor)
         return pxCount;
  
 	//found the color so set to black (to avoid in detectObject ) and increment
-	 _img(y,x)[0] = 0;
+	 _img(y,x)[0] = 255;
 	 _img(y,x)[1] = 0;
 	 _img(y,x)[2] = 0;
    pxCount++;

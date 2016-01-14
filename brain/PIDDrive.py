@@ -47,8 +47,8 @@ class PIDDrive(SyncedSketch):
             pidResult=self.PID.valuePID(cAngle, self.initAngle)
             print (cAngle-self.initAngle), pidResult
             if(pidResult<=0):
-                dirR=0
-                dirL=1
+                dirR=1
+                dirL=0
             elif(pidResult>0):
                 dirR=0
                 dirL=1

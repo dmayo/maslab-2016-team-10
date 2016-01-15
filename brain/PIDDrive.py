@@ -2,6 +2,25 @@ from tamproxy import Sketch, SyncedSketch, Timer
 from tamproxy.devices import Motor
 from tamproxy.devices import Gyro
 from PID import PID
+import os
+import cv2
+import time
+##############
+pipePath = "./vision"
+while 1:
+	time.sleep(1)
+	try:
+		os.mkfifo(rfPath)
+	except OSError:
+		pass
+	rp = open(rfPath, 'r')
+	response = rp.read()
+	print "Got response %s" % response
+	rp.close()
+	k = cv2.waitKey(5) & 0xFF
+	if k == 27:
+		break
+######################
 
 class PIDDrive(SyncedSketch):
 
@@ -33,6 +52,7 @@ class PIDDrive(SyncedSketch):
         self.PID=PID(1,0,0)
 
         self.fwdVel=30
+        
 
     def loop(self):
         

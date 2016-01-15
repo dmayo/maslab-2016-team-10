@@ -114,7 +114,8 @@ int main(int argc, char** argv)
 		int distance = cropHeight-(bounding_rect.height+bounding_rect.y);    // distance of lowermost point from the bottom of the screen
 		
 		std::ostringstream strm;
-		strm	 <<  "{\"distance\": " << distance << ", \"distanceFromCenter\": " << distanceFromCenter << "}" << std::endl;
+		//strm	 <<  "{\"d\":" << distance << ",\"dc\": " << distanceFromCenter << "}" << std::endl;
+		strm	 << distance << " " << distanceFromCenter << std::endl;
 		std::cout	 <<  "{\"distance\": " << distance << ", \"distanceFromCenter\": " << distanceFromCenter << "}" << std::endl;
 		
 	  	     

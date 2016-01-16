@@ -8,6 +8,9 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <math.h>       
+
+#define PI 3.14159265
 
 using namespace std;
 using namespace cv;
@@ -22,19 +25,23 @@ const int cropStartFromXCoordinate = 10;
 const int cropStarFromYCoordinate = 20;
 const int cropWidth = 140;
 const int cropHeight = 100;
+const int blockWidth =	2;		// block width in inches
+const int focalLength = 160;	// focal length of camera
 char const* namedPipe = "./vision";
 
 int floodFillUtil(int x, int y, int currColor,int pxCount,int& maxY,int& maxX);
 void detectObject(int i, int j);
 int getColor(int i, int j);
 char const*getColorName(int color);
-void findPolygons();
+float getActualDistance(int width);
+float getActualHorizontalDistance(int pxHorizontalDistance,int pxBlockWidth);
+int getAngle(float actualDistance, float actualHorizontalDistance);
 
 
 Mat_<Vec3b> _img;			
 Mat img;
-Mat_<uchar> _binaryImage;
-Mat_<uchar> _objectMask;
+Mat_<uchar> _binaryImage[3];
+
 vector<Vec4i> hierarchy;
  
 
@@ -52,7 +59,7 @@ int main(int argc, char** argv)
     capture.set(CV_CAP_PROP_FRAME_WIDTH,screenWidth);
     capture.set(CV_CAP_PROP_FRAME_HEIGHT,screenHeight);
     
-      
+        
     while (capture.isOpened()) {
 
         // read a frame from the webcam
@@ -67,7 +74,9 @@ int main(int argc, char** argv)
         // crop image
         Mat img = origImg(Rect(cropStartFromXCoordinate,cropStarFromYCoordinate,cropWidth,cropHeight));
          // zero out the  binary image for use with contour detection algorithm
-         _binaryImage = Mat::zeros(img.rows,img.cols, CV_8UC1);
+        _binaryImage[RED] = Mat::zeros(img.rows,img.cols, CV_8UC1);
+        _binaryImage[GREEN] = Mat::zeros(img.rows,img.cols, CV_8UC1);
+       
         
         // some boilerplate code
         int nChannels = img.channels();
@@ -92,47 +101,55 @@ int main(int argc, char** argv)
         
         // Find the largest rectangle
 		vector<vector<Point> > contours;	
-		int largest_area=50;
+		int largest_area=25;
         int largest_contour_index=0;
         Rect bounding_rect;
-		findContours( _binaryImage, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) ); 
-		for( int i = 0; i< contours.size(); i++ ) // iterate through each contour. 
+		 
+		for (int images = 1; images <=2;images++)
 		{
-		   double a=contourArea( contours[i],false);  
-		   if(a>largest_area)
-		   {
-			   largest_area=a;
-			   largest_contour_index=i;               
-			   bounding_rect=boundingRect(contours[i]);
-	       }
+			findContours( _binaryImage[images], contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE, Point(0, 0) );
+			for( int i = 0; i< contours.size(); i++ ) // iterate through each contour. 
+			{
+			   double a=contourArea( contours[i],false);  
+			   if(a>largest_area)
+			   {
+				   largest_area=a;
+				   largest_contour_index=i;               
+				   bounding_rect=boundingRect(contours[i]);
+			   }
+			}
       	}
+      	
 	  	rectangle(img, bounding_rect,  Scalar(0,255,0),1, 8,0); 
-	  
-	  	// report on rectangle position
-	    int center = bounding_rect.width / 2;		// center of the object
-	  	int distanceFromCenter = (bounding_rect.x + center) - (cropWidth / 2);	// distance of objects horizontal center from  center of image
-		int distance = cropHeight-(bounding_rect.height+bounding_rect.y);    // distance of lowermost point from the bottom of the screen
-		
-		std::ostringstream strm;
-		//strm	 <<  "{\"d\":" << distance << ",\"dc\": " << distanceFromCenter << "}" << std::endl;
-		strm	 << distance << " " << distanceFromCenter << std::endl;
-		std::cout	 <<  "{\"distance\": " << distance << ", \"distanceFromCenter\": " << distanceFromCenter << "}" << std::endl;
-		
-	  	     
-       	// write position data to named pipe
-   		mkfifo(namedPipe, 0666);
-		fd = open(namedPipe, O_WRONLY | O_NONBLOCK);
-		
-		
-		std::string numStr = strm.str();
-		const char* cstr1 = numStr.c_str();
-		write(fd, cstr1, sizeof(cstr1));
-		close(fd);
-		
+	  	
+	  	// report on  position
+	  	// only if its a square
+	  	if (bounding_rect.width == bounding_rect.height)
+	  	{
+			float distance = getActualDistance(bounding_rect.width);
+			int center = bounding_rect.width / 2;									// center of the object
+			int distanceFromCenter = (bounding_rect.x + center) - (cropWidth / 2);	// distance of objects horizontal center from  center of image
+			float actualDistanceFromCenter = getActualHorizontalDistance( distanceFromCenter, bounding_rect.width);
+			//int distance = cropHeight-(bounding_rect.height+bounding_rect.y);    // distance of lowermost point from the bottom of the screen
+			int angle = getAngle(distance, actualDistanceFromCenter);
+			if (distance > 0)	
+			{
+				std::ostringstream strm;
+				//strm	 <<  "{\"d\":" << distance << ",\"dc\": " << distanceFromCenter << "}" << std::endl;
+				strm	 << distance << " " << angle << std::endl;
+				std::cout	 <<  "{\"distance\": " << distance << "inches , \"angle\": " << angle << " degrees }" << std::endl;
+				// write position data to named pipe
+				mkfifo(namedPipe, 0666);
+				fd = open(namedPipe, O_WRONLY | O_NONBLOCK);
+				std::string numStr = strm.str();
+				const char* cstr1 = numStr.c_str();
+				write(fd, cstr1, sizeof(cstr1));
+				close(fd);
+			}
+		}
 		 // just for debugging purposes, show the frame in a window
         if (!img.empty()) imshow("mainWin", img);
        
-		
         // look for break key to end
         c = waitKey(10);
         if (c == 27)
@@ -198,8 +215,8 @@ int floodFillUtil( int x, int y, int currColor, int pxCount, int& maxY, int& max
 	}
 	 
 	 // mark the pixel in the appropriate binary image
-	 //TODO: clean this up- just testing
-	 _binaryImage(y,x) =100*currColor;
+	
+	 _binaryImage[currColor](y,x) =100*currColor;
 	
    pxCount++;
    if (y > maxY)
@@ -241,6 +258,36 @@ char const*getColorName(int color)
 		return  "Green";
 	return "Other";
 }
+
+float getActualDistance(int pxWidth)
+{
+	// converts width of detected block to distance using triangle similarity
+	if (pxWidth > 0 )
+		return (blockWidth * focalLength) / pxWidth;
+	else 	
+		return 0;
+
+}
+
+float getActualHorizontalDistance(int pxHorizontalDistance,int pxBlockWidth)
+{
+	if (abs(pxHorizontalDistance) > 0 && pxBlockWidth > 0)
+		return (blockWidth * pxHorizontalDistance) / pxBlockWidth;
+	else
+		return 0;
+}
+
+int getAngle(float actualDistance, float actualHorizontalDistance)
+{
+	
+	if (actualDistance >0 && abs(actualHorizontalDistance) > 0)
+	{
+		float sinx =  actualHorizontalDistance /actualDistance  ;
+		return asin (sinx) * 180.0 / PI;
+	}
+	return 0;
+}
+
 
 
 

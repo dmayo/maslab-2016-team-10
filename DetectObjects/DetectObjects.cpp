@@ -52,12 +52,15 @@ int main(int argc, char** argv)
     int i, j;
     int fd;
   	int counter=0;
+  	bool debug = argc > 1 ;
 
     VideoCapture capture(0);
-    namedWindow("mainWin", CV_WINDOW_AUTOSIZE);
+    if (debug)
+    	namedWindow("mainWin", CV_WINDOW_AUTOSIZE);
     bool readOk = true;
     capture.set(CV_CAP_PROP_FRAME_WIDTH,screenWidth);
     capture.set(CV_CAP_PROP_FRAME_HEIGHT,screenHeight);
+    
     
         
     while (capture.isOpened()) {
@@ -137,7 +140,8 @@ int main(int argc, char** argv)
 				std::ostringstream strm;
 				//strm	 <<  "{\"d\":" << distance << ",\"dc\": " << distanceFromCenter << "}" << std::endl;
 				strm	 << distance << " " << angle << std::endl;
-				std::cout	 <<  "{\"distance\": " << distance << "inches , \"angle\": " << angle << " degrees }" << std::endl;
+				if (debug)
+					std::cout	 <<  "{\"distance\": " << distance << "inches , \"angle\": " << angle << " degrees }" << std::endl;
 				// write position data to named pipe
 				mkfifo(namedPipe, 0666);
 				fd = open(namedPipe, O_WRONLY | O_NONBLOCK);
@@ -148,7 +152,7 @@ int main(int argc, char** argv)
 			}
 		}
 		 // just for debugging purposes, show the frame in a window
-        if (!img.empty()) imshow("mainWin", img);
+        if (!img.empty() && debug) imshow("mainWin", img);
        
         // look for break key to end
         c = waitKey(10);

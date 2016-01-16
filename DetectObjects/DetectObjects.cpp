@@ -127,7 +127,7 @@ int main(int argc, char** argv)
 	  	
 	  	// report on  position
 	  	// only if its a square
-	  	if (bounding_rect.width == bounding_rect.height)
+	  	if (std::abs(1 - (double)bounding_rect.width / bounding_rect.height)<=.02)
 	  	{
 			float distance = getActualDistance(bounding_rect.width);
 			int center = bounding_rect.width / 2;									// center of the object

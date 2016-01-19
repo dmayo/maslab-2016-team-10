@@ -9,7 +9,9 @@ class AnalogOutput(Device):
     def __init__(self, tamproxy, pin):
         self.pin = pin
         super (AnalogOutput, self).__init__(tamproxy)
-        while self.id is None: pass
+
+    def __repr__(self):
+        return super(AnalogOutput, self).__repr__(self.pin)
 
     @property
     def add_payload(self):

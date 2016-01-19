@@ -1,5 +1,10 @@
+import logging
+
 from .comm import PacketForwarder
 from . import config as c
+
+
+logger = logging.getLogger('tamproxy')
 
 class TAMProxy(object):
 
@@ -18,9 +23,12 @@ class TAMProxy(object):
         self.started = False
         self.pf = PacketForwarder(self.handle_device_reset)
         self.pf.start()
-        while not self.started: pass
+        while self.pf.is_alive() and not self.started: pass
+        if not self.started:
+            raise Exception('Forwarder exited before reset was completed')
 
     def stop(self):
+        self.clear_devices()
         self.pf.stop()
         self.pf.join()
         self.started = False
@@ -29,10 +37,13 @@ class TAMProxy(object):
         return self
 
     def __exit__(self, *exc):
-        print "Stopping tamproxy"
+        logger.info("Stopping tamproxy")
         self.stop()
 
     def handle_device_reset(self):
+        if self.recovery_data:
+            logger.warn("A reset occured with active devices - attempting to recover")
+    
         self.clear_devices()
         for device_id, add_vals in self.recovery_data.iteritems():
             self.add_device(*add_vals)

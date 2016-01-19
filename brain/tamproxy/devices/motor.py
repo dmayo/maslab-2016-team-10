@@ -10,7 +10,9 @@ class Motor(Device):
         self.dir_pin = dir_pin
         self.pwm_pin = pwm_pin
         super(Motor, self).__init__(tamproxy)
-        while self.id is None: pass
+
+    def __repr__(self):
+        return super(Motor, self).__repr__(self.dir_pin, self.pwm_pin)
 
     @property
     def add_payload(self):

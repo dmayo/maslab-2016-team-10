@@ -46,13 +46,13 @@ Supported Devices
 - [x] Quadrature encoder
 - [x] Standard Motor (Cytron/Dago with PWM & dir)
 - [ ] Feedback motor (Encoder feedback with PID for settable speed)
-- [ ] Servo Motor
+- [x] Servo Motor
 - [ ] Stepper Motor
 - [x] Analog Devices Gyroscope (SPI)
 - [ ] Ultrasonic Distance Sensor
 - [x] Short-range IR Distance Sensor (just an analog input)
 - [x] Ultra-short range IR Distance Sensor (just a digital input)
-- [ ] Color Sensor (I2C)
+- [x] Color Sensor (I2C)
 
 
 Dependencies

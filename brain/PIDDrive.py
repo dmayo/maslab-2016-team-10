@@ -32,7 +32,7 @@ class PIDDrive(SyncedSketch):
 
         self.PID=PID(1,0,0)
 
-        self.fwdVel=30
+        self.fwdVel=0
 
     def loop(self):
         

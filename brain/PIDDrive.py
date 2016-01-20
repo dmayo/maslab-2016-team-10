@@ -57,8 +57,8 @@ class PIDDrive(SyncedSketch):
         
         if self.timer.millis() > 100:
             self.timer.reset()
-            response = self.rp.read()
-            print "Got response %s" % response
+            #response = self.rp.read()
+            #print "Got response %s" % response
             
             # Valid gyro status is [0,1], see datasheet on ST1:ST0 bits
             cAngle=self.gyro.val-self.totalDrift #corrected angle

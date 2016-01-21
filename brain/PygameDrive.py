@@ -2,18 +2,30 @@ from tamproxy import Sketch, SyncedSketch, Timer
 from tamproxy.devices import Motor
 from tamproxy.devices import Gyro
 from tamproxy.devices import Encoder
+from tamproxy.devices import Servo
 from PID import PID
 import os
 import cv2
 import time
+
+import pygame
+
 
 class PIDDrive(SyncedSketch):
 
     ss_pin = 10 #gyro select pin
 
     def setup(self):
+        #Pygame stuff
+        pygame.init()
+        self.screen = pygame.display.set_mode((300, 300))
 
         self.TicpIn = 4480/2.875
+
+        self.servo = Servo(self.tamp, 9)
+        self.servo.write(20)
+        self.servoval = 20
+        self.delta = 0
 
         self.encoderL = Encoder(self.tamp, 22, 23)
         self.encoderR = Encoder(self.tamp, 21, 20)
@@ -53,7 +65,9 @@ class PIDDrive(SyncedSketch):
         
         self.PID=PID(5,4,.2)
 
-        self.fwdVel=30
+        self.fwdVel = 0
+        self.turnVel = 0
+        self.MoveArm, self.Top, self.Bottom = False, 0, 0
         
         self.timer = Timer()
         '''
@@ -72,9 +86,63 @@ class PIDDrive(SyncedSketch):
 
 
         if self.timer.millis() > 100:
-            dt = time.time() - self.init_time
-            if dt > 10:
-                self.fwdVel = 0
+            
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.display.quit()
+                if event.type == pygame.KEYDOWN:
+                    print 'detected key'
+                    if event.key == pygame.K_LEFT:
+                        self.turnVel = -5
+                        print 'Got Key'
+                    if event.key == pygame.K_RIGHT:
+                        self.turnVel = 5
+                    if event.key == pygame.K_UP:
+                        self.fwdVel = 40
+                    if event.key == pygame.K_DOWN:
+                        self.fwdVel = -40
+
+                    if event.key == pygame.K_SPACE:
+                        self.MoveArm = True
+
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
+                        self.turnVel = 0
+                    if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                        self.fwdVel = 0
+
+
+            if self.MoveArm:
+                if self.Bottom == 2 and self.Top == 1:
+                    self.delta = 0
+                    self.servoval = 20
+                    self.servo.write(20)
+                    self.Bottom, self.Top = 0, 0
+                    self.MoveArm = False
+
+                elif self.servoval >= 170: 
+                    self.delta = -30
+
+                    self.Top = 1
+
+                elif self.servoval <= 30: 
+                    self.delta = 30
+
+                    self.Bottom = 1
+                    if self.Top == 1:
+                        self.Bottom = 2
+
+
+                self.servoval += self.delta
+
+            self.servo.write(abs(self.servoval))
+
+            print 'delta: ' + str(self.delta)
+            print 'servoval: ' + str(self.servoval)
+            print 'MoveArm: ' + str(self.MoveArm)
+            self.initAngle += self.turnVel
+
+
             self.timer.reset()
             #response = self.rp.read()
             #print "Got response %s" % response
@@ -90,9 +158,9 @@ class PIDDrive(SyncedSketch):
             pidResult=self.PID.valuePID(cAngle, self.initAngle)
             
 
-            print 'Angle Dif: ' + str(cAngle-self.initAngle) + '\tPID RESULT: '+ str(pidResult)
-            print 'Encoders:\tR: ' + str(self.encoderR.val) + '\tL: ' + str(self.encoderL.val)
-            print 'AVG: ' + str((self.encoderR.val + self.encoderL.val)/2.)
+            # print 'Angle Dif: ' + str(cAngle-self.initAngle) + '\tPID RESULT: '+ str(pidResult)
+            # print 'Encoders:\tR: ' + str(self.encoderR.val) + '\tL: ' + str(self.encoderL.val)
+            # print 'AVG: ' + str((self.encoderR.val + self.encoderL.val)/2.)
 
             self.motorLdrive = self.fwdVel - pidResult
             self.motorRdrive = self.fwdVel + pidResult

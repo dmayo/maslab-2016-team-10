@@ -136,8 +136,8 @@ void ImageProcessor::doStuff() {
     //cv::namedWindow("frame", 1);
     //cv::imshow("frame", frame);
 
-    // cv::namedWindow("local_map", 1);
-    // cv::imshow("local_map", local_map.cvtImage());
+    //cv::namedWindow("local_map", 2);
+    //cv::imshow("local_map", local_map.cvtImage());
 
     // for debug
     clock_t end = clock();
@@ -187,8 +187,17 @@ void ImageProcessor::run(ImageProcessor *ImageProcessorPointer) {
 
 }
 /*
+int main( int, char** argv) {
+    ImageProcessor myImageProcessor;
+    myImageProcessor.run(&myImageProcessor);
+    bool DEBUG=true;
+}
+*/
+
+/*
 int main_img() {
     ImageProcessor myImageProcessor;
     myImageProcessor.run(&myImageProcessor);
 }
 */
+

@@ -12,7 +12,7 @@
 /*********************************
 ** set to 0 if running on edison *
 **********************************/
-static const int DEBUG = 0;
+static const int DEBUG = 1;
 /********************************/
 
 static const int COLOR_BLUE_LINE_USE_PROF = 0;

@@ -15,12 +15,6 @@ EXEC_TEST = test_run
 SOURCES_TEST = $(filter-out ./main.cpp, $(call rwildcard, ./,*.cpp))
 OBJECTS_TEST = $(SOURCES_TEST:.cpp=.o)
 
-ACTUATORS_SOURCES = $(call rwildcard, ./actuators/,*.cpp)
-ACTUATORS_OBJECTS = $(ACTUATORS_SOURCES:.cpp=.o)
-
-SENSORS_SOURCES = $(call rwildcard, ./sensors/,*.cpp)
-SENSORS_OBJECTS = $(SENSORS_SOURCES:.cpp=.o)
-
 IMAGES_SOURCES = $(call rwildcard, ./imageProcessing/,*.cpp)
 IMAGES_OBJECTS = $(IMAGES_SOURCES:.cpp=.o)
 

@@ -178,7 +178,9 @@ std::vector<Eigen::Vector2d,Eigen::aligned_allocator<Eigen::Vector2d>> findBlock
 
 }
 
+
 Eigen::Vector2d findNearestBlockInList(std::vector<Eigen::Vector2d,Eigen::aligned_allocator<Eigen::Vector2d>>& list_of_block_pts) {
+    //distance is angle distance
     double dist_min_val = list_of_block_pts.at(0)[0];
     int min_ind = 0;
     for(int i=0; i<list_of_block_pts.size(); i++) {
@@ -213,10 +215,10 @@ void detectBlocks(cv::Mat& frame, BlockInfo& nearest_block_info) {
         }
         else {
             nearest_pt_rad = nearest_pt_green;
-            updateBlockFoundInfo(nearest_pt_rad, 0, nearest_block_info); //red
+            updateBlockFoundInfo(nearest_pt_rad, 0, nearest_block_info); //green
         }
     }
-
+    //TODO: get rid of these if statements
     else if(list_of_red.size() > 0) {
         Eigen::Vector2d nearest_pt_rad = findNearestBlockInList(list_of_red);
         updateBlockFoundInfo(nearest_pt_rad, 1, nearest_block_info); //red
@@ -245,7 +247,7 @@ void updateBlockFoundInfo(Eigen::Vector2d& block_coord_rad, int cube_color, Bloc
     //nearest_block_info.nearest_cube_angle = block_coord_rob_radial[1];
 
     if (DEBUG==1) {
-        std::cout << "inside block detection: dist" << nearest_block_info.nearest_cube_dist <<"angle"<<nearest_block_info.nearest_cube_angle<<std::endl;
+        std::cout << "inside block detection: dist " << nearest_block_info.nearest_cube_dist <<" angle "<<nearest_block_info.nearest_cube_angle<<std::endl;
     }
 
 }

@@ -127,11 +127,19 @@ void ImageProcessor::doStuff() {
     vid_cap.retrieve(frame); // get a new frame from camera
     cv::resize(frame,frame,cv::Size(0,0), 1, 1, cv::INTER_LINEAR);
 
-    detectWall(frame);
+    //detectWall(frame);
     detectBlocks(frame);
+    if(getFoundCube()){
+        std::cout << "found cube!" << std::endl;
+    }
+    else{
+        std::cout << "no cube :(" << std::endl;
+    }
+    /*
     if(detectingPurpleLine == 1) {
         detectPurpleLine(frame);
     }
+    */
 
     //cv::namedWindow("frame", 1);
     //cv::imshow("frame", frame);

@@ -6,7 +6,7 @@ from tamproxy.devices import Motor
 class MotorWrite(Sketch):
 
     def setup(self):
-        self.motor = Motor(self.tamp, 2, 4)
+        self.motor = Motor(self.tamp, 2, 3)
         self.motor.write(1,0)
         self.delta = 1
         self.motorval = 0

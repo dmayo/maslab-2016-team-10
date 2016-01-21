@@ -11,7 +11,6 @@
 int main( int, char** argv) {
     ImageProcessor myImageProcessor;
     myImageProcessor.run(&myImageProcessor);
-    bool DEBUG=true;
     printf("something worked");
 }
 

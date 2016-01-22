@@ -131,6 +131,7 @@ void ImageProcessor::doStuff() {
     detectBlocks(frame);
     if(getFoundCube()){
         std::cout << "found cube!" << std::endl;
+        std::cout << getNearestCubeDist() << std::endl;
     }
     else{
         std::cout << "no cube :(" << std::endl;

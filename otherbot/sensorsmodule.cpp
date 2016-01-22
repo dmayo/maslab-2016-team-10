@@ -105,7 +105,7 @@ sensorsModule::sensorsModule():
     #endif
 
     #if GYROSCOPE
-    ,mygyroscope(GYROSCOPE_CHIP_PIN, GYROSCOPE_SPI_PIN)
+    ,mygyroscope()
     #endif
 //
     #if COLOR_DETECTOR

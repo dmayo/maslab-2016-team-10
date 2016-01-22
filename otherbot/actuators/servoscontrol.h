@@ -8,7 +8,7 @@ class servosControl
 {
 public:
     double armAngle;
-    double hookAngle;
+    //double hookAngle;
     double sortAngle;
     int running;
     int startCollect;
@@ -23,8 +23,8 @@ public:
     servosControl();
     ~servosControl();
     void computeNewServosAngles();
-    void hookBlock();
-    void unHookBlock();
+    //void hookBlock();
+    //void unHookBlock();
     void raiseBlock();
     void unRaiseBlock();
     void sortRight();

@@ -1,8 +1,8 @@
 #include "encoderquadrature.h"
 
-encoderQuadrature::encoderQuadrature(int encA, int encB, int isLeft):
-    encAGpio(encA),
-    encBGpio(encB)
+encoderQuadrature::encoderQuadrature(int encA, int encB, int isLeft)
+    //encAGpio(encA),
+    //encBGpio(encB)
 
 {
     if(isLeft){
@@ -14,11 +14,13 @@ encoderQuadrature::encoderQuadrature(int encA, int encB, int isLeft):
     else{
         reversed = ENCODER_OPPOSITE_MOTOR;
     }
+    /*
     encAGpio.dir(mraa::DIR_IN);
     encAGpio.isr(mraa::EDGE_BOTH, aHandler,(void *) this);
 
     encBGpio.dir(mraa::DIR_IN);
     encBGpio.isr(mraa::EDGE_BOTH, bHandler, (void *) this);
+    */
 
 }
 
@@ -73,7 +75,8 @@ void encoderQuadrature::updateTick(int prevPhase, int curPhase) {
 void encoderQuadrature::aHandler(void * myEnc) {
   // Get the gpio handle from the args
   encoderQuadrature * encoder = (encoderQuadrature *)myEnc;
-  mraa::Gpio *encA = &(encoder->encAGpio);
+  /*
+  //mraa::Gpio *encA = &(encoder->encAGpio);
   int a = encoder->aState;
   int b = encoder->bState;
   int newA = encA->read();
@@ -81,12 +84,14 @@ void encoderQuadrature::aHandler(void * myEnc) {
   int prevPhase = encoder->getPhase(a, b);
   int curPhase = encoder->getPhase(newA, b);
   encoder->updateTick(prevPhase, curPhase);
+  */
 }
 
 void encoderQuadrature::bHandler(void * myEnc) {
   // Get the gpio handle from the args
   encoderQuadrature * encoder = (encoderQuadrature *)myEnc;
-  mraa::Gpio *encB = &(encoder->encBGpio);
+  /*
+  //mraa::Gpio *encB = &(encoder->encBGpio);
   int a = encoder->aState;
   int b = encoder->bState;
   int newB = encB->read();
@@ -94,5 +99,6 @@ void encoderQuadrature::bHandler(void * myEnc) {
   int prevPhase = encoder->getPhase(a, b);
   int curPhase = encoder->getPhase(a, newB);
   encoder->updateTick(prevPhase, curPhase);
+  */
 }
 

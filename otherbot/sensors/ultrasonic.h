@@ -6,7 +6,7 @@
 #define ULTRASONIC_UPDATE_TIME 60000
 
 #include <sys/time.h>
-#include "mraa.hpp"
+//#include "mraa.hpp"
 #include "sensorssuperclass.h"
 #include  <thread>
 
@@ -24,8 +24,8 @@ class ultrasonic: public sensorsSuperClass
     double getData();
 
     std::thread *runThread;
-    mraa::Gpio trigGpio;
-    mraa::Gpio echoGpio;
+    //mraa::Gpio trigGpio;
+    //mraa::Gpio echoGpio;
     double duration;
     double distance_m;
     double distance_in;

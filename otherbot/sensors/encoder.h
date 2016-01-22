@@ -1,7 +1,6 @@
 #ifndef ENCODER_H
 #define ENCODER_H
 
-#include "mraa.hpp"
 #include <sys/time.h>
 #include <thread>
 #include <unistd.h>
@@ -20,7 +19,7 @@ class encoder: public sensorsSuperClass
 
     //std::thread *runThread;
 //    mraa::Gpio dirGpio;
-    mraa::Gpio encGpio;
+    //mraa::Gpio encGpio;
 
     volatile int dir; //This will be written by the actuator
 

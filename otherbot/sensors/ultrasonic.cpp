@@ -1,11 +1,13 @@
 #include "ultrasonic.h"
 #include <unistd.h>
 
-ultrasonic::ultrasonic(int TP, int EP): trigGpio(TP), echoGpio(EP){
-    trigGpio.dir(mraa::DIR_OUT);
-    echoGpio.dir(mraa::DIR_IN);
+ultrasonic::ultrasonic(int TP, int EP)
+//trigGpio(TP), echoGpio(EP)
+{
+    //trigGpio.dir(mraa::DIR_OUT);
+    //echoGpio.dir(mraa::DIR_IN);
 
-    echoGpio.isr(mraa::EDGE_BOTH, echo_handler, this);
+    //echoGpio.isr(mraa::EDGE_BOTH, echo_handler, this);
     running=1;
     runThread = new std::thread(run,this);
     //runThread->detach();
@@ -19,6 +21,7 @@ ultrasonic::~ultrasonic(){
 }
 
 void ultrasonic::echo_handler(void* ultrasonicSensorPointer) {
+    /*
     // Grab end time first, for accuracy
     struct timeval end;
     gettimeofday(&end, NULL);
@@ -43,16 +46,16 @@ void ultrasonic::echo_handler(void* ultrasonicSensorPointer) {
         ultSensor->distance_m = diffTime * 170.0;
         ultSensor->distance_in= diffTime * 170.0 *39.37;
     }
-
+    */
 }
 
 void ultrasonic::run(void * ultrasonicSensorPointer){
     ultrasonic * ultSens = (ultrasonic *)ultrasonicSensorPointer;
     while (ultSens->running){
         // 20us trigger pulse (must be at least 10us)
-        ultSens->trigGpio.write(1);
+        //ultSens->trigGpio.write(1);
         usleep(20);
-        ultSens->trigGpio.write(0);
+        //ultSens->trigGpio.write(0);
 
         // Must pause at least 60ms between measurements
         usleep(ULTRASONIC_UPDATE_TIME);

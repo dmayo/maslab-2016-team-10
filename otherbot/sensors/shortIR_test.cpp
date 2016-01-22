@@ -2,8 +2,6 @@
 #include <csignal>
 #include <iostream>
 #include <sys/time.h>
-#include "mraa.hpp"
-
 
 int runShortIR(){
   int reading;

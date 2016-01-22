@@ -791,7 +791,7 @@ void states::collectBlock(int color){
         if(difTime>BLOCK_COLLECT_MAX_TIME_MOVING){
             if(detectedBlock){
                 myState=grabing;
-                myServosControl->hookBlock();
+                //myServosControl->hookBlock();
                 startTimeState = getTimeMicroseconds();
                 successfullyCollectedBlock=1;
             }
@@ -836,7 +836,7 @@ void states::collectBlock(int color){
     case(sorting):
         if(difTime>BLOCK_COLLECT_SORT_TIME_MS){
             myState=releasing;
-            myServosControl->unHookBlock();
+            //myServosControl->unHookBlock();
             startTimeState = getTimeMicroseconds();
         }
         break;

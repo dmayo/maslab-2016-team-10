@@ -1,7 +1,7 @@
 #ifndef ACTUATOR_H
 #define ACTUATOR_H
 #include "motorwheel.h"
-#include "pwmutils.h"
+//#include "pwmutils.h"
 #include "../configFile.h"
 #include "../sensorsmodule.h"
 #include "motorscontrol.h"
@@ -19,10 +19,10 @@ public:
     ~actuator();
     motorWheel rightWheel;
     motorWheel leftWheel;
-    pwmUtils pwm;
+    //pwmUtils pwm;
     servo sortServo;
     servo armServo;
-    servo hookServo;
+    //servo hookServo;
     sensorsModule * sensorsPointer;
 
     static void run(actuator *myactuator);
@@ -33,7 +33,7 @@ public:
     volatile double * leftWheelPower;
     volatile double * sortServoAngle;
     volatile double * armServoAngle;
-    volatile double * hookServoAngle;
+    //volatile double * hookServoAngle;
 
 
     std::thread *runThread;
@@ -46,8 +46,8 @@ public:
     double getSortServoAngle();
     void setArmServoAngle(double angle);
     double getArmServoAngle();
-    void setHookServoAngle(double angle);
-    double getHookServoAngle();
+    //void setHookServoAngle(double angle);
+    //double getHookServoAngle();
 
 };
 

@@ -4,7 +4,7 @@
 servosControl::servosControl()
 {
     armAngle = ARM_START;
-    hookAngle = HOOK_START;
+    //hookAngle = HOOK_START;
     sortAngle = SORT_START; //initialize this in the center
     previousSwipe=0;
     swipping =0;
@@ -18,7 +18,7 @@ void servosControl::run(servosControl *myservo){
         myservo->computeNewServosAngles();
     }
 }
-
+/*
 void servosControl::hookBlock(){
     hookAngle = HOOK_START + 110;
 }
@@ -26,7 +26,7 @@ void servosControl::hookBlock(){
 void servosControl::unHookBlock(){
     hookAngle = HOOK_START;
 }
-
+*/
 void servosControl::raiseBlock(){
     armAngle = ARM_START + 154;
 }
@@ -44,7 +44,7 @@ void servosControl::sortLeft(){
 }
 
 void servosControl::reset(){
-    hookAngle = HOOK_START;
+    //hookAngle = HOOK_START;
     armAngle = ARM_START;
     sortAngle = SORT_START;
     swipping=0;

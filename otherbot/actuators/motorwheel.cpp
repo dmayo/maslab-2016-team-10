@@ -1,6 +1,14 @@
 #include "motorwheel.h"
+#include <string>
+#include <iostream>
 
-motorWheel::motorWheel(int dirPinN, int pwmInd):dirPin(dirPinN),pwmIndex(pwmInd)
+motorWheel::motorWheel(std::string wheelType)
 {
-    dirPin.dir(mraa::DIR_OUT);
+    //named pipes goes here
+
+}
+
+void motorWheel::setSpeed(double speed, double dir){
+	//more pipes here
+	std::cout << "speed " << speed << " dir " << dir;
 }

@@ -3,16 +3,16 @@
 #include <iostream>
 #include <cmath>
 #include <sys/time.h>
-#include "mraa.hpp"
 #include <unistd.h>
 
 
 shortIR::shortIR(int dataPin){
-
+	/*
 	data_aio = new mraa::Aio(dataPin);
 	if (data_aio == NULL){
 		return;
 	}
+	*/
 
 	//data_aio->dir(mraa::DIR_IN);
 
@@ -23,7 +23,8 @@ shortIR::shortIR(int dataPin){
 }
 
 float shortIR::timing(){
-	return data_aio->read();
+	return 0;
+	//return data_aio->read();
 }
 
 float shortIR::ranging(){

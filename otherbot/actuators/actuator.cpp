@@ -2,16 +2,15 @@
 #include <unistd.h>
 
 actuator::actuator():
-    rightWheel(RIGHT_WHEEL_DIR, RIGHT_WHEEL_PWM),
-    leftWheel(LEFT_WHEEL_DIR, LEFT_WHEEL_PWM),
-    pwm(),
-    sortServo(SORT_SERVO_PWM),
-    armServo(ARM_SERVO_PWM),
-    hookServo(HOOK_SERVO_PWM),
+    rightWheel("right"),
+    leftWheel("left"),
+    sortServo("sort"),
+    armServo("arm"),
+    //hookServo(HOOK_SERVO_PWM),
     rightWheelPower(NULL),
     leftWheelPower(NULL),
     armServoAngle(NULL),
-    hookServoAngle(NULL),
+    //hookServoAngle(NULL),
     sortServoAngle(NULL),
     sensorsPointer(NULL){
 
@@ -26,7 +25,7 @@ actuator::actuator(motorsControl &mymotorsControl, servosControl &myservosContro
     rightWheelPower = &mymotorsControl.rightMotorPower;
     leftWheelPower = &mymotorsControl.leftMotorPower;
     armServoAngle = &myservosControl.armAngle;
-    hookServoAngle = &myservosControl.hookAngle;
+    //hookServoAngle = &myservosControl.hookAngle;
     sortServoAngle = &myservosControl.sortAngle;
 
 }
@@ -56,8 +55,10 @@ void actuator::run(actuator * myactuator){
             myactuator->setPowerLeftWheel(*(myactuator->leftWheelPower));
         if (myactuator->armServoAngle)
            myactuator->setArmServoAngle(*(myactuator->armServoAngle));
+        /*
         if (myactuator->hookServoAngle)
             myactuator->setHookServoAngle(*(myactuator->hookServoAngle));
+        */
         if (myactuator->sortServoAngle)
             myactuator->setSortServoAngle(*(myactuator->sortServoAngle));
         usleep(UPDATE_RATE_ACTUATORS_MILISECONDS * 1000);
@@ -84,10 +85,9 @@ void actuator::setPowerLeftWheel(double speed){
     }
 #endif
 
-    leftWheel.dirPin.write(dir);
     speed = speed>1? 1: speed; //If speed >1, speed =1.
     speed= speed * MAXIMUM_NORMALIZED_SAFE_SPEED_MOTORS;
-    pwm.writePWM(leftWheel.pwmIndex,speed);
+    leftWheel.setSpeed(speed,dir);
 }
 
 void actuator::setPowerRightWheel(double speed){
@@ -118,15 +118,14 @@ void actuator::setPowerRightWheel(double speed){
         sensorsPointer->rightEncoder.dir =encoderDir;
     }
 #endif
-    rightWheel.dirPin.write(dir);
     speed = speed>1? 1: speed; //If speed >1, speed =1.
     speed= speed * MAXIMUM_NORMALIZED_SAFE_SPEED_MOTORS;
-    pwm.writePWM(rightWheel.pwmIndex,speed);
+    rightWheel.setSpeed(speed,dir);
 }
 
 void actuator::setSortServoAngle(double angle){
     double duty = angle/180.0;
-    pwm.setServoPosition(sortServo.servoIndex,duty);
+    sortServo.moveServo(duty);
 
 }
 
@@ -138,7 +137,7 @@ double actuator::getSortServoAngle(){
 
 void actuator::setArmServoAngle(double angle){
     double duty = angle/180.0;
-    pwm.setServoPosition(armServo.servoIndex,duty);
+    armServo.moveServo(duty);
 
 }
 
@@ -147,7 +146,7 @@ double actuator::getArmServoAngle(){
     return *armServoAngle;}
     return -1;
 }
-
+/*
 void actuator::setHookServoAngle(double angle){
     double duty = angle/180.0;
     pwm.setServoPosition(hookServo.servoIndex,duty);
@@ -159,6 +158,7 @@ double actuator::getHookServoAngle(){
     return *hookServoAngle;}
     return -1;
 }
+*/
 
 //void actuator::getRGData(int *r,int *g){
 //    pwm.writePWM(myColorSensor.redPWM, .9);

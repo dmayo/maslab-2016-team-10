@@ -1,9 +1,10 @@
 #include "gyroscope.h"
 
-gyroscope::gyroscope(int chipSelectPin, int spiPin): 
-chipSelectGpio(chipSelectPin), spiSpi(spiPin){
+gyroscope::gyroscope()
+{
+//chipSelectGpio(chipSelectPin), spiSpi(spiPin){
 	running = 1;
-
+/*
 	chipSelectGpio.dir(mraa::DIR_OUT);
 	chipSelectGpio.write(1);
 
@@ -18,6 +19,7 @@ chipSelectGpio(chipSelectPin), spiSpi(spiPin){
   	init = 0;
 
 	runThread = new std::thread(run, this);
+	*/
 }
 
 gyroscope::~gyroscope() {
@@ -28,6 +30,7 @@ gyroscope::~gyroscope() {
 
 void gyroscope::run(void* gyroscopeSensorPointer){
 	gyroscope* gyroscopeSensor = (gyroscope*) gyroscopeSensorPointer;
+	/*
 	mraa::Gpio* chipSelect = & (gyroscopeSensor->chipSelectGpio);
 	mraa::Spi* spi = & (gyroscopeSensor->spiSpi);
 
@@ -60,6 +63,7 @@ void gyroscope::run(void* gyroscopeSensorPointer){
     	}
     	usleep(10 * MS);
     }
+    */
 }
 
 float gyroscope::getTotal(){

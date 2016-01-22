@@ -1,12 +1,13 @@
 #ifndef SERVO_H
 #define SERVO_H
-#include "mraa.hpp"
+#include <string>
 
 class servo
 {
 public:
-    servo(int PWMindex);
-    int servoIndex;
+	std::string servoName;
+    servo(std::string servoName);
+    void moveServo(double duty);
 };
 
 #endif // SERVO_H

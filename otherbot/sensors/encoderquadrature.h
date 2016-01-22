@@ -5,14 +5,13 @@
 #ifndef ENCODERQUADRATURE_H
 #define ENCODERQUADRATURE_H
 #include "sensorssuperclass.h"
-#include "mraa.hpp"
 #include "../configFile.h"
 class encoderQuadrature : public sensorsSuperClass
 {
 public:
     encoderQuadrature(int encA, int encB, int isLeft);
-    mraa::Gpio encAGpio;
-    mraa::Gpio encBGpio;
+    //mraa::Gpio encAGpio;
+    //mraa::Gpio encBGpio;
 
     static void aHandler(void * myEnc);
     static void bHandler(void * myEnc);

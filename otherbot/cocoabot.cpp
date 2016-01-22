@@ -144,8 +144,8 @@ void cocoabot::run(int argc, char **argv){
         myState = nextState;
         delete previousState;
         previousState=NULL;
-        myServosControl.hookBlock();
-        myServosControl.hookBlock();
+        //myServosControl.hookBlock();
+        //myServosControl.hookBlock();
         while (running){
             myState->startProcessingProceduresManual();
             myState->wallFollow();
@@ -159,8 +159,8 @@ void cocoabot::run(int argc, char **argv){
         myState = nextState;
         delete previousState;
         previousState=NULL;
-        myServosControl.hookBlock();
-        myServosControl.hookBlock();
+        //myServosControl.hookBlock();
+        //myServosControl.hookBlock();
         while (running){
             myState->startProcessingProceduresManual();
             myState->wallFollowRight();
@@ -174,8 +174,8 @@ void cocoabot::run(int argc, char **argv){
         myState = nextState;
         delete previousState;
         previousState=NULL;
-        myServosControl.hookBlock();
-        myServosControl.hookBlock();
+        //myServosControl.hookBlock();
+        //myServosControl.hookBlock();
         while (running){
             myState->startProcessingProceduresManual();
             myState->wallFollowLeftFast();

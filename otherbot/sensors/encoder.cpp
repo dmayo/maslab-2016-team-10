@@ -1,14 +1,15 @@
 #include "encoder.h"
 
-encoder::encoder(int encPin): encGpio(encPin), dir(0)
+encoder::encoder(int encPin)
+ //encGpio(encPin), dir(0)
 {
 	edgeCount = 0;
 	rotations = 0.0;
 	running = 1;
 
 //	dirGpio.dir(mraa::DIR_OUT);
-    encGpio.dir(mraa::DIR_IN);
-	encGpio.isr(mraa::EDGE_BOTH, edge_handler, this);
+    //encGpio.dir(mraa::DIR_IN);
+	//encGpio.isr(mraa::EDGE_BOTH, edge_handler, this);
 
     //runThread = new std::thread(run,this);
 }

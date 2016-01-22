@@ -1,12 +1,12 @@
 #ifndef MOTORWHEEL_H
 #define MOTORWHEEL_H
-#include "mraa.hpp"
+#include <string>
+
 class motorWheel
 {
 public:
-    motorWheel(int dirPinN, int pwmInd);
-    mraa::Gpio dirPin;
-    int pwmIndex;
+    motorWheel(std::string wheelType);
+    void setSpeed(double speed, double dir);
 private:
 
 };

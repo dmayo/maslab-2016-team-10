@@ -1,4 +1,3 @@
-
 #ifndef IMAGEPROCESSOR_H
 #define IMAGEPROCESSOR_H
 
@@ -36,27 +35,27 @@ public:
     GridMap local_map; // for now
 
     // update for other threads to get
+    
     BlockDetection::BlockInfo nearestBlockInfo;
     BlockDetection::BlockInfo nearestBlockInfoPrevious;
     int detectingPurpleLine;
     TerritoryDetection::PurpleLineInfo purpleLineInfo;
-
-    /*
+    
     int foundCube;
     double nearestCubeAngle;
     double nearestCubeDist;
     int nearestCubeColor;
-    */
-
+    
+    
     cv::Mat frame_raw;
     cv::Mat frame;
 
     static const int CUBE_COLOR_GREEN = 0;
     static const int CUBE_COLOR_RED = 1;
-
+    
     int running;
     std::thread *runThread;
-
+    
     void detectWall(cv::Mat&);
     void detectBlocks(cv::Mat&);
     void detectPurpleLine(cv::Mat& frame);
@@ -89,7 +88,6 @@ public:
     void writeToFile(std::string fn);
 
     void debugStuff();
-
 
     static void run(ImageProcessor * ImageProcessorPointer);
 };

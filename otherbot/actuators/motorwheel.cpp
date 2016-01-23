@@ -10,5 +10,5 @@ motorWheel::motorWheel(std::string wheelType)
 
 void motorWheel::setSpeed(double speed, double dir){
 	//more pipes here
-	std::cout << "speed " << speed << " dir " << dir;
+	//std::cout << "speed " << speed << " dir " << dir;
 }

@@ -9,6 +9,6 @@ servo::servo(std::string servoName)
 
 void servo::moveServo(double duty){
 	//pipes here
-	std::cout << servoName << " " << duty;
+	//std::cout << servoName << " " << duty;
 }
 

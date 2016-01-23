@@ -1,5 +1,6 @@
 #include "actuator.h"
 #include <unistd.h>
+#include <iostream>
 
 actuator::actuator():
     rightWheel("right"),
@@ -16,7 +17,7 @@ actuator::actuator():
 
     running=1;
     runThread = new std::thread(run,this);
-
+    std::cout<<"actuator initialized"<<std::endl;
 
 }
 
@@ -44,7 +45,7 @@ actuator::~actuator(){
 }
 
 void actuator::run(actuator * myactuator){
-
+    std::cout<<"actuator running"<<std::endl;
     //Here we see for each of the powers/angles if they have been defined
     //i.e. they point to a value
     // if they do, we update the things.

@@ -1,5 +1,6 @@
 #include "servoscontrol.h"
 #include <unistd.h>
+#include <iostream>
 
 servosControl::servosControl()
 {
@@ -9,11 +10,14 @@ servosControl::servosControl()
     previousSwipe=0;
     swipping =0;
     this->running=1;
+    std::cout<<"servo controller initialized"<<std::endl;
     runThread = new std::thread(run,this);
 }
 
 void servosControl::run(servosControl *myservo){
+    std::cout<<"servo controller running"<<std::endl;
     while(myservo->running){
+        //std::cout<<"servo controller running"<<std::endl;
         usleep(UPDATE_RATE_SERVOS_MILISECONDS*1000);
         myservo->computeNewServosAngles();
     }

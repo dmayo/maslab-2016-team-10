@@ -1,5 +1,6 @@
 #include "motorscontrol.h"
 #include <unistd.h>
+#include <iostream>
 motorsControl::motorsControl(sensorsModule *sensors): mysensors(sensors)
 {
     isTurning=0;
@@ -20,6 +21,7 @@ motorsControl::motorsControl(sensorsModule *sensors): mysensors(sensors)
     desiredAngle=0;
 
     this->running=1;
+    std::cout<<"motor controller initialized"<<std::endl;
     runThread = new std::thread(run,this);
 }
 
@@ -31,6 +33,7 @@ void motorsControl::setNewDesiredRelativePositionInRadialCordinates(double radiu
 
 
 void motorsControl::run(motorsControl *mycontrol){
+    std::cout<<"motor controller running"<<std::endl;
     while (mycontrol->running) {
         usleep(SPEED_CONTROL_UPDATE_RATE_MILISECONDS*1000);
         mycontrol->computeNewMotorPowers();

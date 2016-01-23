@@ -10,7 +10,7 @@
 
 int main( int, char** argv) {
     ImageProcessor myImageProcessor;
-    myImageProcessor.run(&myImageProcessor);
+    //myImageProcessor.run(&myImageProcessor);
     printf("something worked");
 }
 

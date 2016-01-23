@@ -1,4 +1,6 @@
 ﻿#include "sensorsmodule.h"
+#include <iostream>
+
 sensorsModule::sensorsModule():
     //Here is the initializer. It defines initial values for all the variables and initializes all the objects
     frontUltrasonicData(0),
@@ -122,6 +124,7 @@ sensorsModule::sensorsModule():
 
 {
     running=1;
+    std::cout<<"sensors module initialized"<<std::endl;
     runThread = new std::thread(run,this);
 }
 
@@ -134,6 +137,7 @@ sensorsModule::~sensorsModule(){
 
 
 void sensorsModule::run(sensorsModule * sensors){
+    std::cout<<"sensors module running"<<std::endl;
     int started =0;
 
     while (sensors->running){

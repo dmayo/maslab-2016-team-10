@@ -1,6 +1,7 @@
 #include "statestart.h"
 #include "statewallfollow.h"
 #include "statelookingforblocks.h"
+#include <iostream>
 stateStart::stateStart(motorsControl * motorControlPointer,
                        servosControl * servoControlPointer,
                        sensorsModule * sensorsPointer, ImageProcessor *imageProcessorPointer,
@@ -20,7 +21,7 @@ stateStart::stateStart(states *previouState):states(previouState){
 void stateStart::processData(){
     startProcessData();
     //do stuff
-
+    std::cout<<"start state!"<<std::endl;
     //nextState = new stateWallFollow(this);
     nextState = new stateLookingForBlocks(this);
     //finish doing stuff

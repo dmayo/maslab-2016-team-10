@@ -17,7 +17,7 @@ class cocoabot
 public:
     cocoabot();
     void run();
-    void run(int argc, char** argv);
+    //void run(int argc, char** argv);
     int running;
 private:
     sensorsModule mySensors;

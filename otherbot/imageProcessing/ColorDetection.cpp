@@ -150,9 +150,4 @@ cv::Mat detectColor(cv::Mat& frame, int colors[], int size_of_colors){
 
 }
 
-
-
-
-
-
 }

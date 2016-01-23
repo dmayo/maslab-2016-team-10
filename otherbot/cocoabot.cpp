@@ -4,11 +4,12 @@
 #include <cstdio>
 #include "statecollectingcube.h"
 #include "statetestprocedure.h"
+#include <iostream>
 //#include "statelookingforpurpleline.h"
 
-actuator * actPointerMain;
+//actuator * actPointerMain;
 cocoabot *cocoabotPointer;
-
+/*
 //Global function that assures that we stop the motors when stopping the robot.
 void stopMotorsMain(int signo)
 {
@@ -21,7 +22,7 @@ void stopMotorsMain(int signo)
         actPointerMain->setPowerRightWheel(0);
     }
 }
-
+*/
 cocoabot::cocoabot(): //Initializes all the modules
     mySensors(),
     myMotorControl(&mySensors),
@@ -33,28 +34,46 @@ cocoabot::cocoabot(): //Initializes all the modules
     myLogger(&mySensors, &myMotorControl, &myServosControl, &myState, &myImageProcessor)
 
 {
+    std::cout<<"cocoabot created"<<std::endl;
+    
     //Starts the state machine
     myState=new stateStart(&myMotorControl,
                            &myServosControl,
                            &mySensors,
                            &myImageProcessor,
                            &myUtils);
+    
     cocoabotPointer =this;
+    /*
     actPointerMain = &myActuator;
     signal(SIGINT, stopMotorsMain);
+    */
 }
 
 //Runs the state machine
 void cocoabot::run(){
+    std::cout<<"cocoabot running"<<std::endl;
+    /*
+    while (running){
+        usleep(UPDATE_RATE_STATE_MACHINE_MICROSECONDS);
+        //std::cout<<"running main thread"<<std::endl;
+    }
+    */
     int changedToPurpleLine=0;
     int decisionPurpleLine = 0;
+    /*
     while (!mySensors.onData){
+        std::cout<<"waiting for sensors"<<std::endl;
         usleep(UPDATE_RATE_STATE_MACHINE_MICROSECONDS);
     }
+    */
     myUtils.reset();
+
     while (running){
+        //std::cout<<"running";
         if(myUtils.gameTimeRemaining()>0){
             myState->processData();
+            //std::cout<<"process";
             states * nextState = myState->getNextState();
             if (nextState!=myState){
                 logger::log();
@@ -69,10 +88,11 @@ void cocoabot::run(){
             myState->stop();
         }
     }
+
 }
 
 
-
+/*
 void cocoabot::run(int argc, char **argv){
 
     if(strcmp(argv[1],"collectBlock")==0){
@@ -359,3 +379,4 @@ void cocoabot::run(int argc, char **argv){
 
 
 }
+*/

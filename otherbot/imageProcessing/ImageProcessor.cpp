@@ -1,6 +1,7 @@
 
 #include "ImageProcessor.h"
 #include <unistd.h>
+#include <iostream>
 
 
 // *** (DE)CONSTRUCTORS FOR IMAGE PROCESSING CLASS *** //
@@ -21,9 +22,10 @@ ImageProcessor::ImageProcessor():
 
     detectingPurpleLine = 0;
 
-    running=1;
-    runThread = new std::thread(run,this);
+    this->running=1;
 
+    runThread = new std::thread(run,this);
+    //this->run(this);
     cpu_time = 0.0; // for debug
     cache_time = 0.0; // for debug
 }
@@ -129,6 +131,7 @@ void ImageProcessor::doStuff() {
 
     //detectWall(frame);
     detectBlocks(frame);
+    /*
     if(getFoundCube()){
         std::cout << "found cube!" << std::endl;
         std::cout << getNearestCubeDist() << std::endl;
@@ -136,6 +139,8 @@ void ImageProcessor::doStuff() {
     else{
         std::cout << "no cube :(" << std::endl;
     }
+    */
+    
     /*
     if(detectingPurpleLine == 1) {
         detectPurpleLine(frame);
@@ -184,9 +189,10 @@ void ImageProcessor::debugStuff() {
 }
 
 void ImageProcessor::run(ImageProcessor *ImageProcessorPointer) {
-
+	ImageProcessorPointer->running=1;
     while(!DEBUG && ImageProcessorPointer->running) {
-        ImageProcessorPointer->doStuff();
+        //ImageProcessorPointer->doStuff();
+        //std::cout<<"running!"<<std::endl;
         usleep(UPDATE_RATE_IMAGE_PROCESSOR_MICROSECONDS);
     }
     while(ImageProcessorPointer->running) {

@@ -147,16 +147,18 @@ std::vector<Eigen::Vector2d,Eigen::aligned_allocator<Eigen::Vector2d>> findBlock
     cv::Mat im_color = ColorDetection::detectColor(frame, color);
     ImageUtils::ContourData contour_data = ImageUtils::getContours(im_color);
 
+    //cv::namedWindow("cont",1); cv::imshow("cont",drawing); //show color tracking
+
     // CHECK BACK ON THIS
     //ImageUtils::binaryImagePreProcess(im_red, cv::MORPH_CLOSE);
 
     // show images
     if(DEBUG == 1){
-        cv::namedWindow("ae",1); cv::imshow("ae",im_color);
+        cv::namedWindow("ae",1); cv::imshow("ae",im_color); //show color tracking
 
         cv::Mat drawing = cv::Mat::zeros(frame.size(), CV_8UC3);
         cv::drawContours(drawing, contour_data.contours, -1, cv::Scalar(255,255,255), 1, 8);
-        cv::namedWindow("qq",1); cv::imshow("qq",drawing);
+        cv::namedWindow("qq",1); cv::imshow("qq",drawing); //show contours
 
         cv::waitKey(100);
     }
@@ -164,14 +166,18 @@ std::vector<Eigen::Vector2d,Eigen::aligned_allocator<Eigen::Vector2d>> findBlock
     //std::cout<<"number of contours"<<contour_data.contours.size()<<std::endl;
     if(contour_data.contours.size() > 0) { // contours not null
         // findLowestContour(contour_data);
+        Eigen::Vector2d block_pt_xy;
         for(int j = 0; j < contour_data.contours.size(); j++) {
             if(isBlock(contour_data.contours.at(j))) {
-                Eigen::Vector2d block_pt_xy = crudeEstimate(contour_data.contours.at(j)); // hacked for now
+                block_pt_xy = crudeEstimate(contour_data.contours.at(j)); // hacked for now
                 Eigen::Vector2d block_pt_radial = CameraMath::cvtCamXY2RobotRadial(block_pt_xy[0], block_pt_xy[1]);
-                if (DEBUG==1) std::cout << "x,z coords"<<block_pt_xy << std::endl;
+                if (DEBUG==1) std::cout << j<<"x,z coords"<<block_pt_xy << std::endl;
                 list_of_pts.push_back(block_pt_radial);
+                //cv::circle(frame, cv::Point(block_pt_xy[0], block_pt_xy[1]),30, cv::Scalar(255,255,255),CV_FILLED, 8,0);
             }
         }
+
+        //cv::namedWindow("123",1); cv::imshow("123", frame);
     }
 
     return list_of_pts; // may possibly return empty list

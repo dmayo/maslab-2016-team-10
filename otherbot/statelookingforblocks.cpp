@@ -6,16 +6,17 @@ stateLookingForBlocks::stateLookingForBlocks(states *previousState):states(previ
 {
     name = "State looking for cubes";
     startTimeState =getTimeMicroseconds();
-    //myPrivateState = wallFollowing;
+    myPrivateState = wallFollowing;
     std::cout<<"looking for blocks";
 }
 
 void stateLookingForBlocks::processData(){
     startProcessData();
     long long int difTime = (getTimeMicroseconds()-startTimeState)/1000;
-    turnNDegreesSlowly(135);
+    //turnNDegreesSlowly(135);
     std::cout<<"state: looking for blocks"<<std::endl;
-    /*
+    std::cout<<myPrivateState<<std::endl;
+    
     switch(myPrivateState){
         case (wallFollowing):
             wallFollow();
@@ -44,7 +45,7 @@ void stateLookingForBlocks::processData(){
     else if(foundCube()){
         nextState=new stateApproachBlock(this);
     }
-    */
+    
     finishProcessData();
 }
 stateLookingForBlocks::~stateLookingForBlocks(){

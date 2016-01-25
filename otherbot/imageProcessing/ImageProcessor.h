@@ -45,6 +45,10 @@ public:
     double nearestCubeAngle;
     double nearestCubeDist;
     int nearestCubeColor;
+
+    //pipes
+    int fd;
+    char * myfifo;
     
     
     cv::Mat frame_raw;

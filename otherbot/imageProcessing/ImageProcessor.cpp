@@ -1,7 +1,10 @@
-
 #include "ImageProcessor.h"
 #include <unistd.h>
 #include <iostream>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 
 // *** (DE)CONSTRUCTORS FOR IMAGE PROCESSING CLASS *** //
@@ -23,6 +26,8 @@ ImageProcessor::ImageProcessor():
     detectingPurpleLine = 0;
 
     this->running=1;
+
+    myfifo = "./image";
 
     runThread = new std::thread(run,this);
     //this->run(this);
@@ -132,10 +137,19 @@ void ImageProcessor::doStuff() {
 
     //detectWall(frame);
     detectBlocks(frame);
-    
+
+
     if(getFoundCube()){
         //std::cout << "found cube!" << std::endl;
         std::cout << "dist: " <<getNearestCubeDist()<< " angle: "<<getNearestCubeAngle()<<std::endl;
+        std::string s1 = std::to_string(getNearestCubeDist());
+        std::string s2 = std::to_string(getNearestCubeAngle());
+        std::string send = s1+","+s2;
+
+        const char *out = send.c_str();
+        std::cout<<s1+","+s2<<std::endl;
+
+        write(fd, out, 20);
     }
     else{
         std::cout << "no cube :(" << std::endl;
@@ -191,11 +205,17 @@ void ImageProcessor::debugStuff() {
 void ImageProcessor::run(ImageProcessor *ImageProcessorPointer) {
 	ImageProcessorPointer->running=1;
     cv::namedWindow("frame",2);
+    /* create the FIFO (named pipe) */
+    mkfifo(ImageProcessorPointer->myfifo, 0666);
+
+    /* open the FIFO */
+    ImageProcessorPointer->fd = open(ImageProcessorPointer->myfifo, O_WRONLY);
     while(!DEBUG && ImageProcessorPointer->running) {
         ImageProcessorPointer->doStuff();
         //std::cout<<"running!"<<std::endl;
         usleep(UPDATE_RATE_IMAGE_PROCESSOR_MICROSECONDS);
     }
+    close(ImageProcessorPointer->fd);
     while(ImageProcessorPointer->running) {
         ImageProcessorPointer->debugStuff();
         usleep(UPDATE_RATE_IMAGE_PROCESSOR_MICROSECONDS);

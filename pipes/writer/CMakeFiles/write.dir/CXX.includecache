@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/Users/David/Documents/projects/maslab-2016-team-10/pipes/write.cpp
+/Users/David/Documents/projects/maslab-2016-team-10/pipes/writer/write.cpp
 fcntl.h
 -
 sys/stat.h

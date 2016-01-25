@@ -1,4 +1,4 @@
-# Install script for directory: /Users/David/Documents/projects/maslab-2016-team-10/pipes
+# Install script for directory: /Users/David/Documents/projects/maslab-2016-team-10/pipes/writer
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -35,5 +35,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/David/Documents/projects/maslab-2016-team-10/pipes/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/David/Documents/projects/maslab-2016-team-10/pipes/writer/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

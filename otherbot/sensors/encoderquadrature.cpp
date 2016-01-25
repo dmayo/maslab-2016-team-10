@@ -1,4 +1,5 @@
 #include "encoderquadrature.h"
+#include <iostream>
 
 encoderQuadrature::encoderQuadrature(int encA, int encB, int isLeft)
     //encAGpio(encA),
@@ -14,6 +15,8 @@ encoderQuadrature::encoderQuadrature(int encA, int encB, int isLeft)
     else{
         reversed = ENCODER_OPPOSITE_MOTOR;
     }
+    runThread = new std::thread(run,this);
+
     /*
     encAGpio.dir(mraa::DIR_IN);
     encAGpio.isr(mraa::EDGE_BOTH, aHandler,(void *) this);
@@ -24,6 +27,24 @@ encoderQuadrature::encoderQuadrature(int encA, int encB, int isLeft)
 
 }
 
+void encoderQuadrature::run(void* encoderQuadraturePointer){
+    //encoder* encSensor = (encoderQuadraturePointer*) encoderQuadraturePointer;
+    std::cout<<"encoder!"<<std::endl;
+    int fd;
+    char * myfifo = "./../brain/encoder";
+    char buf[MAX_BUF];
+    //open, read, and display the message from the FIFO
+    fd = open(myfifo, O_RDONLY);
+    while (1){
+      std::cout<<"works2"<<std::endl;
+      //encSensor->edgeCount = encSensor->edgeCount + offset;
+      read(fd, buf, MAX_BUF);
+      std::cout<<buf<<std::endl;
+      //encSensor->count= 1; //get edge count from python
+
+    }
+    close(fd);
+}
 
 long long encoderQuadrature::getCounts(){
     return count*reversed;
@@ -55,7 +76,7 @@ int encoderQuadrature::getPhase(int a, int b) {
   return 10; //Default return; should never get here
   // those are all the possibilities.
 }
-
+/*
 void encoderQuadrature::updateTick(int prevPhase, int curPhase) {
   // Tick forward (possibly wrapping)
   if (curPhase - prevPhase == 1 ||
@@ -71,11 +92,12 @@ void encoderQuadrature::updateTick(int prevPhase, int curPhase) {
         //REALLY SHOULDN'T HAPPE FOR OUR SPEEDS.
   }
 }
-
+*/
+/*
 void encoderQuadrature::aHandler(void * myEnc) {
   // Get the gpio handle from the args
   encoderQuadrature * encoder = (encoderQuadrature *)myEnc;
-  /*
+  
   //mraa::Gpio *encA = &(encoder->encAGpio);
   int a = encoder->aState;
   int b = encoder->bState;
@@ -84,13 +106,14 @@ void encoderQuadrature::aHandler(void * myEnc) {
   int prevPhase = encoder->getPhase(a, b);
   int curPhase = encoder->getPhase(newA, b);
   encoder->updateTick(prevPhase, curPhase);
-  */
+ 
 }
-
+ */
+ /*
 void encoderQuadrature::bHandler(void * myEnc) {
   // Get the gpio handle from the args
   encoderQuadrature * encoder = (encoderQuadrature *)myEnc;
-  /*
+ 
   //mraa::Gpio *encB = &(encoder->encBGpio);
   int a = encoder->aState;
   int b = encoder->bState;
@@ -99,6 +122,7 @@ void encoderQuadrature::bHandler(void * myEnc) {
   int prevPhase = encoder->getPhase(a, b);
   int curPhase = encoder->getPhase(a, newB);
   encoder->updateTick(prevPhase, curPhase);
-  */
+
 }
+  */
 

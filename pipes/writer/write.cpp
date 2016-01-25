@@ -13,7 +13,9 @@ int main()
 
     /* write "Hi" to the FIFO */
     fd = open(myfifo, O_WRONLY);
-    write(fd, "Hi", sizeof("Hi"));
+    while(1){
+        write(fd, "Hi", sizeof("Hi"));
+    }
     close(fd);
 
     /* remove the FIFO */

@@ -10,20 +10,31 @@
 motorWheel::motorWheel(std::string wheelType)
 {
     //named pipes goes here
+	myfifo = "./../brain/robot";
+    /* create the FIFO (named pipe) */
+    mkfifo(myfifo, 0666);
+
+    delay_microsec=100000;
+    this->wheelType=wheelType;
 
 }
 
 void motorWheel::setSpeed(double speed, double dir){
 	//more pipes here
 	std::cout << "speed " << speed << " dir " << dir << std::endl;
-	int fd;
-	std::ostringstream strm;
-	char const* namedPipe = "./motorL";
-	mkfifo(namedPipe, 0666);
-	fd = open(namedPipe, O_WRONLY | O_NONBLOCK);
-	std::string numStr = strm.str();
-	const char* cstr1 = numStr.c_str();
-	write(fd, cstr1, sizeof(cstr1));
-	close(fd);
+
+	std::string s = std::to_string(speed);
+
+	// Cstring:
+	char digits[5];
+	std::strcpy( digits, wheelType.c_str() );
+	/* write to the FIFO */
+    fd = open(myfifo, O_WRONLY);
+    write(fd, digits, sizeof(digits));
+
+    close(fd);
+    usleep(delay_microsec);
+    /* remove the FIFO */
+    //unlink(myfifo);
 	std::cout<<"wrote"<<std::endl;
 }

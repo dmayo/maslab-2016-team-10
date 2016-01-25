@@ -121,6 +121,7 @@ void ImageProcessor::writeToFile(std::string fn) {
 
 // ****** MAIN FUNCTION IN LOOP ******* //
 void ImageProcessor::doStuff() {
+    //std::cout<<"doing stuff"<<std::endl;
 
     clearCameraCache();
 
@@ -131,22 +132,21 @@ void ImageProcessor::doStuff() {
 
     //detectWall(frame);
     detectBlocks(frame);
-    /*
+    
     if(getFoundCube()){
-        std::cout << "found cube!" << std::endl;
-        std::cout << getNearestCubeDist() << std::endl;
+        //std::cout << "found cube!" << std::endl;
+        std::cout << "dist: " <<getNearestCubeDist()<< " angle: "<<getNearestCubeAngle()<<std::endl;
     }
     else{
         std::cout << "no cube :(" << std::endl;
     }
-    */
+    cv::imshow("frame", frame);
     
     /*
     if(detectingPurpleLine == 1) {
         detectPurpleLine(frame);
     }
-    */
-
+    */    
     //cv::namedWindow("frame", 1);
     //cv::imshow("frame", frame);
 
@@ -190,8 +190,9 @@ void ImageProcessor::debugStuff() {
 
 void ImageProcessor::run(ImageProcessor *ImageProcessorPointer) {
 	ImageProcessorPointer->running=1;
+    cv::namedWindow("frame",2);
     while(!DEBUG && ImageProcessorPointer->running) {
-        //ImageProcessorPointer->doStuff();
+        ImageProcessorPointer->doStuff();
         //std::cout<<"running!"<<std::endl;
         usleep(UPDATE_RATE_IMAGE_PROCESSOR_MICROSECONDS);
     }

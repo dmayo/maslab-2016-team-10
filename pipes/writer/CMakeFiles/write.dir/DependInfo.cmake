@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/David/Documents/projects/maslab-2016-team-10/pipes/write.cpp" "/Users/David/Documents/projects/maslab-2016-team-10/pipes/CMakeFiles/write.dir/write.cpp.o"
+  "/Users/David/Documents/projects/maslab-2016-team-10/pipes/writer/write.cpp" "/Users/David/Documents/projects/maslab-2016-team-10/pipes/writer/CMakeFiles/write.dir/write.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "Clang")
 

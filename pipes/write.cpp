@@ -6,10 +6,10 @@
 int main()
 {
     int fd;
-    char * myfifo = "./robot1";
+    char * myfifo = "./robot";
 
     /* create the FIFO (named pipe) */
-    mkfifo(myfifo, 0666);
+    //mkfifo(myfifo, 0666);
 
     /* write "Hi" to the FIFO */
     fd = open(myfifo, O_WRONLY);

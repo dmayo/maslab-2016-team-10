@@ -89,7 +89,6 @@ encoderQuadrature leftEncoder;
 #endif
 
 #else//ENC_2_WIRES
-
 #if RIGHT_ENCODER
 encoder rightEncoder;
 #endif

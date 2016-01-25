@@ -1,6 +1,6 @@
 import os, time
 
-pipePath = "./robot"
+pipePath = "./encoder"
 if not os.path.exists(pipePath):
     os.mkfifo(pipePath)
 
@@ -11,8 +11,7 @@ wp = os.open(pipePath, os.O_WRONLY)
 
 while True:
 	i+=1
-	os.write(wp, "UP")
-	os.write(wp, "STOP")
+	os.write(wp, "1.0")
 	#wp = open(pipePath,'w')
 	#wp.write(message+str(i))
 	os.write(wp, message+str(i))

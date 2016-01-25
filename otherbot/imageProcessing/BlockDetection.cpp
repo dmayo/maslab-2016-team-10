@@ -171,7 +171,7 @@ std::vector<Eigen::Vector2d,Eigen::aligned_allocator<Eigen::Vector2d>> findBlock
             if(isBlock(contour_data.contours.at(j))) {
                 block_pt_xy = crudeEstimate(contour_data.contours.at(j)); // hacked for now
                 Eigen::Vector2d block_pt_radial = CameraMath::cvtCamXY2RobotRadial(block_pt_xy[0], block_pt_xy[1]);
-                if (DEBUG==1) std::cout << j<<"x,z coords"<<block_pt_xy << std::endl;
+                if (DEBUG==1) std::cout <<"x,z coords"<<block_pt_xy << std::endl;
                 list_of_pts.push_back(block_pt_radial);
                 //cv::circle(frame, cv::Point(block_pt_xy[0], block_pt_xy[1]),30, cv::Scalar(255,255,255),CV_FILLED, 8,0);
             }

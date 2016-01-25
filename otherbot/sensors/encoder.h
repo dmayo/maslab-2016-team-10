@@ -15,9 +15,9 @@ class encoder: public sensorsSuperClass
     long long getCounts();
     double getData();
     double getRotations();
-    static void edge_handler(void* encoderSensorPointer);
+    static void run(void* encoderSensorPointer);
 
-    //std::thread *runThread;
+    std::thread *runThread;
 //    mraa::Gpio dirGpio;
     //mraa::Gpio encGpio;
 

@@ -6,10 +6,21 @@
 #define ENCODERQUADRATURE_H
 #include "sensorssuperclass.h"
 #include "../configFile.h"
+#include <thread>
+ #include <stdlib.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <iostream>
+ #define MAX_BUF 1024
+
 class encoderQuadrature : public sensorsSuperClass
 {
 public:
     encoderQuadrature(int encA, int encB, int isLeft);
+    static void run(void* encoderQuadraturePointer);
+    std::thread *runThread;
     //mraa::Gpio encAGpio;
     //mraa::Gpio encBGpio;
 

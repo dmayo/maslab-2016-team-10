@@ -72,9 +72,6 @@ class PIDDrive(SyncedSketch):
 
 
         if self.timer.millis() > 100:
-            dt = time.time() - self.init_time
-            if dt > 10:
-                self.fwdVel = 0
             self.timer.reset()
             #response = self.rp.read()
             #print "Got response %s" % response

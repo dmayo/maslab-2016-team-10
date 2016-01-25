@@ -3,6 +3,7 @@ from tamproxy.devices import Motor
 from tamproxy.devices import Gyro
 from tamproxy.devices import Encoder
 from tamproxy.devices import Servo
+from tamproxy.devices import Color
 
 import time
 
@@ -24,6 +25,10 @@ class PIDDrive(SyncedSketch):
         self.screen = pygame.display.set_mode((300, 300))
 
         self.TicpIn = 4480/2.875
+
+        self.color = Color(self.tamp,
+                           integrationTime=Color.INTEGRATION_TIME_101MS,
+                           gain=Color.GAIN_1X)
 
         self.servo = Servo(self.tamp, 9)
         self.servo.write(20)
@@ -122,19 +127,17 @@ class PIDDrive(SyncedSketch):
                     if event.key == pygame.K_SPACE:
                         self.MoveArm = True
 
-                    if event.key == pygame.K_1:
-                        if self.Sort == 0:
-                            self.Sort = 1
-                    if event.key == pygame.K_2:
-                        if self.Sort == 0:
-                            self.Sort = 2
-
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                         self.turnVel = 0
                     if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                         self.fwdVel = 0
-
+                        
+            if self.color.c > 500 and self.Sort == 0:
+                if self.color.r > self.color.g:
+                    self.Sort = 1
+                else:
+                    self.Sort = 2
 
             if self.MoveArm:
                 if self.Bottom == 2 and self.Top == 1:

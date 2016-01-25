@@ -13,34 +13,58 @@ class pythonDriver(SyncedSketch):
 
     ss_pin = 10 #gyro select pin
 
+    Lencoder_pins = 22, 23 
+    Rencoder_pins = 21, 20
+
+    arm_pin = 9
+    sorter_pin = 5
+
+    Rmoter_pins = 1, 3
+    Lmotor_pins = 2, 4
+
+    pipes = './gyro', './IR' 
+
+    for path in pipes:
+        if not os.path.exists(path):
+            os.mkfifo(path)
+
     def setup(self):
-        self.TicpIn = 4480/2.875
-
-        self.servo = Servo(self.tamp, 9)
-        self.servo.write(20)
-        self.servoval = 20
-        self.delta = 0
-
-        self.encoderL = Encoder(self.tamp, 22, 23)
-        self.encoderR = Encoder(self.tamp, 21, 20)
 
         self.init_time = time.time()
-        # self.encoderL = Encoder(self.tamp, 23, 22)
-        # self.encoderR = Encoder(self.tamp, 21, 20)
+
+        self.functions = {}
+
+        self.servo = Servo(self.tamp,self.arm_pin)
+        # self.servo.write(20)
+        # self.servoval = 20
+        # self.delta = 0
+        self.functions['servoARM'] = lambda angle: self.servo.write(angle)
+
+        self.sorter = Servo(self.tamp, self.sorter_pin)
+        # self.sorter.center = 98
+        # self.sorter.right = 20
+        # self.sorter.left = 170
+        # self.sorter.speed = 30
+        self.functions['servoSORT'] = lambda angle: self.sorter.write(angle)
+
+        self.encoderL = Encoder(self.tamp, *self.Lencoder_pins)
+        self.encoderR = Encoder(self.tamp, *self.Rencoder_pins)
 
         #motor left
-        self.motorL = Motor(self.tamp, 2, 4)
+        self.motorL = Motor(self.tamp, *self.Lmotor_pins)
         self.motorLdrive = 0
         self.motorL.write(1,0)
         #self.deltaL = 1
         #self.motorvalL = 0
+        self.functions['left'] = lambda speed: self.motorL.write(speed<0, abs(speed))
         
         #motor right
-        self.motorR = Motor(self.tamp, 1, 3)
+        self.motorR = Motor(self.tamp, *self.Rmoter_pins)
         self.motorRdrive = 0
         self.motorR.write(1,0)
         #self.deltaR = 1
         #self.motorvalR = 0
+        self.functions['right'] = lambda speed: self.motorR.write(speed<0, abs(speed))
 
         #gyro
         
@@ -61,8 +85,16 @@ class pythonDriver(SyncedSketch):
 
         self.fwdVel = 0
         self.turnVel = 0
+        self.maxVel = 40
+
+        self.Distance = 0
+
         self.MoveArm, self.Top, self.Bottom = False, 0, 0
         
+
+        self.Sort = 0
+        self.SortPause = 0
+
         self.timer = Timer()
 
         #connect to pipe
@@ -73,7 +105,6 @@ class pythonDriver(SyncedSketch):
             print "error"
         self.pipe_fd = os.open(pipe_path, os.O_RDONLY | os.O_NONBLOCK)
 
-
     def loop(self):
 
 
@@ -81,11 +112,25 @@ class pythonDriver(SyncedSketch):
             #if get message
 
             #read message
+
+            '''Alternative Command Names:
+                left
+                right
+
+                servoARM
+                servoSORT
+            '''
+
             response = os.read(self.pipe_fd,100)
             print "Got response %s" % response
             #rp.close()
             print "no message"
 
+            value, function = response.split(' ')
+
+            functions[function](int(value))
+
+            '''
             if response == "LEFT":
                 self.turnVel = -5
                 print 'Got Key'
@@ -103,15 +148,21 @@ class pythonDriver(SyncedSketch):
             if response =="STOP":
                 self.turVel=0
                 self.fwdVel=0
-            '''
+            if event.key == 'SORT':
+                if self.Sort == 0:
+                    self.Sort = 1
+            if event.key == pygame.K_2:
+                if self.Sort == 0:
+                    self.Sort = 2
+            
             if response == "LEFT" or response == "RIGHT":
                 self.turnVel = 0
             if response == "UP" or response == "DOWN":
                 self.fwdVel = 0
-            '''
+            
 
             if self.MoveArm:
-                if self.Bottom == "2" and self.Top == "1":
+                if self.Bottom == 2 and self.Top == 1:
                     self.delta = 0
                     self.servoval = 20
                     self.servo.write(20)
@@ -145,10 +196,11 @@ class pythonDriver(SyncedSketch):
             #response = self.rp.read()
             #print "Got response %s" % response
             
-            # Valid gyro status is [0,1], see datasheet on ST1:ST0 bits
+            # Valid gyro status is [0,1], see datasheet on ST1:ST0 bit'''
 
             cAngle=self.gyro.val - self.totalDrift #corrected angle
             #print (self.gyro.val-self.prevGyro), self.gyro.val, self.gyro.status, cAngle, self.totalDrift
+            '''
             self.prevGyro=self.gyro.val
             self.totalDrift+=self.drift
 
@@ -175,7 +227,7 @@ class pythonDriver(SyncedSketch):
 
             self.motorL.write(dirL,abs(self.motorLdrive))
             self.motorR.write(dirR,abs(self.motorRdrive))
-            
+            '''            
 if __name__ == "__main__":
     sketch = pythonDriver(1, -0.00001, 100)
     sketch.run()

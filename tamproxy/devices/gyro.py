@@ -1,4 +1,4 @@
-from .device import ContinuousReadDevice
+ from .device import ContinuousReadDevice
 from .. import config as c
 import time
 

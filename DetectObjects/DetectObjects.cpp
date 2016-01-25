@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <math.h>       
+#include <math.h>
 
 #define PI 3.14159265
 
@@ -27,7 +27,7 @@ const int cropWidth = 160;
 const int cropHeight = 120;
 const int blockWidth =	2;		// block width in inches
 const int focalLength = 200;	// focal length of camera
-char const* namedPipe = "./vision";
+//char const* namedPipe = "./robot";
 
 int floodFillUtil(int x, int y, int currColor,int pxCount,int& maxY,int& maxX);
 void detectObject(int i, int j);
@@ -63,8 +63,11 @@ int main(int argc, char** argv)
     capture.set(CV_CAP_PROP_FRAME_WIDTH,screenWidth);
     capture.set(CV_CAP_PROP_FRAME_HEIGHT,screenHeight);
     
-    
-        
+    std::cout<<"test"<<std::endl;
+	//mkfifo("./robot", 0666);
+	fd = open("./robot" O_WRONLY);
+	std::cout<<"open pipe"<<std::endl;
+
     while (capture.isOpened()) {
 
         // read a frame from the webcam
@@ -145,12 +148,10 @@ int main(int argc, char** argv)
 			if (debug)
 				std::cout	 <<  "{\"color\": " << getColorName(colorOfBlock) << ", \"distance\": " << actualDistance << " inches , \"angle\": " << angle << " degrees }" << std::endl;
 			// write position data to named pipe
-			mkfifo(namedPipe, 0666);
-			fd = open(namedPipe, O_WRONLY | O_NONBLOCK);
 			std::string numStr = strm.str();
 			const char* cstr1 = numStr.c_str();
 			write(fd, cstr1, sizeof(cstr1));
-			close(fd);
+			std::cout<<"wrote some data"<<endl;
 			
 		}
 		 // just for debugging purposes, show the frame in a window
@@ -167,6 +168,7 @@ int main(int argc, char** argv)
             break;
         }
     }
+    close(fd);
 }
 
 void detectObject(int i, int j)

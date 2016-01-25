@@ -53,7 +53,7 @@ class PIDDrive(SyncedSketch):
         
         self.PID=PID(5,4,.2)
 
-        self.fwdVel=30
+        self.fwdVel=0
         
         self.timer = Timer()
         '''

@@ -2,6 +2,7 @@
 #include "stateapproachblock.h"
 #include "statecollectingcube.h"
 #include <iostream>
+
 stateLookingForBlocks::stateLookingForBlocks(states *previousState):states(previousState)
 {
     name = "State looking for cubes";
@@ -14,7 +15,7 @@ void stateLookingForBlocks::processData(){
     startProcessData();
     long long int difTime = (getTimeMicroseconds()-startTimeState)/1000;
     //turnNDegreesSlowly(135);
-    std::cout<<"state: looking for blocks"<<std::endl;
+    //std::cout<<"state: looking for blocks"<<std::endl;
     std::cout<<myPrivateState<<std::endl;
     
     switch(myPrivateState){

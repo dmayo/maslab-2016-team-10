@@ -210,8 +210,8 @@ class PIDDrive(SyncedSketch):
             self.motorLdrive = self.fwdVel - pidResult
             self.motorRdrive = self.fwdVel + pidResult
 
-            self.motorL.write(self.motorLdrive > 0,abs(self.motorLdrive))
-            self.motorR.write(self.motorRdrive > 0,abs(self.motorRdrive))
+            self.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
+            self.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
 
             '''
             print "ok"

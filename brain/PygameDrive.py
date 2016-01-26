@@ -105,6 +105,8 @@ class PIDDrive(SyncedSketch):
 
         self.Sort = 0
         self.SortPause = 0
+
+        self.State = 0 
         
         self.timer = Timer()
         '''
@@ -154,6 +156,7 @@ class PIDDrive(SyncedSketch):
             # print self.uIR.val 
             if self.uIR.val == 0:
                 self.MoveArm = True
+                self.State = 0
 
             if self.MoveArm:
                 if self.Bottom == 2 and self.Top == 1:
@@ -220,12 +223,38 @@ class PIDDrive(SyncedSketch):
 
             message = os.read(self.image_fd, 20)
             if message:
-                # print("Recieved: '%s'" % message)
-                try:
-                    self.blockDistance, self.blockAngle = [number[:5] for number in message.split(',')]
-                except:
+                print("Recieved: '%s'" % message)
+                if message[:2] == 'no':
+                    if self.State == 0:
+                        self.State = 1
+
+                    if self.State == 2:
+                        self.State = 3
+                else:
+                    if self.State != 0:
+                        self.State = 2
                     print message
-            print 'Block Angle: ' + str(self.blockAngle)
+                    try:
+                        self.blockDistance, self.blockAngle = [number[:6] for number in message.split(',')]
+                    except:
+                        print message
+
+            # print 'State: ' + str(self.Searching)
+
+
+            # print 'Block Angle: ' + str(self.blockAngle)
+            if self.State == 0:
+                self.fwdVel = 0
+
+            if self.State == 1: # Searching
+                self.initAngle += 2 
+                self.fwdVel = 0
+
+            elif self.State == 2:  # Drive Forward
+                self.fwdVel = 20
+            elif self.State == 3: # Attempt to pick up block
+                self.fwdVel = 20
+            print self.State
 
             self.blockAngle = float(self.blockAngle)
             

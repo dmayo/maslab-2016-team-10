@@ -81,7 +81,7 @@ class pythonDriver(SyncedSketch):
         self.drifts = []
         
         
-        self.PID=PID(5,4,.2)
+        self.PID=PID(2,1,0.15)
 
         self.fwdVel = 0
         self.turnVel = 0

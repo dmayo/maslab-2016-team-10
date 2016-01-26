@@ -5,7 +5,7 @@ from tamproxy.devices import AnalogInput
 
 class AnalogRead(SyncedSketch):
 
-    adc_pin = 0
+    adc_pin = 17
 
     def setup(self):
         self.testpin = AnalogInput(self.tamp, self.adc_pin)

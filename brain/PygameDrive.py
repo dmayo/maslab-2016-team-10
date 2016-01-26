@@ -4,8 +4,11 @@ from tamproxy.devices import Gyro
 from tamproxy.devices import Encoder
 from tamproxy.devices import Servo
 from tamproxy.devices import Color
+from tamproxy.devices import DigitalInput
 
 import time
+
+from random import random
 
 from PID import PID
 import os
@@ -19,6 +22,12 @@ class PIDDrive(SyncedSketch):
 
     ss_pin = 10 #gyro select pin
 
+    image_pipe = './image'
+    if not os.path.exists(image_pipe):
+        os.mkfifo(image_pipe)
+
+    image_fd = os.open(image_pipe, os.O_RDONLY)
+
     def setup(self):
         #Pygame stuff
         pygame.init()
@@ -29,6 +38,10 @@ class PIDDrive(SyncedSketch):
         self.color = Color(self.tamp,
                            integrationTime=Color.INTEGRATION_TIME_101MS,
                            gain=Color.GAIN_1X)
+        self.color.r, self.color.g, self.color.b = 100, 100, 100
+
+        self.uIR = DigitalInput(self.tamp, 17)
+        self.uIR.val = 1
 
         self.servo = Servo(self.tamp, 9)
         self.servo.write(20)
@@ -71,7 +84,9 @@ class PIDDrive(SyncedSketch):
         
         self.gyro = Gyro(self.tamp, self.ss_pin, integrate=True)
         self.initAngle = self.gyro.val
-
+        self.newAngle = 0
+        self.blockAngle = 0
+        self.blockDistance = 0
         print "initial angle:"+str(self.initAngle)
         
 
@@ -82,7 +97,7 @@ class PIDDrive(SyncedSketch):
         self.drifts = []
         
         
-        self.PID=PID(5, 4, .15)
+        self.PID=PID(.5, 1, 0.15)
 
         self.fwdVel = 0
         self.turnVel = 0
@@ -115,29 +130,30 @@ class PIDDrive(SyncedSketch):
                 if event.type == pygame.KEYDOWN:
 
                     if event.key == pygame.K_LEFT:
-                        self.turnVel = -5
+                        self.turnVel = -10
                     if event.key == pygame.K_RIGHT:
-                        self.turnVel = 5
+                        self.turnVel = 10
 
                     if event.key == pygame.K_UP:
                         self.fwdVel = 100
                     if event.key == pygame.K_DOWN:
                         self.fwdVel = -100
 
-                    if event.key == pygame.K_SPACE:
-                        self.MoveArm = True
-
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                         self.turnVel = 0
                     if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                         self.fwdVel = 0
-                        
+
             if self.color.c > 500 and self.Sort == 0:
                 if self.color.r > self.color.g:
                     self.Sort = 1
                 else:
                     self.Sort = 2
+
+            # print self.uIR.val 
+            if self.uIR.val == 0:
+                self.MoveArm = True
 
             if self.MoveArm:
                 if self.Bottom == 2 and self.Top == 1:
@@ -202,13 +218,26 @@ class PIDDrive(SyncedSketch):
             self.prevGyro=self.gyro.val
             self.totalDrift+=self.drift
 
+            message = os.read(self.image_fd, 20)
+            if message:
+                # print("Recieved: '%s'" % message)
+                try:
+                    self.blockDistance, self.blockAngle = [number[:5] for number in message.split(',')]
+                except:
+                    print message
+            print 'Block Angle: ' + str(self.blockAngle)
 
-            pidResult=self.PID.valuePID(cAngle, self.initAngle)
+            self.blockAngle = float(self.blockAngle)
+            
+            self.newAngle = self.initAngle+self.blockAngle
+
+
+            pidResult=self.PID.valuePID(cAngle, self.newAngle)
             
 
-            print 'Angle Dif: ' + str(cAngle-self.initAngle) + '\tPID RESULT: '+ str(pidResult)
-            print 'Encoders:\tR: ' + str(self.encoderR.val) + '\tL: ' + str(self.encoderL.val)
-            print 'AVG: ' + str((self.encoderR.val + self.encoderL.val)/2.)
+            # print 'Angle Dif: ' + str(cAngle-self.initAngle) + '\tPID RESULT: '+ str(pidResult)
+            # print 'Encoders:\tR: ' + str(self.encoderR.val) + '\tL: ' + str(self.encoderL.val)
+            # print 'AVG: ' + str((self.encoderR.val + self.encoderL.val)/2.)
 
             self.motorLdrive = self.fwdVel - pidResult
             self.motorRdrive = self.fwdVel + pidResult

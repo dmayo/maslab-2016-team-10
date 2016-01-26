@@ -154,7 +154,7 @@ void ImageProcessor::doStuff() {
     else{
         std::cout << "no cube :(" << std::endl;
     }
-    cv::imshow("frame", frame);
+    // cv::imshow("frame", frame);
     
     /*
     if(detectingPurpleLine == 1) {
@@ -204,7 +204,7 @@ void ImageProcessor::debugStuff() {
 
 void ImageProcessor::run(ImageProcessor *ImageProcessorPointer) {
 	ImageProcessorPointer->running=1;
-    cv::namedWindow("frame",2);
+    // cv::namedWindow("frame",2);
     /* create the FIFO (named pipe) */
     mkfifo(ImageProcessorPointer->myfifo, 0666);
 

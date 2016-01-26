@@ -153,6 +153,10 @@ void ImageProcessor::doStuff() {
     }
     else{
         std::cout << "no cube :(" << std::endl;
+
+        std::string send = "no";
+        const char *out = send.c_str();
+        write(fd, out, 2);
     }
     cv::imshow("frame", frame);
     

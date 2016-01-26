@@ -38,22 +38,24 @@ class PIDDrive(SyncedSketch):
         self.color = Color(self.tamp,
                            integrationTime=Color.INTEGRATION_TIME_101MS,
                            gain=Color.GAIN_1X)
-        self.color.r, self.color.g, self.color.b = 100, 100, 100
 
         self.uIR = DigitalInput(self.tamp, 17)
         self.uIR.val = 1
 
         self.servo = Servo(self.tamp, 9)
-        self.servo.write(20)
-        self.servoval = 20
+        self.servo.bottom = 0
+        self.servo.top = 200
+        self.servo.speed = 30
+        self.servo.write(self.servo.bottom)
+        self.servoval = self.servo.bottom
         self.delta = 0
 
 
         self.sorter = Servo(self.tamp, 5)
-        self.sorter.center = 98
-        self.sorter.right = 20
-        self.sorter.left = 170
-        self.sorter.speed = 30
+        self.sorter.center = 90
+        self.sorter.right = 25
+        self.sorter.left = 165
+        self.sorter.speed = 15
 
         self.sorter.write(self.sorter.center)
         self.sorterval = self.sorter.center
@@ -106,23 +108,20 @@ class PIDDrive(SyncedSketch):
         self.Sort = 0
         self.SortPause = 0
 
-        self.State = 0 
+        self.State = 1
         
         self.timer = Timer()
-        '''
-        self.pipePath = "./vision"
-        print "ok1"
-        time.sleep(1)
-        try:
-            os.mkfifo(self.pipePath)
-        except OSError:
-            print "error"
-        print "ok"
-        self.rp = open(self.pipePath, 'r')
-        '''
+
 
     def loop(self):
-
+        #state 0 - wait for first no block, do nothing
+            #transition: no block -> state 1
+        #state 1 - look for block
+            #transition: found block -> state 2
+        #sate 2 - drive over block
+            #transition: ir triggered -> state 3
+        #sate 3 - pick up block
+            #transition: color sensor done -> sate 1
 
         if self.timer.millis() > 100:
             
@@ -141,13 +140,23 @@ class PIDDrive(SyncedSketch):
                     if event.key == pygame.K_DOWN:
                         self.fwdVel = -100
 
+                    if event.key == pygame.K_1:
+                        self.Sort = 1
+                    if event.key == pygame.K_2:
+                        self.Sort = 2
+
+                    if event.key == pygame.K_SPACE:
+                        self.MoveArm = True
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                         self.turnVel = 0
                     if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                         self.fwdVel = 0
 
-            if self.color.c > 500 and self.Sort == 0:
+            print 'Color'
+            print self.color.c
+            print self.color.r, self.color.g
+            if self.color.c > 800 and self.Sort == 0:
                 if self.color.r > self.color.g:
                     self.Sort = 1
                 else:
@@ -161,18 +170,19 @@ class PIDDrive(SyncedSketch):
             if self.MoveArm:
                 if self.Bottom == 2 and self.Top == 1:
                     self.delta = 0
-                    self.servoval = 20
-                    self.servo.write(20)
+                    self.servoval = self.servo.bottom
+                    self.servo.write(self.servo.bottom)
                     self.Bottom, self.Top = 0, 0
                     self.MoveArm = False
 
-                elif self.servoval >= 175: 
-                    self.delta = -30
+                elif self.servoval >= self.servo.top: 
+                    time.sleep(1)
+                    self.delta = -self.servo.speed
 
                     self.Top = 1
 
-                elif self.servoval <= 30: 
-                    self.delta = 30
+                elif self.servoval <= self.servo.bottom: 
+                    self.delta = self.servo.speed
 
                     self.Bottom = 1
                     if self.Top == 1:
@@ -247,18 +257,18 @@ class PIDDrive(SyncedSketch):
                 self.fwdVel = 0
 
             if self.State == 1: # Searching
-                self.initAngle += 2 
+                self.initAngle -= 3
                 self.fwdVel = 0
 
             elif self.State == 2:  # Drive Forward
-                self.fwdVel = 20
+                self.fwdVel = 40
             elif self.State == 3: # Attempt to pick up block
-                self.fwdVel = 20
-            print self.State
+                self.fwdVel = 30
+            print 'State: ' + str(self.State)
 
             self.blockAngle = float(self.blockAngle)
             
-            self.newAngle = self.initAngle+self.blockAngle
+            self.newAngle = cAngle + self.blockAngle
 
 
             pidResult=self.PID.valuePID(cAngle, self.newAngle)

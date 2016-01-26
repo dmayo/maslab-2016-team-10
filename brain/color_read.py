@@ -12,11 +12,6 @@ pygame.init()
 
 # Color sensor should be connected to the I2C ports (SDA and SCL)
 
-def distance(x, y, z):
-    a = (x-y)**2
-    b = (x-z)**2
-    c = (y-z)**2
-    return ((a+b)**.5, (a+c)**.5, (b+c)**.5)
 
 
 
@@ -32,13 +27,20 @@ class ColorRead(SyncedSketch):
                            gain=Color.GAIN_1X)
         self.timer = Timer()
 
-        self.max_g = 0
-        self.min_g = 255
-        self.max_r = 0
-        self.min_r = 255
+        self.max_r = 1
+        self.max_g = 1
+        self.max_b = 1
+        self.max_temp = 1
+        self.max_lux = 1
+        self.max_opacity = 1
+        self.max_dif = 1
+
+        self.r_values = []
+        self.g_values = []
+
     def loop(self):
         if self.timer.millis() > 100:
-            events = pygame.event.get()
+
 
             self.screen.fill((0, 0, 0))
 
@@ -46,16 +48,47 @@ class ColorRead(SyncedSketch):
             # print self.color.r, self.color.g, self.color.b, self.color.c
             # print self.color.colorTemp, self.color.lux
 
-            color_sum = (self.color.r**2 + self.color.g**2 + self.color.b**2+1)**.5
+            color_sum = (self.color.r**2 + self.color.g**2 + self.color.b**2 +.001)**.5
 
             r, g, b = 255*self.color.r/color_sum, 255*self.color.g/color_sum, 255*self.color.b/color_sum
             c = min(255*self.color.c/1000, 255)
 
-            print 'Red: ' + str(self.color.r) + '\tGreen: ' + str(self.color.g) + '\tBlue: ' + str(self.color.b) 
-            print 'Opacity: ' + str(self.color.c)
-            print distance(r, g, b)
+            self.max_dif = max(self.max_dif, (r-g)**2)
+            self.max_temp = max(self.max_temp, self.color.colorTemp)
+            self.max_lux = max(self.max_lux, self.color.lux)
+            self.max_opacity = max(self.max_opacity, self.color.c)
 
-            self.screen.fill(((self.color.c > 500 and self.color.r > self.color.g)*255, (self.color.c > 500 and self.color.g > self.color.r)*255, 0))
+            maxes = [1, 1, 1, self.max_temp, self.max_lux, self.max_opacity, self.max_dif]
+
+
+            temp = 255*self.color.colorTemp/self.max_temp
+            lux = 255*self.color.lux/self.max_lux
+            opacity = 255*self.color.c/self.max_opacity
+            dif = (r-g)**2
+
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r:
+                        self.r_values = [r, g, b, self.color.colorTemp, self.color.lux, self.color.c, dif]
+                    if event.key == pygame.K_g:
+                        self.g_values = [r, g, b, self.color.colorTemp, self.color.lux, self.color.c, dif]
+            if self.r_values:
+                for x in xrange(len(self.r_values)):
+                    pygame.draw.rect(self.screen, (255, 0, 0), (10+10*x+1, 300-[1, 255][x > 2]*self.r_values[x]/maxes[x]-5, 2, 12))
+            if self.g_values:
+                for x in xrange(len(self.g_values)):
+                    pygame.draw.rect(self.screen, (0, 255, 0), (10+10*x+1, 300-[1, 255][x > 2]*self.g_values[x]/maxes[x]-5, 2, 12))
+
+            # self.screen.fill(((self.color.r > 400 and self.color.r > self.color.g)*255, (self.color.g > 400  and self.color.g > self.color.r)*255, 0))
+
+            pygame.draw.rect(self.screen, (255, 0, 0), (10, 300-r, 5, 5))
+            pygame.draw.rect(self.screen, (0, 255, 0), (20, 300-g, 5, 5))
+            pygame.draw.rect(self.screen, (0, 0, 255), (30, 300-b, 5, 5))
+            pygame.draw.rect(self.screen, (255, 255, 0), (40, 300-temp, 5, 5))
+            pygame.draw.rect(self.screen, (0, 255, 255), (50, 300-lux, 5, 5))
+            pygame.draw.rect(self.screen, (255, 0, 255), (60, 300-opacity, 5, 5))
+            pygame.draw.rect(self.screen, (255, 255, 255), (70, 300-255*dif/self.max_dif, 5, 5))
+
             pygame.display.flip()
 
 

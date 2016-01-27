@@ -14,11 +14,21 @@ class MotorController:
 		self.motorRdrive=0
 		self.fwdVel=0
 
+		self.wallFollowPIDResult=0
+
+		self.motorState="turnToAngle"
+
 	def stop(self):
 		self.actuators.motorL.write(1,0)
 		self.actuators.motorR.write(1,0)
 
 	def updateMotorSpeeds(self):
+		if(self.motorState=="turnToAngle"):
+			self.updateTurnToAngle()
+		elif(state.motorState=="wallFollow"):
+			self.updateWallFolow()
+
+	def updateTurnToAngle(self):
 		pidResult=self.PID.valuePID(self.sensors.gyro.gyroCAngle, self.desiredAngle)
 
 		# print 'Angle Dif: ' + str(cAngle-self.initAngle) + '\tPID RESULT: '+ str(pidResult)
@@ -30,3 +40,11 @@ class MotorController:
 
 		self.actuators.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
 		self.actuators.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
+
+	def updateWallFollow(self):
+		self.motorLdrive = self.fwdVel - wallFollowPIDResult
+		self.motorRdrive = self.fwdVel + wallFollowPIDResult
+
+		self.actuators.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
+		self.actuators.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
+

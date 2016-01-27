@@ -5,8 +5,6 @@ class state(object):
 		self.motorController=motorController
 		self.timer=timer
 
-		self.finishedTurningNDegreesSlowly=False
-
 		#constants
 		TURN_SLOWLY_ANGLE=2
 
@@ -16,8 +14,11 @@ class state(object):
 	def getAngle(self):
 		return self.sensors.gyro.gyroCAngle
 
+	def isTurning():
+		return False
+
+
 	def turnNDegreesSlowly(self, turnAngle):
-		self.finishedTurningNDegreesSlowly=True
 		self.motorController.desiredAngle=self.sensors.gyro.gyroCAngle+turnAngle
 		'''
 	    enum turningStates {turning,turned};

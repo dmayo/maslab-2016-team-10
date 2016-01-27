@@ -8,8 +8,8 @@ class Camera:
 		self.blockAngle = 0
 
 	def update(self):
-		#message = self.cameraPipe.read(20)
-		message=""
+		message = self.cameraPipe.read(20)
+		#message=""
 		if message:
 			print("Recieved: '%s'" % message)
 			if message[:2] == 'no':

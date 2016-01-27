@@ -10,13 +10,14 @@ class startState(state):
 
 			if self.timer.millis() > 100:
 				self.sensors.updateGyro()
-
+				self.sortBlock()
+				
 				if(not(self.finishedTurningNDegreesSlowly)):
 					self.turnNDegreesSlowly(10)
 					print "done turning"
 
 				#print self.sensors.gyroCAngle
-				print self.actuators.arm.armState
+				#print self.actuators.sorter.sorterState
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()
 				self.timer.reset()

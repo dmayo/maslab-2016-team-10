@@ -88,3 +88,10 @@ class state(object):
 		#desiredAngle= getNewAngle() + angle;
 		#desiredPosition = getNewPosition() +radiusInInches;
 		pass
+
+	def sortBlock(self):
+		if self.sensors.color.c > 800 and self.actuators.sorter.sorterState=="None":
+			if self.sensors.color.r > self.sensors.color.g:
+				self.actuators.sorter.moveSorterLeft()
+			else:
+				self.actuators.sorter.moveSorterRight()

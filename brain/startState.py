@@ -11,10 +11,12 @@ class startState(state):
 			if self.timer.millis() > 100:
 				self.sensors.updateGyro()
 				self.sortBlock()
+
+				self.turnNDegreesSlowly(self.sensors.camera.blockAngle)
 				
-				if(not(self.finishedTurningNDegreesSlowly)):
-					self.turnNDegreesSlowly(10)
-					print "done turning"
+				#if(not(self.finishedTurningNDegreesSlowly)):
+					
+					#print "done turning"
 
 				#print self.sensors.gyroCAngle
 				#print self.actuators.sorter.sorterState

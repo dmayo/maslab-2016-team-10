@@ -18,5 +18,6 @@ class Camera:
 				try:
 					self.detectBlock=True
 					self.blockDistance, self.blockAngle = [number[:6] for number in message.split(',')]
+					self.blockAngle = float(self.blockAngle)
 				except:
 					print "garbage message"

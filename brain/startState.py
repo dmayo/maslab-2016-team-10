@@ -4,7 +4,6 @@ class startState(state):
 		super(startState, self).__init__(sensors, actuators, motorController, timer)
 		print "start state"
 	def run(self):
-
 		while True:
 			self.sensors.camera.update()
 
@@ -15,8 +14,9 @@ class startState(state):
 					self.turnNDegreesSlowly(10)
 					print "done turning"
 
-				print self.sensors.gyroCAngle
-
+				#print self.sensors.gyroCAngle
+				print self.actuators.sorter.sorterState
+				self.actuators.update()
 				self.motorController.updateMotorSpeeds()
 				self.timer.reset()
 

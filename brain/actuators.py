@@ -1,6 +1,6 @@
 from tamproxy.devices import Motor
-from tamproxy.devices import Servo
 from sorter import Sorter
+from arm import Arm
 
 class Actuators:
 	def __init__(self,tamp):
@@ -15,13 +15,7 @@ class Actuators:
 		self.motorR.write(1,0)
 
 		#arm servo
-		self.servo = Servo(self.tamp, 9)
-		self.servo.bottom = 0
-		self.servo.top = 200
-		self.servo.speed = 30
-		self.servo.write(self.servo.bottom)
-		self.servoval = self.servo.bottom
-		self.delta = 0
+		self.arm = Arm(self.tamp)
 
 		#sorting servo
 		self.sorter = Sorter(self.tamp)

@@ -92,7 +92,7 @@ class PIDDrive(SyncedSketch):
         self.blockDistance = 0
         print "initial angle:"+str(self.initAngle)
         
-        self.Follow = 'Right'
+        self.Follow = 'Left'
         self.IRs = {'Left': [0, 1, 2], 'Right': [5, 4, 3]}
 
         self.prevGyro = 0

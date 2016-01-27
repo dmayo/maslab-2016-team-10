@@ -27,6 +27,7 @@ class Sensors:
 
         self.camera=Camera()
 
-    #updates sensors except for the camera
+    #updates all sensors except for the camera
     def update(self):
         self.gyro.update()
+        self.irArray.update()

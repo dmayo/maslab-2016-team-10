@@ -13,7 +13,7 @@ class will have to be updated!
     ir_offset = [0.0,0.0,0.0,0.0,0.0,0.0]
 
     def __init__(self,tamp,pin0,pin1,pin2,pin3,pin4,pin5):
-        self.sensors = [Ir_sensor(tamp,pin0),Ir_sensor(tamp,pin1),Ir_sensor(tamp,pin2),Ir_sensor(tamp,pin3,'Long'),Ir_sensor(tamp,pin4),Ir_sensor(tamp,pin5)]
+        self.sensors = [Ir_sensor(tamp,pin0),Ir_sensor(tamp,pin1),Ir_sensor(tamp,pin2),Ir_sensor(tamp,pin3),Ir_sensor(tamp,pin4),Ir_sensor(tamp,pin5)]
 
         self.ir_offset[0] = 1.5
         self.ir_offset[1] = 1.5

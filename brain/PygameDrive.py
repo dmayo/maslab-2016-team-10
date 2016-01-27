@@ -103,6 +103,7 @@ class PIDDrive(SyncedSketch):
 
         self.fwdVel = 0
         self.turnVel = 0
+        self.turn = 0
         self.MoveArm, self.Top, self.Bottom = False, 0, 0
 
         self.Sort = 0
@@ -123,6 +124,24 @@ class PIDDrive(SyncedSketch):
         #sate 3 - pick up block
             #transition: color sensor done -> sate 1
 
+        message = os.read(self.image_fd, 20)
+        if message:
+            # print("Recieved: '%s'" % message)
+            if message[:2] == 'no':
+                self.blockAngle = 0
+                if self.State == 0:
+                    self.State = 1
+
+                if self.State == 2:
+                    self.State = 3
+            else:
+                if self.State != 0:
+                    self.State = 2
+                try:
+                    self.blockDistance, self.blockAngle = [number[:6] for number in message.split(',')]
+                except:
+                    self.blockAngle = 0
+        self.blockAngle = float(self.blockAngle)
         if self.timer.millis() > 100:
             
             for event in pygame.event.get():
@@ -150,12 +169,14 @@ class PIDDrive(SyncedSketch):
                 if event.type == pygame.KEYUP:
                     if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                         self.turnVel = 0
+                        self.turn = 0
                     if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                         self.fwdVel = 0
 
             print 'Color'
             print self.color.c
             print self.color.r, self.color.g
+            print 
             if self.color.c > 800 and self.Sort == 0:
                 if self.color.r > self.color.g:
                     self.Sort = 1
@@ -217,7 +238,7 @@ class PIDDrive(SyncedSketch):
             self.servoval += self.delta
             self.servo.write(abs(self.servoval))
 
-            self.initAngle += self.turnVel
+            self.turn += self.turnVel
 
 
             self.timer.reset()
@@ -231,47 +252,13 @@ class PIDDrive(SyncedSketch):
             self.prevGyro=self.gyro.val
             self.totalDrift+=self.drift
 
-            message = os.read(self.image_fd, 20)
-            if message:
-                print("Recieved: '%s'" % message)
-                if message[:2] == 'no':
-                    if self.State == 0:
-                        self.State = 1
-
-                    if self.State == 2:
-                        self.State = 3
-                else:
-                    if self.State != 0:
-                        self.State = 2
-                    print message
-                    try:
-                        self.blockDistance, self.blockAngle = [number[:6] for number in message.split(',')]
-                    except:
-                        print message
 
             # print 'State: ' + str(self.Searching)
 
-
-            # print 'Block Angle: ' + str(self.blockAngle)
-            if self.State == 0:
-                self.fwdVel = 0
-
-            if self.State == 1: # Searching
-                self.initAngle -= 3
-                self.fwdVel = 0
-
-            elif self.State == 2:  # Drive Forward
-                self.fwdVel = 40
-            elif self.State == 3: # Attempt to pick up block
-                self.fwdVel = 30
-            print 'State: ' + str(self.State)
-
-            self.blockAngle = float(self.blockAngle)
-            
             self.newAngle = cAngle + self.blockAngle
+            print self.blockAngle
 
-
-            pidResult=self.PID.valuePID(cAngle, self.newAngle)
+            pidResult=self.PID.valuePID(cAngle, cAngle+self.blockAngle+self.turn)
             
 
             # print 'Angle Dif: ' + str(cAngle-self.initAngle) + '\tPID RESULT: '+ str(pidResult)

@@ -1,5 +1,6 @@
 from tamproxy import Sketch, SyncedSketch, Timer
 from tamproxy.devices import AnalogInput
+from ir_sensor import *
 import pygame
 
 
@@ -20,7 +21,7 @@ def Short(V):
 
 class AnalogRead(SyncedSketch):
 
-    adc_pin = 16
+    adc_pin = 14
     pygame.init()
     screen = pygame.display.set_mode((300, 300))
     v_max = 1
@@ -31,8 +32,9 @@ class AnalogRead(SyncedSketch):
     set = 0
 
     def setup(self):
-        self.testpin = AnalogInput(self.tamp, self.adc_pin)
-        self.timer = Timer()
+        self.test_sensor = Ir_sensor(self.tamp, self.adc_pin)
+        # self.testpin = AnalogInput(self.tamp, self.adc_pin) #these
+        self.timer = Timer() #this, too.
 
     def loop(self):
         if self.timer.millis() > 100:
@@ -79,9 +81,10 @@ class AnalogRead(SyncedSketch):
                     self.set = 0
 
             self.timer.reset()
-            v = self.testpin.val
-            print 'Long: ' + str(Long(v))
-            print 'Short: ' + str(Short(v))
+
+            v = self.test_sensor.get_distance()
+
+            print 'Short: ' + str(self.test_sensor.get_distance())
             if self.set:
                 self.distances[self.set].append(v)
             self.screen.fill((0, 0, 0))

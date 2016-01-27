@@ -95,3 +95,46 @@ class state(object):
 				self.actuators.sorter.moveSorterLeft()
 			else:
 				self.actuators.sorter.moveSorterRight()
+
+	def wallFollow(self, side):
+		self.Follow = side #Right or Left
+		self.IRs = {'Left': [0, 1, 2], 'Right': [5, 4, 3]}
+
+		self.IRPID = PID(10, 5, .15)
+
+		ir = self.ir_array.ir_value
+		if(side=="Left"):
+			avg=getAvgDistanceLeftWall()
+			min_val=getMinDistanceLeftWall()
+		elif(side=="Right"):
+			avg=getAvgDistanceRightWall()
+			min_val=getMinDistanceRightWall()
+		assert side=="Left" or side=="Right"
+
+		if avg != float('inf'):
+			pidResult= -self.IRPID.valuePID(4, avg)
+		elif min_val != float('inf'):
+			pidResult= -self.IRPID.valuePID(4, min_val)
+		else:
+			pidResult = -20
+
+		if ir[self.IRs[self.Follow][2]] < 4:
+			pidResult = 20
+			self.fwdVel = 0
+		else:
+			self.fwdVel = 30
+		print 'IR + ' + str(ir[self.IRs[self.Follow][0]]) +', ' + str(.15+ir[self.IRs[self.Follow][1]]/2)
+		print 'AVG + ' + str(avg)
+		print 'Min_Val + ' + str(min_val)
+		print 'Front + ' + str(ir[self.IRs[self.Follow][2]])
+		print 'Angle + ' + str(cAngle)
+		print 'PID + ' + str(pidResult)
+
+		self.motorLdrive = 0 # self.fwdVel - pidResult
+		self.motorRdrive = 0 # self.fwdVel + pidResult
+		print 'MotorL + ' + str(self.motorLdrive)
+		print 'MotorR + ' + str(self.motorRdrive)
+		self.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
+		self.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
+
+

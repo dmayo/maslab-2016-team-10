@@ -22,11 +22,11 @@ class PIDDrive(SyncedSketch):
 
     ss_pin = 10 #gyro select pin
 
-    image_pipe = './image'
-    if not os.path.exists(image_pipe):
-        os.mkfifo(image_pipe)
+    # image_pipe = './image'
+    # if not os.path.exists(image_pipe):
+    #     os.mkfifo(image_pipe)
 
-    image_fd = os.open(image_pipe, os.O_RDONLY)
+    # image_fd = os.open(image_pipe, os.O_RDONLY)
 
     def setup(self):
 
@@ -92,6 +92,8 @@ class PIDDrive(SyncedSketch):
         self.blockDistance = 0
         print "initial angle:"+str(self.initAngle)
         
+        self.Follow = 'Left'
+        self.IRs = {'Left': [0, 1, 2], 'Right': [5, 4, 3]}
 
         self.prevGyro = 0
         self.drift = -.02875
@@ -101,8 +103,9 @@ class PIDDrive(SyncedSketch):
         
         
         self.PID=PID(.5, 1, 0.15)
+        self.IRPID = PID(10, 5, .15)
 
-        self.fwdVel = 0
+        self.fwdVel = 30
         self.turnVel = 0
         self.MoveArm, self.Top, self.Bottom = False, 0, 0
 
@@ -112,6 +115,7 @@ class PIDDrive(SyncedSketch):
         self.State = 1
         
         self.timer = Timer()
+
 
 
     def loop(self):
@@ -138,7 +142,7 @@ class PIDDrive(SyncedSketch):
 
             # print self.uIR.val 
             if self.uIR.val == 0:
-                self.MoveArm = True
+                #  self.MoveArm = True
                 self.State = 0
 
             if self.MoveArm:
@@ -205,19 +209,44 @@ class PIDDrive(SyncedSketch):
             self.prevGyro=self.gyro.val
             self.totalDrift+=self.drift
 
-            message = os.read(self.image_fd, 20)
-            if ParseMessage(message):
-                self.blockDistance, self.blockAngle = ParseMessage(message)
+            # message = os.read(self.image_fd, 20)
+            # if ParseMessage(message):
+            #     self.blockDistance, self.blockAngle = ParseMessage(message)
         
             # print 'Angle Dif: ' + str(cAngle-self.initAngle) + '\tPID RESULT: '+ str(pidResult)
             # print 'Encoders:\tR: ' + str(self.encoderR.val) + '\tL: ' + str(self.encoderL.val)
             # print 'AVG: ' + str((self.encoderR.val + self.encoderL.val)/2.)
 
-            pidResult = self.PID.valuePID(3, self.ir_array[0])
 
-            self.motorLdrive = self.fwdVel - pidResult
-            self.motorRdrive = self.fwdVel + pidResult
 
+            self.ir_array.update()
+            ir = self.ir_array.ir_value
+            avg = (ir[self.IRs[self.Follow][0]]+.15+ir[self.IRs[self.Follow][1]]/2)/2
+            min_val = min(ir[0], ir[1])
+
+            if avg != float('inf'):
+                pidResult= -self.IRPID.valuePID(4, avg)
+            elif min_val != float('inf'):
+                pidResult= -self.IRPID.valuePID(4, min_val)
+            else:
+                pidResult = -20
+
+            if ir[self.IRs[self.Follow][2]] < 4:
+                pidResult = 20
+                self.fwdVel = 0
+            else:
+                self.fwdVel = 30
+            print 'IR + ' + str(ir[self.IRs[self.Follow][0]]) +', ' + str(.15+ir[self.IRs[self.Follow][1]]/2)
+            print 'AVG + ' + str(avg)
+            print 'Min_Val + ' + str(min_val)
+            print 'Front + ' + str(ir[self.IRs[self.Follow][2]])
+            print 'Angle + ' + str(cAngle)
+            print 'PID + ' + str(pidResult)
+
+            self.motorLdrive = 0 # self.fwdVel - pidResult
+            self.motorRdrive = 0 # self.fwdVel + pidResult
+            print 'MotorL + ' + str(self.motorLdrive)
+            print 'MotorR + ' + str(self.motorRdrive)
             self.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
             self.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
 

@@ -15,7 +15,6 @@ class Sorter:
 		self.sorterState = "None"
 
 	def moveSorterLeft(self):
-		print "moving left"
 		if self.sorterval < self.servo.left:
 			self.sorterState="Left"
 			self.dsorter = self.servo.speed

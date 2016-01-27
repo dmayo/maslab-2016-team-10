@@ -21,4 +21,5 @@ class Actuators:
 		self.sorter = Sorter(self.tamp)
 
 	def update(self):
+		self.arm.update()
 		self.sorter.update()

@@ -10,7 +10,6 @@ class Ir_sensor(AnalogInput):
         max_dist = 24
         v = self.val
         d = 1.0656*10**5/(v+633.328)
-        print 'Voltage: ' + str(v)
         if d > max_dist:
             return float('inf')
         else:

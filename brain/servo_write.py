@@ -21,10 +21,10 @@ class ServoWrite(Sketch):
         if (self.timer.millis() > 10):
             self.timer.reset()
             if self.servoval >= 170: 
-                self.delta = -2 # down
+                self.delta = -10 # down
             elif self.servoval <= 20: 
 
-                self.delta = 2 # up
+                self.delta = 10 # up
             self.servoval += self.delta
 
             print self.servoval

@@ -3,6 +3,7 @@ from tamproxy.devices import Encoder
 from tamproxy.devices import Color
 from tamproxy.devices import DigitalInput
 from camera import Camera
+from ir_array import Ir_array
 
 class Sensors:
     def __init__(self, tamp):
@@ -13,6 +14,8 @@ class Sensors:
         #ultra IR pick up block detector
         self.uIR = DigitalInput(self.tamp, 17)
         self.uIR.val = 1
+
+        self.ir_array = Ir_array(self.tamp, 16, 15, 14, 40, 11, 10)
 
         #encoders
         self.encoderL = Encoder(self.tamp, 22, 23)

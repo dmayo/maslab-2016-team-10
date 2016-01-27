@@ -12,6 +12,10 @@ import time
 class pythonDriver(SyncedSketch):
 
     ss_pin = 10 #gyro select pin
+    # also 11, 12, and 13
+
+    color_pins = 18, 19
+    uIR_pin = 17
 
     Lencoder_pins = 22, 23 
     Rencoder_pins = 21, 20

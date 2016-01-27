@@ -1,6 +1,5 @@
 from ir_sensor import *
 
-
 class Ir_array:
     """Ir_array is used to update all IR sensors on the Stack Destroyer robot
 and report the distances in inches between the edge of the robot circular
@@ -23,7 +22,7 @@ class will have to be updated!
         self.ir_offset[5] = 1
 
     def update(self):
-        for x in xrange(6):
+        for x in xrange(len(ir_value)):
             self.ir_value[x] = self.sensors[x].get_distance() - self.ir_offset[x]
 
         

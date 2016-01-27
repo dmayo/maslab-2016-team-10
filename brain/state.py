@@ -14,11 +14,11 @@ class state(object):
 		raise "run not implemented in state"
 
 	def getAngle(self):
-		return self.sensors.gyro.val
+		return self.sensors.gyro.gyroCAngle
 
 	def turnNDegreesSlowly(self, turnAngle):
 		self.finishedTurningNDegreesSlowly=True
-		self.motorController.desiredAngle=self.sensors.gyroCAngle+turnAngle
+		self.motorController.desiredAngle=self.sensors.gyro.gyroCAngle+turnAngle
 		'''
 	    enum turningStates {turning,turned};
 	    static turningStates myState = turning;

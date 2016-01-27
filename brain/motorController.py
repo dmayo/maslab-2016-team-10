@@ -19,7 +19,7 @@ class MotorController:
 		self.actuators.motorR.write(1,0)
 
 	def updateMotorSpeeds(self):
-		pidResult=self.PID.valuePID(self.sensors.gyroCAngle, self.desiredAngle)
+		pidResult=self.PID.valuePID(self.sensors.gyro.gyroCAngle, self.desiredAngle)
 
 		# print 'Angle Dif: ' + str(cAngle-self.initAngle) + '\tPID RESULT: '+ str(pidResult)
 		# print 'Encoders:\tR: ' + str(self.encoderR.val) + '\tL: ' + str(self.encoderL.val)

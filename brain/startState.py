@@ -9,7 +9,7 @@ class startState(state):
 			self.sensors.camera.update()
 
 			if self.timer.millis() > 100:
-				self.sensors.updateGyro()
+				self.sensors.update()
 				self.sortBlock()
 
 				self.turnNDegreesSlowly(self.sensors.camera.blockAngle)
@@ -24,4 +24,4 @@ class startState(state):
 				self.motorController.updateMotorSpeeds()
 				self.timer.reset()
 
-		return startState(self.sensors, self.actuators)
+		return startState(slef.sensors, slef.actuators, slef.motorController, slef.timer)

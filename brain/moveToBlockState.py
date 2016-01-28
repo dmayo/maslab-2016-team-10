@@ -6,8 +6,8 @@ import pickUpBlockState
 class MoveToBlockState(state):
 	#substates: ApproachBlock, EatBlock
 
-	def __init__(self, sensors, actuators, motorController, timer):
-		super(MoveToBlockState, self).__init__(sensors, actuators, motorController, timer)
+	def __init__(self, sensors, actuators, motorController, timer, utils):
+		super(MoveToBlockState, self).__init__(sensors, actuators, motorController, timer, self.utils)
 		print "beginning MoveToBlockState"
 		self.CLOSE_ENOUGH_DISTANCE = 3
 		self.ANGLE_EPSILON = 10
@@ -27,7 +27,7 @@ class MoveToBlockState(state):
 				#constantly check to see if we have something to eat
 				if self.sensors.uIR == 0:
 					self.motorController.fwdVel = 0
-					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer)
+					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				if self.substate == "ApproachBlock":
 					#TODO: Assuming here we always see block. Maybe put in what happens if we lose sight of the block? (why would that happen? If Erin removes it.)
@@ -39,11 +39,11 @@ class MoveToBlockState(state):
 					elif abs(self.sensors.camera.blockAngle) > self.ANGLE_EPSILON:
 						print 'Have turned too far from the direction of the block. Will reposition...'
 						self.motorController.fwdVel = 0
-						return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer)
+						return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif self.substate == "EatBlock":
 					if self.dummyHasFinishedDrivingDistance() == True:
 						print 'Finished attempt to eat block. Break beam did not go off.'
-						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer)
+						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()

@@ -1,11 +1,12 @@
 from PID import PID
 
 class state(object):
-	def __init__(self, sensors, actuators, motorController, timer):
+	def __init__(self, sensors, actuators, motorController, timer, utils):
 		self.sensors=sensors
 		self.actuators=actuators
 		self.motorController=motorController
 		self.timer=timer
+		self.utils=utils
 
 	def run(self):
 		raise "run not implemented in state"
@@ -18,6 +19,7 @@ class state(object):
 
 
 	def turnNDegreesSlowly(self, turnAngle):
+		self.motorState="turnToAngle"
 		self.motorController.desiredAngle=self.sensors.gyro.gyroCAngle+turnAngle
 		'''
 	    enum turningStates {turning,turned};

@@ -24,7 +24,7 @@ class MotorController:
 		self.actuators.motorR.write(1,0)
 
 	def updateMotorSpeeds(self):
-		#print self.motorState
+		print self.motorState
 		if(self.motorState=="turnToAngle"):
 			self.updateTurnToAngle()
 		elif(self.motorState=="wallFollow"):

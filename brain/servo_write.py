@@ -7,12 +7,12 @@ class ServoWrite(Sketch):
     these degrees are not guaranteed accurate, and each servo's range of valid
     microsecond pulses is different"""
 
-    SERVO_PIN = 9
+    SERVO_PIN = 5
 
     def setup(self):
         self.servo = Servo(self.tamp, self.SERVO_PIN)
-        self.servo.write(20)
-        self.servoval = 20
+        self.servo.write(0)
+        self.servoval = 0
         self.delta = 1
         self.timer = Timer()
         self.end = False
@@ -20,11 +20,10 @@ class ServoWrite(Sketch):
     def loop(self):
         if (self.timer.millis() > 10):
             self.timer.reset()
-            if self.servoval >= 170: 
-                self.delta = -10 # down
-            elif self.servoval <= 20: 
-
-                self.delta = 10 # up
+            if self.servoval >= 180: 
+                self.delta = -1 # down
+            elif self.servoval <= 0:
+                self.delta = 1 # up
             self.servoval += self.delta
 
             print self.servoval

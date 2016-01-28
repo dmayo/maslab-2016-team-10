@@ -25,6 +25,8 @@ class MoveToBlockState(state):
 		self.flank_target_distance = 0
 		self.flank_isleftflank = False
 		self.current_distance_traveled = 0
+		self.FLANK_MANEUVER_MAX_ATTEMPTS = 3
+		self.flank_maneuver_attempts = 0
 
 	def run(self):
 
@@ -45,6 +47,7 @@ class MoveToBlockState(state):
 						isManueverPossible = self.calculateFlankManeuver()
 						if isManueverPossible == True:
 							self.turnNDegreesSlowly(self.flank_first_angle)
+							self.flank_maneuver_attempts += 1
 							self.substate = "FlankManeuverTurn1"
 						else:
 							print 'Area too cramped to start Flank Maneuver. Perhaps we are in a corner? Being blind wall following.'
@@ -68,7 +71,7 @@ class MoveToBlockState(state):
 						print 'Finished attempt to eat block. Break beam did not go off.'
 						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer)
 				elif self.substate == "FlankManeuverTurn1":
-					if self.dummyHasTurnFinished() == True:
+					if self.isFinishedTurning() == True:
 						self.motorController.fwdVel = self.DRIVE_SPEED
 						self.substate = "FlankManeuverTravel"
 				elif self.substate == "FlankManeuverTravel":
@@ -76,14 +79,18 @@ class MoveToBlockState(state):
 						# keep turning until you find an opening or until you reach 90 degrees. If you reach 90 degrees, give up, you're cramped.
 					elif self.current_distance_traveled >= self.flank_target_distance:
 						self.motorController.fwdVel = 0
+				elif self.substate == "FlankManeuverTurn2":
+					if self.isFinishedTurning() == True:
+						self.substate == "ApproachBlock"
+				else:
+					Print 'Error! Substate named ', self.substate, ' was not recognized. Exiting to Start State...'
+					return startState.startState(self.sensors, self.actuators, self.motorController, self.timer)
+
 
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()
 				self.timer.reset()
-
-	def dummyHasTurnFinished(self):
-		return True
 
 	#collision detection avoids 1 inch of space on the sides. Trig was used to determine the lenght of the 30-degree angled sensors.
 	#for the front sensors, we seek to avoid the worst case of a 90-degree angle, comes out to 2.9+.59 = about 3.5

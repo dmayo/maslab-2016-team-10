@@ -1,6 +1,6 @@
 from state import state
 from turnToBlockState import TurnToBlockState
-from wallFollowState import WallFollowState
+from wallFollowingState import WallFollowingState
 
 #if it sees a block -> turnToBlockState
 #else -> scan for blocks
@@ -23,7 +23,7 @@ class LookingForBlocksState(state):
 				if self.sensors.camera.detectBlock:
 					return TurnToBlockState(slef.sensors, slef.actuators, slef.motorController, slef.timer)
 				elif self.sensors.gyro.gyroCAngle>self.initialAngle+360:
-					return WallFollowState(slef.sensors, slef.actuators, slef.motorController, slef.timer)
+					return WallFollowingState(slef.sensors, slef.actuators, slef.motorController, slef.timer)
 				else:
 					self.turnConstantRate(self.SCAN_SPEED)
 

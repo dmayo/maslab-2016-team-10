@@ -10,6 +10,7 @@ from ir_array import *
 import time
 
 from random import random
+from math import pi
 
 from PID import PID
 import os
@@ -90,9 +91,9 @@ class PIDDrive(SyncedSketch):
         self.newAngle = 0
         self.blockAngle = 0
         self.blockDistance = 0
-        print "initial angle:"+str(self.initAngle)
+        # print "initial angle:"+str(self.initAngle)
         
-        self.Follow = 'Left'
+        self.Follow = 'Right'
         self.IRs = {'Left': [0, 1, 2], 'Right': [5, 4, 3]}
 
         self.prevGyro = 0
@@ -131,9 +132,9 @@ class PIDDrive(SyncedSketch):
         if self.timer.millis() > 100:
             
 
-            print 'Color'
-            print self.color.c
-            print self.color.r, self.color.g
+            # print 'Color'
+            # print self.color.c
+            # print self.color.r, self.color.g
             if self.color.c > 800 and self.Sort == 0:
                 if self.color.r > self.color.g:
                     self.Sort = 1
@@ -220,9 +221,13 @@ class PIDDrive(SyncedSketch):
 
 
             self.ir_array.update()
+
             ir = self.ir_array.ir_value
-            avg = (ir[self.IRs[self.Follow][0]]+.15+ir[self.IRs[self.Follow][1]]/2)/2
-            min_val = min(ir[0], ir[1])
+            ir90 = self.IRs[self.Follow][0]
+            ir30 = self.IRs[self.Follow][1]
+
+            avg = (ir[self.IRs[self.Follow][0]]+ir[self.IRs[self.Follow][1]]/2)/2
+            min_val = min(ir[self.IRs[self.Follow][0]], ir[self.IRs[self.Follow][1]])
 
             if avg != float('inf'):
                 pidResult= -self.IRPID.valuePID(4, avg)
@@ -233,20 +238,15 @@ class PIDDrive(SyncedSketch):
 
             if ir[self.IRs[self.Follow][2]] < 4:
                 pidResult = 20
-                self.fwdVel = 0
+                # self.fwdVel = 0
             else:
                 self.fwdVel = 30
-            print 'IR + ' + str(ir[self.IRs[self.Follow][0]]) +', ' + str(.15+ir[self.IRs[self.Follow][1]]/2)
-            print 'AVG + ' + str(avg)
-            print 'Min_Val + ' + str(min_val)
-            print 'Front + ' + str(ir[self.IRs[self.Follow][2]])
-            print 'Angle + ' + str(cAngle)
-            print 'PID + ' + str(pidResult)
 
-            self.motorLdrive = 0 # self.fwdVel - pidResult
-            self.motorRdrive = 0 # self.fwdVel + pidResult
-            print 'MotorL + ' + str(self.motorLdrive)
-            print 'MotorR + ' + str(self.motorRdrive)
+            pidResult = self.PID.valuePID(self.initAngle, cAngle)
+
+            self.motorLdrive = self.fwdVel - pidResult
+            self.motorRdrive = self.fwdVel + pidResult
+            print 'Distance Traveled : ' + str(self.getDistanceTraveled())
             self.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
             self.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
 
@@ -269,6 +269,15 @@ class PIDDrive(SyncedSketch):
             return blockDistance, blockAngle
         else:
             return None
+
+    def getDistanceTraveled(self):
+        """returns Distance traveled in inches. 
+        Call resetEncoders, drive forward until you've reached your destination"""
+        print 'Left: ' + str(self.encoderL.val)
+        print 'Right: ' + str(self.encoderR.val)
+        avg = (self.encoderL.val + self.encoderR.val)/2
+        return avg/360.
+
             
 if __name__ == "__main__":
     sketch = PIDDrive(1, -0.00001, 100)

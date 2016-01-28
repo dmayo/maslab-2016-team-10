@@ -1,6 +1,7 @@
 from tamproxy.devices import Encoder
+from math import pi
 
-"""Encoder info: There are 4480 encoder ticks per revolution, which comes out to 2.875 inches"""
+"""Encoder info: There are 4480 encoder ticks per revolution, which comes out to 2.875*pi inches"""
 class EncoderWrap:
 	def __init__(self,tamp):
 		self.tamp=tamp
@@ -14,6 +15,12 @@ class EncoderWrap:
 	def resetEncoders(self):
 		self.encoderL.write(0)
 		self.encoderR.write(0)
+
+	def getDistanceTraveled(self):
+		"""returns Distance traveled in inches. 
+		Call resetEncoders, drive forward until you've reached your destination"""
+		avg = (self.encoderL.val + self.encoderR.val)/2
+		return avg/360.
 
 	def update(self):
 		if(abs(self.encoderL.val-self.prevEncoderL)<self.NOT_MOVING_EPSILON and abs(self.encoderL.val-self.prevEncoderL)<self.NOT_MOVING_EPSILON):

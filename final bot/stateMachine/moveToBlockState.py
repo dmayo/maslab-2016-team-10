@@ -54,8 +54,8 @@ class MoveToBlockState(state):
 				if self.substate == "ApproachBlock":
 					if self.sensors.camera.detectBlock == False:
 						print 'Lost sight of block before we expected! Or did not find it after a flank maneuver. Falling back to startState...'
-						return 
-					if self.isColliding():
+						return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+					elif self.isColliding():
 						self.motorController.fwdVel = 0
 						isManueverPossible = self.calculateFlankManeuver()
 						if isManueverPossible == True:

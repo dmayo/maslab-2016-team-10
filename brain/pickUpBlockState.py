@@ -8,8 +8,8 @@ import lookingForBlocksState
 #substates: WallDetect,FindSafeAngle,PickUpBlock
 
 class PickUpBlockState(state):
-	def __init__(self, sensors, actuators, motorController, timer):
-		super(PickUpBlockState, self).__init__(sensors, actuators, motorController, timer)
+	def __init__(self, sensors, actuators, motorController, timer, utils):
+		super(PickUpBlockState, self).__init__(sensors, actuators, motorController, timer, utils)
 
 		print "PickUpBlockState starting..."
 
@@ -49,19 +49,19 @@ class PickUpBlockState(state):
 					elif self.sensors.gyro.gyroCAngle>self.initialAngle+360:
 						print 'After a full 360 could not find a good angle! Abandoning state...'
 						self.turnConstantRate(0)
-						return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer)
+						return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 					else:
 						self.turnConstantRate(self.SCAN_SPEED)
 				elif self.substate == "PickUpBlock":
 					isBlockDetected = self.sortBlock()
 					if isBlockDetected == True:
 						print 'Block successfully thrown into funnel!'
-						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer)
+						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 					else:
 						if time.time() - self.pickUpBlockStartTime > self.PICKUP_TIMEOUT :
 							if time.time() - self.pickUpBlockStartTime > (self.PICKUP_TIMEOUT + self.JOSTLE_TIMEOUT):
 								print 'Have choked on block and could not jostle it out after the timeout. Giving up...'
-								return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer)
+								return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 							else:
 								if self.actuators.sorter.sorterState == "None":
 									self.actuators.sorter.jostle()

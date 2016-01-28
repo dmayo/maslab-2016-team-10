@@ -11,7 +11,7 @@ class DigitalRead(SyncedSketch):
             self.testpins.append(DigitalInput(self.tamp, i))
 
     def loop(self):
-        print 17, self.testpins[17].val
+        print 8, self.testpins[8].val
 
 if __name__ == "__main__":
     sketch = DigitalRead(1, -0.00001, 100)

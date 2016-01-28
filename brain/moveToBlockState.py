@@ -9,8 +9,8 @@ import blindWallFollowingState
 class MoveToBlockState(state):
 	#substates: ApproachBlock, EatBlock, FlankManeuverTurn1, FlankManeuverTravel, FlankManeuverTurn2, DragBlock, PositionToDragBlock, Drag Block
 
-	def __init__(self, sensors, actuators, motorController, timer):
-		super(MoveToBlockState, self).__init__(sensors, actuators, motorController, timer)
+	def __init__(self, sensors, actuators, motorController, timer, utils):
+		super(MoveToBlockState, self).__init__(sensors, actuators, motorController, timer, self.utils)
 		print "beginning MoveToBlockState"
 		self.CLOSE_ENOUGH_DISTANCE = 4 #make this such that the forward sensors will not detect a potential 90-degree corner while in approach mode
 		self.ANGLE_EPSILON = 10
@@ -37,7 +37,7 @@ class MoveToBlockState(state):
 				#constantly check to see if we have something to eat
 				if self.sensors.uIR == 0:
 					self.motorController.fwdVel = 0
-					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer)
+					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				if self.substate == "ApproachBlock":
 					if self.isColliding():
@@ -56,7 +56,7 @@ class MoveToBlockState(state):
 					elif abs(self.sensors.camera.blockAngle) > self.ANGLE_EPSILON:
 						print 'Have turned too far from the direction of the block. Will reposition...'
 						self.motorController.fwdVel = 0
-						return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer)
+						return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif self.substate == "EatBlock":
 					if self.isColliding():
 						#To implement: if we got close enough, go to drag block state until we are free to move again.
@@ -76,6 +76,7 @@ class MoveToBlockState(state):
 					else
 					#TODO:					
 
+						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()

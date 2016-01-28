@@ -17,9 +17,7 @@ class EncoderWrap:
 		self.encoderR.write(0)
 
 	def getDistanceTraveled(self):
-		"""returns Distance traveled in inches. 
-		Call resetEncoders, drive forward until you've reached your destination"""
-		avg = (self.encoderL.val + self.encoderR.val)/2
+		avg = (self.encoderL.val+self.encoderR.val)/2
 		return avg/360.
 
 	def update(self):

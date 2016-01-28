@@ -7,9 +7,9 @@ import time
 #else -> wall follow
 #if no block found after a little while -> lookingForBlocksState
 
-class wallFollowingState(state):
-	def __init__(self, sensors, actuators, motorController, timer):
-		super(wallFollowingState, self).__init__(sensors, actuators, motorController, timer)
+class WallFollowingState(state):
+	def __init__(self, sensors, actuators, motorController, timer, utils):
+		super(WallFollowingState, self).__init__(sensors, actuators, motorController, timer, utils)
 		print "Wall Following State"
 		self.SCAN_SPEED=3
 		self.initialAngle=self.sensors.gyro.gyroCAngle
@@ -22,16 +22,16 @@ class wallFollowingState(state):
 
 			if self.timer.millis() > 100:
 				self.sensors.update()
-				
-				self.wallFollow("Left")
+
+				self.wallFollow("Right")
 
 				if self.sensors.camera.detectBlock:
-					return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer)
+					return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif (time.time()-self.startStateTime)>=self.WALL_FOLLOW_TIME:
-					return lookingForBlocksState.LookingForBlocksState(self.sensors, self.actuators, self.motorController, self.timer)
+					return lookingForBlocksState.LookingForBlocksState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				else:
 					self.turnConstantRate(self.SCAN_SPEED)
-
+				
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()
 				self.timer.reset()

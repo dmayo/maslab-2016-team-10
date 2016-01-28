@@ -6,7 +6,7 @@ class MotorController:
 		self.actuators=actuators
 
 		#PID
-		self.PID=PID(.5, 1, 0.15)
+		self.PID=PID(1, 2, 0.15)
 
 		self.currentAngle=0
 		self.desiredAngle=0
@@ -24,10 +24,11 @@ class MotorController:
 		self.actuators.motorR.write(1,0)
 
 	def updateMotorSpeeds(self):
+		print self.motorState
 		if(self.motorState=="turnToAngle"):
 			self.updateTurnToAngle()
 		elif(self.motorState=="wallFollow"):
-			self.updateWallFolow()
+			self.updateWallFollow()
 		elif(self.motorState=="turnConstantRate"):
 			self.updateTurnConstantRate()  
 
@@ -45,8 +46,8 @@ class MotorController:
 		self.actuators.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
 
 	def updateWallFollow(self):
-		self.motorLdrive = self.fwdVel - wallFollowPIDResult
-		self.motorRdrive = self.fwdVel + wallFollowPIDResult
+		self.motorLdrive = self.fwdVel - self.wallFollowPIDResult
+		self.motorRdrive = self.fwdVel + self.wallFollowPIDResult
 
 		self.actuators.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
 		self.actuators.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))

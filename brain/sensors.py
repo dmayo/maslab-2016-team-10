@@ -15,6 +15,9 @@ class Sensors:
         self.uIR = DigitalInput(self.tamp, 17)
         self.uIR.val = 1
 
+        self.Button = DigitalInput(self.tamp, 8)
+        self.Button.val = 0
+
         #ir sensors
         self.irArray = Ir_array(self.tamp, 16, 15, 14, 40, 11, 10)
 

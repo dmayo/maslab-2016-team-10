@@ -1,6 +1,6 @@
 from state import state
-from turnToBlockState import TurnToBlockState
-from lookingForBlocksState import LookingForBlocksState
+import turnToBlockState
+import lookingForBlocksState
 import time
 
 #if it sees a block -> turnToBlockState

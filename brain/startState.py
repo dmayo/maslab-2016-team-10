@@ -1,6 +1,6 @@
 from state import state
-from turnToBlockState import TurnToBlockState
-from lookingForBlocksState import LookingForBlocksState
+import turnToBlockState
+import lookingForBlocksState
 
 #if it sees a block -> get block
 #else -> scan for blocks

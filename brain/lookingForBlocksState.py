@@ -1,6 +1,6 @@
 from state import state
-from turnToBlockState import TurnToBlockState
-from wallFollowingState import WallFollowingState
+import turnToBlockState
+import wallFollowingState
 
 #if it sees a block -> turnToBlockState
 #else -> scan for blocks

@@ -19,7 +19,7 @@ class Sensors:
         self.irArray = Ir_array(self.tamp, 16, 15, 14, 40, 11, 10)
 
         #encoders
-        self.encoders=EncoderWrap()
+        self.encoders=EncoderWrap(self.tamp)
 
         #gyro
         self.gyro=GyroWrap(self.tamp)

@@ -46,7 +46,6 @@ class Sorter:
 		self.pauseLength=pauseLength
 
 	def pauseSorter(self):
-		print time.time()-self.startPauseTime
 		if(time.time()-self.startPauseTime>self.pauseLength):
 			self.sorterState=self.nextSorterState
 			self.nextSorterState="None"

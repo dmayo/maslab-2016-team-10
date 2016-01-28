@@ -15,7 +15,7 @@ class TurnToBlockState(state):
 			self.sensors.camera.update()
 
 			if self.timer.millis() > 100:
-				self.sensors.updateGyro()
+				self.sensors.update()
 
 				if self.camera.detectBlock == False:
 					print "Lost sight of block while turning!"

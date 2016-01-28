@@ -1,3 +1,5 @@
+from PID import PID
+
 class state(object):
 	def __init__(self, sensors, actuators, motorController, timer):
 		self.sensors=sensors
@@ -105,13 +107,13 @@ class state(object):
 		self.motorController.motorState="wallFollow"
 		self.IRPID = PID(10, 5, .15)
 
-		ir = self.ir_array.ir_value
+		ir = self.sensors.irArray.ir_value
 		if(side=="Left"):
-			avg=getAvgDistanceLeftWall()
-			min_val=getMinDistanceLeftWall()
+			avg=self.sensors.irArray.getAvgDistanceLeftWall()
+			min_val=self.sensors.irArray.getMinDistanceLeftWall()
 		elif(side=="Right"):
-			avg=getAvgDistanceRightWall()
-			min_val=getMinDistanceRightWall()
+			avg=self.sensors.irArray.getAvgDistanceRightWall()
+			min_val=self.sensors.irArray.getMinDistanceRightWall()
 		assert side=="Left" or side=="Right"
 
 		#TODO:make this code better
@@ -122,19 +124,16 @@ class state(object):
 		else:
 			pidResult = -20
 
-		if self.sensors.irArray.value[self.sensors.irArray.IRs[side][2]] < 4:
+		if self.sensors.irArray.ir_value[self.sensors.irArray.IRs[side][2]] < 4:
 			pidResult = 20
 			self.motorController.fwdVel = 0
 		else:
 			self.motorController.fwdVel = 30
 
+		if(side=="Right"):
+			pidResult*=-1
+
 		self.motorController.wallFollowPIDResult = pidResult
-
-		self.motorLdrive = 0 # self.fwdVel - pidResult
-		self.motorRdrive = 0 # self.fwdVel + pidResult
-
-		self.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
-		self.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
 
 	def turnConstantRate(self,turnSpeed):
 		self.motorController.turnConstantRate=turnSpeed

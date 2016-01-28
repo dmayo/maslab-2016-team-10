@@ -28,7 +28,7 @@ class TurnToBlockState(state):
 					print "Lost sight of block while turning!"
 					return lookingForBlocksState.LookingForBlocksState(self.sensors,self.actuators,self.motorController,self.timer)
 				elif self.sensors.camera.blockAngle <= self.BLOCK_ANGLE_EPSILON:
-					print "read to move to block"
+					print "ready to move to block"
 					#return MoveToBlockState(self.sensors,self.actuators,self.motorController,self.timer)
 				else:
 					self.turnNDegreesSlowly(self.sensors.camera.blockAngle)

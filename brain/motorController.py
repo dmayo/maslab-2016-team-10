@@ -21,7 +21,6 @@ class MotorController:
 
 		self.motorState="turnToAngle"
 
-                resetEncoders()
 		self.lastLEncoderVal = 0
 		self.lastREncoderVal = 0
 
@@ -33,16 +32,7 @@ class MotorController:
 		if(self.motorState=="turnToAngle"):
 			self.updateTurnToAngle()
 		elif(state.motorState=="wallFollow"):
-			self.updateWallFolow()
-
-	def resetEncoders(self):
-                self.sensors.encoderL.write(0)
-                self.sensors.encoderR.write(0)
-                
-
-	def isMoving(self):
-                
-                
+			self.updateWallFolow()             
 
 	def updateTurnToAngle(self):
 		pidResult=self.PID.valuePID(self.sensors.gyro.gyroCAngle, self.desiredAngle)

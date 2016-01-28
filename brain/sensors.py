@@ -1,9 +1,9 @@
-from tamproxy.devices import Encoder
 from tamproxy.devices import Color
 from tamproxy.devices import DigitalInput
 from camera import Camera
 from ir_array import Ir_array
 from gyroWrap import GyroWrap
+from encoderWrap import EncoderWrap
 
 class Sensors:
     def __init__(self, tamp):
@@ -19,8 +19,7 @@ class Sensors:
         self.irArray = Ir_array(self.tamp, 16, 15, 14, 40, 11, 10)
 
         #encoders
-        self.encoderL = Encoder(self.tamp, 22, 23)
-        self.encoderR = Encoder(self.tamp, 21, 20)
+        self.encoders=EncoderWrap()
 
         #gyro
         self.gyro=GyroWrap(self.tamp)
@@ -29,5 +28,7 @@ class Sensors:
 
     #updates all sensors except for the camera
     def update(self):
-        self.gyro.update()
         self.irArray.update()
+        self.encoders.update()
+        self.gyro.update()
+

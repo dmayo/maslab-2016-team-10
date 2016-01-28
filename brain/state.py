@@ -110,6 +110,7 @@ class state(object):
 			min_val=getMinDistanceRightWall()
 		assert side=="Left" or side=="Right"
 
+		#TODO:make this code better
 		if avg != float('inf'):
 			pidResult= -self.IRPID.valuePID(4, avg)
 		elif min_val != float('inf'):

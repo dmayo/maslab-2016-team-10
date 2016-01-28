@@ -14,6 +14,7 @@ class MoveToBlockState(state):
 		self.DRIVE_SPEED = 40 #needs calibration
 		self.EAT_DISTANCE = 9 #distance in inches we will drive forward to eat block
 		self.substate = "ApproachBlock"
+		self.motorController.fwdVel = self.DRIVE_SPEED
 
 	def run(self):
 
@@ -25,7 +26,7 @@ class MoveToBlockState(state):
 
 				#constantly check to see if we have something to eat
 				if self.sensors.uIR == 0:
-					self.dummyDriveForwardConstantSpeed(0) #or something to stop all movement!
+					self.motorController.fwdVel = 0
 					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer)
 
 				if self.substate == "ApproachBlock":
@@ -33,14 +34,12 @@ class MoveToBlockState(state):
 					if self.sensors.camera.blockDistance < self.CLOSE_ENOUGH_DISTANCE:
 						print 'Finished approaching block. Will now try to eat it.'
 						self.substate = "EatBlock"
-						self.dummyDriveForwardConstantSpeed(0) #redundant?
+						self.motorController.fwdVel = 0
 						self.dummyDriveDistance(self.EAT_DISTANCE)
 					elif abs(self.sensors.camera.blockAngle) > self.ANGLE_EPSILON:
 						print 'Have turned too far from the direction of the block. Will reposition...'
-						self.dummyDriveForwardConstantSpeed(0)
+						self.motorController.fwdVel = 0
 						return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer)
-					else:
-						self.dummyDriveForwardConstantSpeed(self.DRIVE_SPEED)
 				elif self.substate == "EatBlock":
 					if self.dummyHasFinishedDrivingDistance() == True:
 						print 'Finished attempt to eat block. Break beam did not go off.'
@@ -49,9 +48,6 @@ class MoveToBlockState(state):
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()
 				self.timer.reset()
-
-	def dummyDriveForwardConstantSpeed(self,drive_speed):
-		pass
 
 	def dummyDriveDistance(self,distance):
 		pass

@@ -15,6 +15,10 @@ class EncoderWrap:
 		self.encoderL.write(0)
 		self.encoderR.write(0)
 
+	def getDistanceTraveled(self):
+		avg = (self.encoderL.val+self.encoderR.val)/2
+		return avg/360.
+
 	def update(self):
 		if(abs(self.encoderL.val-self.prevEncoderL)<self.NOT_MOVING_EPSILON and abs(self.encoderL.val-self.prevEncoderL)<self.NOT_MOVING_EPSILON):
 			self.isRobotMoving=False

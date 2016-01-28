@@ -9,6 +9,8 @@ class Sorter:
 		self.servo.right = 25
 		self.servo.left = 165
 		self.servo.speed = 15
+		self.servo.rightJostle = 60
+		self.servo.leftJostle = 120
 
 		self.servo.write(self.servo.center)
 		self.sorterval = self.servo.center
@@ -41,6 +43,28 @@ class Sorter:
 		self.sorterState="None"
 		self.sorterval = self.servo.center
 
+	def jostleServoLeft(self):
+		if self.sorterval < self.servo.leftJostle:
+			self.sorterState="LeftJostle"
+			self.dsorter = self.servo.speed
+		elif self.sorterval >= self.servo.leftJostle:
+			self.sorterState="RightJostle"
+			self.dsorter = 0
+
+	def jostleServoRight(self):
+		if self.sorterval > self.servo.rightJostle:
+			self.sorterState="RightJostle"
+			self.dsorter = -self.servo.speed
+		elif self.sorterval <= self.servo.rightJostle:
+			self.sorterState="Center"
+			self.nextSorterState="None"
+			self.dsorter = 0
+
+	#jostle moves the servo back and forth in a way that does not allow the block to fall into either tower
+	#it is meant to "de-choke" the funnel if a block has become stuck
+	def jostle(self):
+		self.sorterState ="LeftJostle"
+
 	def setPause(self,pauseLength):
 		self.startPauseTime=time.time()
 		self.pauseLength=pauseLength
@@ -61,5 +85,9 @@ class Sorter:
 				self.moveSorterCenter()
 			elif(self.sorterState=="Pause"):
 				self.pauseSorter()
+			elif self.sorterState=="LeftJostle":
+				self.jostleServoLeft()
+			elif self.sorterState =="RightJostle":
+				self.jostleServoRight()
 			self.sorterval += self.dsorter
 	        self.servo.write(abs(self.sorterval))

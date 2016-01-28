@@ -15,8 +15,7 @@ class MoveToBlockState(state):
 		self.CLOSE_ENOUGH_DISTANCE = 4 #make this such that the forward sensors will not detect a potential 90-degree corner while in approach mode
 		self.ANGLE_EPSILON = 10
 		self.DRIVE_SPEED = 40 #needs calibration
-		self.EAT_DISTANCE = 9 #distance in inches we will drive forward to eat block
-		self.SAFE_DISTANCE = 1.5 #distance at which we want to stop travelling to avoid a collision
+		self.EAT_DISTANCE = 7.1 #distance in inches we will drive forward to eat block
 		self.substate = "ApproachBlock"
 		self.motorController.fwdVel = self.DRIVE_SPEED
 		self.FLANK_APPROACH_LENGHT = 2.5 #we hope the Flank Maneuver leaves us in a position straight in front of the block, 2.5 inches away
@@ -24,7 +23,8 @@ class MoveToBlockState(state):
 		self.CAMERA_OFFSET = 2.96
 		self.flank_first_angle = 0
 		self.flank_target_distance = 0
-		self.flank_actual_distance = 0
+		self.flank_isleftflank = False
+		self.current_distance_traveled = 0
 
 	def run(self):
 
@@ -41,6 +41,7 @@ class MoveToBlockState(state):
 
 				if self.substate == "ApproachBlock":
 					if self.isColliding():
+						self.motorController.fwdVel = 0
 						isManueverPossible = self.calculateFlankManeuver()
 						if isManueverPossible == True:
 							self.turnNDegreesSlowly(self.flank_first_angle)
@@ -48,11 +49,11 @@ class MoveToBlockState(state):
 						else:
 							print 'Area too cramped to start Flank Maneuver. Perhaps we are in a corner? Being blind wall following.'
 							return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer)
-						elif self.sensors.camera.blockDistance < self.CLOSE_ENOUGH_DISTANCE:
+					elif self.sensors.camera.blockDistance < self.CLOSE_ENOUGH_DISTANCE:
 						print 'Finished approaching block. Will now try to eat it.'
 						self.substate = "EatBlock"
-						self.motorController.fwdVel = 0
-						self.dummyDriveDistance(self.EAT_DISTANCE)
+						self.motorController.fwdVel = self.DRIVE_SPEED
+						self.sensors.encoders.resetEncoders()
 					elif abs(self.sensors.camera.blockAngle) > self.ANGLE_EPSILON:
 						print 'Have turned too far from the direction of the block. Will reposition...'
 						self.motorController.fwdVel = 0
@@ -63,28 +64,23 @@ class MoveToBlockState(state):
 						#Otherwise, see if you can't scan the area to make sure you're gonna crash if you keep going forward
 						#if you do find you will crash, see if you can do a tight flank maneuver, or just give up
 						#FORGET IT, don't do scan. Go straight to drag or flank maneuver.
-					elif self.dummyHasFinishedDrivingDistance() == True:
+					elif self.current_distance_traveled >= self.EAT_DISTANCE:
 						print 'Finished attempt to eat block. Break beam did not go off.'
 						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer)
 				elif self.substate == "FlankManeuverTurn1":
 					if self.dummyHasTurnFinished() == True:
 						self.motorController.fwdVel = self.DRIVE_SPEED
-						self.substate = "FlankManeuver2"
+						self.substate = "FlankManeuverTravel"
 				elif self.substate == "FlankManeuverTravel":
 					if self.isColliding():
 						# keep turning until you find an opening or until you reach 90 degrees. If you reach 90 degrees, give up, you're cramped.
-					else
-					#TODO:					
+					elif self.current_distance_traveled >= self.flank_target_distance:
+						self.motorController.fwdVel = 0
 
-						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()
 				self.timer.reset()
-
-
-	def dummyHasFinishedDrivingDistance(self):
-		return True
 
 	def dummyHasTurnFinished(self):
 		return True
@@ -116,8 +112,10 @@ class MoveToBlockState(state):
 		angle = math.asin(opp/hyp)
 		if isLeftClear() == True:
 			self.flank_first_angle = angle
+			self.flank_is_left = True
 		elif isRightClear() == True:
 			self.flank_first_angle = -angle
+			self.flank_is_left = False
 		else:
 			return False
 		self.flank_target_distance = math.sqrt(hyp**2-opp**2)

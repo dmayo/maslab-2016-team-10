@@ -1,6 +1,7 @@
 from state import state
-from turnToBlockState import *
-from checkForMoreBlocksStates import *
+import turnToBlockState
+import checkForMoreBlocksState
+import wallFollowingState
 
 
 #if it sees a block -> turnToBlockState

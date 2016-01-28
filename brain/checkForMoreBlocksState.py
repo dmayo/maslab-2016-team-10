@@ -1,9 +1,9 @@
 from state import state
-from startState import *
+import startState
 
 class CheckForMoreBlocksState(state):
 	def __init__(self, sensors, actuators, motorController, timer):
-		super(startState, self).__init__(sensors, actuators, motorController, timer)
+		super(CheckForMoreBlocksState, self).__init__(sensors, actuators, motorController, timer)
 		print "starting CheckForMoreBlocksState"
 
 	def run(self):
@@ -14,7 +14,7 @@ class CheckForMoreBlocksState(state):
 				self.sensors.update()
 
 				#stubState
-				return startState(self.sensors, self.actuators, self.motorController, self.timer)
+				return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer)
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()

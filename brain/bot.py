@@ -19,7 +19,6 @@ class Bot(SyncedSketch):
         self.myState = startState(self.sensors, self.actuators, self.motorController, self.timer)
 
     def loop(self):
-        print "starting state m"
         self.myState=self.myState.run() #run current state and return next state
         self.timer.reset()
             

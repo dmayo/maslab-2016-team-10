@@ -2,7 +2,8 @@ from tamproxy.devices import Encoder
 
 """Encoder info: There are 4480 encoder ticks per revolution, which comes out to 2.875 inches"""
 class EncoderWrap:
-	def __init__(self):
+	def __init__(self,tamp):
+		self.tamp=tamp
 		self.encoderL = Encoder(self.tamp, 22, 23)
 		self.encoderR = Encoder(self.tamp, 21, 20)
 		self.isRobotMoving=False
@@ -14,7 +15,7 @@ class EncoderWrap:
 		self.encoderL.write(0)
 		self.encoderR.write(0)
 
-	def update():
+	def update(self):
 		if(abs(self.encoderL.val-self.prevEncoderL)<self.NOT_MOVING_EPSILON and abs(self.encoderL.val-self.prevEncoderL)<self.NOT_MOVING_EPSILON):
 			self.isRobotMoving=False
 		else:

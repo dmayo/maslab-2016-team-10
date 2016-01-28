@@ -26,9 +26,9 @@ class MotorController:
 	def updateMotorSpeeds(self):
 		if(self.motorState=="turnToAngle"):
 			self.updateTurnToAngle()
-		elif(state.motorState=="wallFollow"):
+		elif(self.motorState=="wallFollow"):
 			self.updateWallFolow()
-		elif(state.motorState=="turnConstantRate"):
+		elif(self.motorState=="turnConstantRate"):
 			self.updateTurnConstantRate()  
 
 	def updateTurnToAngle(self):

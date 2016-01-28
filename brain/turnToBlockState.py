@@ -1,6 +1,7 @@
 from state import state
 import wallFollowingState
-import moveToBlockState
+import lookingForBlocksState
+#import moveToBlockState
 
 #if it doesn't see a block -> lookForBlockState
 #if the block is centered in the camera view -> moveToBlock
@@ -12,8 +13,8 @@ class TurnToBlockState(state):
 	max_turn_attempts = 5
 
 	def __init__(self, sensors, actuators, motorController, timer):
-		super(startState, self).__init__(sensors, actuators, motorController, timer)
-		print "beginning Turn to block state"
+		super(TurnToBlockState, self).__init__(sensors, actuators, motorController, timer)
+		print "Turn to block state"
 		self.BLOCK_ANGLE_EPSILON = 3
 	def run(self):
 
@@ -23,12 +24,12 @@ class TurnToBlockState(state):
 			if self.timer.millis() > 100:
 				self.sensors.update()
 
-				if self.camera.detectBlock == False:
+				if self.sensors.camera.detectBlock == False:
 					print "Lost sight of block while turning!"
-					return lookingForBlockState(self.sensors,self.actuators,self.motorController,self.timer)
-				elif self.camera.blockAngle <= self.BLOCK_ANGLE_EPSILON:
-					print "Yes!"
-					#return AttackBlockState(self.sensors,self.actuators,self.motorController,self.timer)
+					return lookingForBlocksState.LookingForBlocksState(self.sensors,self.actuators,self.motorController,self.timer)
+				elif self.sensors.camera.blockAngle <= self.BLOCK_ANGLE_EPSILON:
+					print "read to move to block"
+					#return MoveToBlockState(self.sensors,self.actuators,self.motorController,self.timer)
 				else:
 					self.turnNDegreesSlowly(self.sensors.camera.blockAngle)
 					'''

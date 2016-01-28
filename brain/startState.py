@@ -18,9 +18,9 @@ class startState(state):
 				self.sensors.update()
 
 				if self.sensors.camera.detectBlock:
-					return TurnToBlockState(slef.sensors, slef.actuators, slef.motorController, slef.timer)
+					return turnToBlockState.TurnToBlockState(self.sensors,self.actuators,self.motorController,self.timer)
 				else:
-					return LookingForBlocksState(slef.sensors, slef.actuators, slef.motorController, slef.timer)
+					return lookingForBlocksState.LookingForBlocksState(self.sensors,self.actuators,self.motorController,self.timer)
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()

@@ -11,7 +11,7 @@ class Camera:
 		message = self.cameraPipe.read(20)
 		#message=""
 		if message:
-			print("Recieved: '%s'" % message)
+			#print("Recieved: '%s'" % message)
 			if message[:2] == 'no':
 				self.detectBlock=False
 			else:

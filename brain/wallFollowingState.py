@@ -9,7 +9,7 @@ import time
 
 class wallFollowingState(state):
 	def __init__(self, sensors, actuators, motorController, timer):
-		super(startState, self).__init__(sensors, actuators, motorController, timer)
+		super(wallFollowingState, self).__init__(sensors, actuators, motorController, timer)
 		print "Wall Following State"
 		self.SCAN_SPEED=3
 		self.initialAngle=self.sensors.gyro.gyroCAngle
@@ -26,9 +26,9 @@ class wallFollowingState(state):
 				self.wallFollow("Left")
 
 				if self.sensors.camera.detectBlock:
-					return TurnToBlockState(slef.sensors, slef.actuators, slef.motorController, slef.timer)
+					return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer)
 				elif (time.time()-self.startStateTime)>=self.WALL_FOLLOW_TIME:
-					return LookingForBlocksState(slef.sensors, slef.actuators, slef.motorController, slef.timer)
+					return lookingForBlocksState.LookingForBlocksState(self.sensors, self.actuators, self.motorController, self.timer)
 				else:
 					self.turnConstantRate(self.SCAN_SPEED)
 

@@ -84,7 +84,7 @@ class MoveToBlockState(state):
 								self.substate = "DragBlock"
 								self.start_gyro_angle = self.sensors.gyro.gyroCAngle
 							else:
-								Print 'After serveral drag attempts, it appears we are in a space too cramped to eat the block. Fall back to blind wall following...'
+								print 'After serveral drag attempts, it appears we are in a space too cramped to eat the block. Fall back to blind wall following...'
 								return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 					elif self.current_distance_traveled >= self.EAT_DISTANCE:
 						print 'Finished attempt to eat block. Break beam did not go off.'
@@ -95,7 +95,7 @@ class MoveToBlockState(state):
 						self.motorController.fwdVel = DRIVE_SPEED
 						self.substate = "EatBlock"
 					elif self.sensors.gyroCAngle >= (self.start_gyro_angle + 360):
-						Print 'After a full 360, could not find a good position about which to turn. Being blind wall following...'
+						print 'After a full 360, could not find a good position about which to turn. Being blind wall following...'
 						self.turnConstantRate(0)
 						return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif self.substate == "FlankManeuverTurn1":
@@ -105,13 +105,14 @@ class MoveToBlockState(state):
 				elif self.substate == "FlankManeuverTravel":
 					if self.isColliding():
 						# keep turning until you find an opening or until you reach 90 degrees. If you reach 90 degrees, give up, you're cramped.
+						pass
 					elif self.current_distance_traveled >= self.flank_target_distance:
 						self.motorController.fwdVel = 0
 				elif self.substate == "FlankManeuverTurn2":
 					if self.isFinishedTurning() == True:
 						self.substate == "ApproachBlock"
 				else:
-					Print 'Error! Substate named ', self.substate, ' was not recognized. Exiting to Start State...'
+					print 'Error! Substate named ', self.substate, ' was not recognized. Exiting to Start State...'
 					return startState.startState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				self.actuators.update()

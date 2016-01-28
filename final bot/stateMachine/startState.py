@@ -26,7 +26,7 @@ class startState(state):
 
 				if(self.utils.isGameStarted==True and time.time()-self.utils.startTime>self.START_GAME_DELAY):
 					if self.sensors.camera.detectBlock:
-						return turnToBlockState.TurnToBlockState(self.sensors,self.actuators,self.motorController,self.timer, self.utils))
+						return turnToBlockState.TurnToBlockState(self.sensors,self.actuators,self.motorController,self.timer, self.utils)
 					else:
 						return lookingForBlocksState.LookingForBlocksState(self.sensors,self.actuators,self.motorController,self.timer, self.utils)
 

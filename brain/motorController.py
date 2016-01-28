@@ -1,9 +1,6 @@
 from PID import PID
 
-class MotorController:
-        """Encoder info: There are 4480 encoder ticks per revolution, which comes out to 2.875 inches"""
-        encoder_epsilon = 62 #5 degrees of change
-        
+class MotorController:        
 	def __init__(self,sensors,actuators):
 		self.sensors=sensors
 		self.actuators=actuators

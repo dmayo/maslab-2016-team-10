@@ -67,10 +67,12 @@ class state(object):
 	    '''
 
 	def turnToTheRightSlowly(self):
-		setCarrotPosition(0, TURN_SLOWLY_ANGLE)
+		#setCarrotPosition(0, TURN_SLOWLY_ANGLE)
+		pass
 
 	def turnToTheLeftSlowly(self):
-		setCarrotPosition(0, -1*TURN_SLOWLY_ANGLE)
+		#setCarrotPosition(0, -1*TURN_SLOWLY_ANGLE)
+		pass
 
 	def foundCube(self):
 		pass
@@ -132,8 +134,8 @@ class state(object):
 		self.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
 		self.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
 
-	def turnConstantRate():
-		self.motorController.turnConstantRate=3
+	def turnConstantRate(self,turnSpeed):
+		self.motorController.turnConstantRate=turnSpeed
 		self.motorController.motorState="turnConstantRate"
 
 

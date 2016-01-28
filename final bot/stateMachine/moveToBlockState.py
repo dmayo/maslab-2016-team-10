@@ -11,25 +11,33 @@ class MoveToBlockState(state):
 
 	def __init__(self, sensors, actuators, motorController, timer, utils):
 		super(MoveToBlockState, self).__init__(sensors, actuators, motorController, timer, self.utils)
-		print "beginning MoveToBlockState"
+		
 		self.CLOSE_ENOUGH_DISTANCE = 4 #make this such that the forward sensors will not detect a potential 90-degree corner while in approach mode
 		self.ANGLE_EPSILON = 10
 		self.DRIVE_SPEED = 40 #needs calibration
 		self.EAT_DISTANCE = 7.1 #distance in inches we will drive forward to eat block
-		self.substate = "ApproachBlock"
-		self.motorController.fwdVel = self.DRIVE_SPEED
-		self.FLANK_APPROACH_LENGHT = 2.5 #we hope the Flank Maneuver leaves us in a position straight in front of the block, 2.5 inches away
-		self.ROBOT_RADIUS = 7.5 #radius of the robot
+		self.ROBOT_RADIUS = 7.5
 		self.CAMERA_OFFSET = 2.96
+		self.start_gyro_angle = 0
+		self.current_distance_traveled = 0
+
+		self.FLANK_APPROACH_LENGHT = 2.5 #we hope the Flank Maneuver leaves us in a position straight in front of the block, 2.5 inches away
+		self.FLANK_MANEUVER_MAX_ATTEMPTS = 3
 		self.flank_first_angle = 0
 		self.flank_target_distance = 0
 		self.flank_isleftflank = False
-		self.current_distance_traveled = 0
-		self.FLANK_MANEUVER_MAX_ATTEMPTS = 3
 		self.flank_maneuver_attempts = 0
 
-	def run(self):
+		self.MIN_DRAG_BLOCK_DISTANCE = 1.1
+		self.DRAG_TURN_RATE = 3
+		self.DRAG_MAX_ATTEMPTS = 3
+		self.drag_attempts = 0
 
+		print "beginning MoveToBlockState"
+		self.substate = "ApproachBlock"
+		self.motorController.fwdVel = self.DRIVE_SPEED
+
+	def run(self):
 		while True:
 			self.sensors.camera.update()
 
@@ -39,9 +47,14 @@ class MoveToBlockState(state):
 				#constantly check to see if we have something to eat
 				if self.sensors.uIR == 0:
 					self.motorController.fwdVel = 0
+					self.turnConstantRate(0)
 					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
+				#TODO: what if when the state starts, we are closer to the block than the CLOSE_ENOUGH_DISTANCE? That will cause changes needed in the EatBlock state collision code.
 				if self.substate == "ApproachBlock":
+					if self.sensors.camera.detectBlock == False:
+						print 'Lost sight of block before we expected! Or did not find it after a flank maneuver. Falling back to startState...'
+						return 
 					if self.isColliding():
 						self.motorController.fwdVel = 0
 						isManueverPossible = self.calculateFlankManeuver()
@@ -50,8 +63,8 @@ class MoveToBlockState(state):
 							self.flank_maneuver_attempts += 1
 							self.substate = "FlankManeuverTurn1"
 						else:
-							print 'Area too cramped to start Flank Maneuver. Perhaps we are in a corner? Being blind wall following.'
-							return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer)
+							print 'Area too cramped to start Flank Maneuver. Perhaps we are in a corner? Fall back to blind wall following...'
+							return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 					elif self.sensors.camera.blockDistance < self.CLOSE_ENOUGH_DISTANCE:
 						print 'Finished approaching block. Will now try to eat it.'
 						self.substate = "EatBlock"
@@ -63,13 +76,28 @@ class MoveToBlockState(state):
 						return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif self.substate == "EatBlock":
 					if self.isColliding():
-						#To implement: if we got close enough, go to drag block state until we are free to move again.
-						#Otherwise, see if you can't scan the area to make sure you're gonna crash if you keep going forward
-						#if you do find you will crash, see if you can do a tight flank maneuver, or just give up
-						#FORGET IT, don't do scan. Go straight to drag or flank maneuver.
+						if self.current_distance_traveled >= self.MIN_DRAG_BLOCK_DISTANCE:
+							if self.drag_attempts < self.DRAG_MAX_ATTEMPTS:
+								self.drag_attempts += 1
+								self.motorController.fwdVel = 0
+								self.turnConstantRate(self.DRAG_TURN_RATE)
+								self.substate = "DragBlock"
+								self.start_gyro_angle = self.sensors.gyro.gyroCAngle
+							else:
+								Print 'After serveral drag attempts, it appears we are in a space too cramped to eat the block. Fall back to blind wall following...'
+								return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 					elif self.current_distance_traveled >= self.EAT_DISTANCE:
 						print 'Finished attempt to eat block. Break beam did not go off.'
-						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer)
+						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+				elif self.substate == "DragBlock":
+					if self.isColliding() == False:
+						self.turnConstantRate(0)
+						self.motorController.fwdVel = DRIVE_SPEED
+						self.substate = "EatBlock"
+					elif self.sensors.gyroCAngle >= (self.start_gyro_angle + 360):
+						Print 'After a full 360, could not find a good position about which to turn. Being blind wall following...'
+						self.turnConstantRate(0)
+						return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif self.substate == "FlankManeuverTurn1":
 					if self.isFinishedTurning() == True:
 						self.motorController.fwdVel = self.DRIVE_SPEED
@@ -84,9 +112,7 @@ class MoveToBlockState(state):
 						self.substate == "ApproachBlock"
 				else:
 					Print 'Error! Substate named ', self.substate, ' was not recognized. Exiting to Start State...'
-					return startState.startState(self.sensors, self.actuators, self.motorController, self.timer)
-
-
+					return startState.startState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()
@@ -99,15 +125,15 @@ class MoveToBlockState(state):
 			return True
 		elif self.sensors.irArray.ir_value[1] < 2.32 or self.sensors.irArray.ir_value[4] < 2.32:
 			return True
-		elif self.sensors.irArray.ir_value[2] < 3.5 or self.sensors.ir_value[3] < 3.5
+		elif self.sensors.irArray.ir_value[2] < 3.5 or self.sensors.irArray.ir_value[3] < 3.5:
 			return True
 		return False
 
 	def isLeftClear(self):
-		return self.sensors.irArray.ir_value[0] < 1 and self.sensors.irArray.ir_value[1] < 2.32 and self.sensors.irArray.ir_value[2] < 3.5
+		return (self.sensors.irArray.ir_value[0] < 1 and self.sensors.irArray.ir_value[1] < 2.32 and self.sensors.irArray.ir_value[2] < 3.5)
 
 	def isRightClear(self):
-		return self.sensors.irArray.ir_value[5] < 1 and self.sensors.irArray.ir_value[4] < 2.32 and self.sensors.irArray.ir_value[3] < 3.5
+		return (self.sensors.irArray.ir_value[5] < 1 and self.sensors.irArray.ir_value[4] < 2.32 and self.sensors.irArray.ir_value[3] < 3.5)
 
 
 	#flank maneuver attempts to calculate parameters that will allow us to make a triangle motion to the cube such that our turn towards the cube will be 90 degrees

@@ -10,6 +10,7 @@ class LookingForBlocksState(state):
 		super(startState, self).__init__(sensors, actuators, motorController, timer)
 		print "Looking For Blocks State"
 		self.SCAN_SPEED=3
+		self.initialAngle=self.sensors.gyro.gyroCAngle
 
 	def run(self):
 		while True:
@@ -20,8 +21,10 @@ class LookingForBlocksState(state):
 				
 				if self.sensors.camera.detectBlock:
 					return TurnToBlockState(slef.sensors, slef.actuators, slef.motorController, slef.timer)
+				elif self.sensors.gyro.gyroCAngle>self.initialAngle+360:
+					return WallFollowState(slef.sensors, slef.actuators, slef.motorController, slef.timer)
 				else:
-					turnConstantRate(self.SCAN_SPEED)
+					self.turnConstantRate(self.SCAN_SPEED)
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()

@@ -10,7 +10,7 @@ class LookingForBlocksState(state):
 	def __init__(self, sensors, actuators, motorController, timer):
 		super(LookingForBlocksState, self).__init__(sensors, actuators, motorController, timer)
 		print "Looking For Blocks State"
-		self.SCAN_SPEED=3
+		self.SCAN_SPEED=20
 		self.initialAngle=self.sensors.gyro.gyroCAngle
 
 	def run(self):
@@ -26,6 +26,8 @@ class LookingForBlocksState(state):
 					return wallFollowingState.WallFollowingState(self.sensors, self.actuators, self.motorController, self.timer)
 				else:
 					self.turnConstantRate(self.SCAN_SPEED)
+
+				return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer)
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()

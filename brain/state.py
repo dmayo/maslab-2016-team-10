@@ -5,9 +5,6 @@ class state(object):
 		self.motorController=motorController
 		self.timer=timer
 
-		#constants
-		TURN_SLOWLY_ANGLE=2
-
 	def run(self):
 		raise "run not implemented in state"
 

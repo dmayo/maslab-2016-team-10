@@ -1,4 +1,5 @@
 from state import state
+import wallFollowingState
 import turnToBlockState
 import lookingForBlocksState
 
@@ -16,7 +17,7 @@ class startState(state):
 
 			if self.timer.millis() > 100:
 				self.sensors.update()
-
+				
 				if self.sensors.camera.detectBlock:
 					return turnToBlockState.TurnToBlockState(self.sensors,self.actuators,self.motorController,self.timer)
 				else:

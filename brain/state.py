@@ -7,6 +7,7 @@ class state(object):
 		self.motorController=motorController
 		self.timer=timer
 		self.utils=utils
+		self.ANGLE_EPSILON=1
 
 	def run(self):
 		raise "run not implemented in state"
@@ -17,9 +18,15 @@ class state(object):
 	def isTurning():
 		return False
 
+	def isFinishedTurning(self):
+		if(abs(self.motorController.desiredAngle-self.sensors.gyro.gyroCAngle)<self.ANGLE_EPSILON ans self.sensors.encoders.isRobotMoving=False):
+			return True
+		else:
+			return False
 
 	def turnNDegreesSlowly(self, turnAngle):
 		self.motorState="turnToAngle"
+		self.motorController.fwdVel=0
 		self.motorController.desiredAngle=self.sensors.gyro.gyroCAngle+turnAngle
 		'''
 	    enum turningStates {turning,turned};

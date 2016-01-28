@@ -2,7 +2,6 @@
 #include "BlockDetection.h"
 
 namespace BlockDetection {
-    
 // bound contour area to remove small bits
 bool contour2small(std::vector<cv::Point>& contour) {
     return (fabs(cv::contourArea(contour,0)) < FEATURE_AREA_THRESH_BLOCK); // 0 for non-oriented

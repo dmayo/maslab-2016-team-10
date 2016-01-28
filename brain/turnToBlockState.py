@@ -1,4 +1,6 @@
 from state import state
+from wallFollowingState import WallFollowingState
+from attackBlockState import AttackBlockState
 
 class TurnToBlockState(state):
 
@@ -19,12 +21,12 @@ class TurnToBlockState(state):
 
 				if self.camera.detectBlock == False:
 					print "Lost sight of block while turning!"
-					return wallFollowingState(self.sensors,self.actuators,self.motorController,self.timer) #TODO: get actual state name
+					return WallFollowingState(self.sensors,self.actuators,self.motorController,self.timer) #TODO: get actual state name
 				else if self.finishedTurningNDegreesSlowly == True:
 				print "Robot stationary. Pointing towards target?"
 				if self.camera.blockAngle <= epsilon:
 					print "Yes!"
-					return attackBlockState(self.sensors,self.actuators,self.motorController,self.timer)
+					return AttackBlockState(self.sensors,self.actuators,self.motorController,self.timer)
 				else:
 					print "No. Off by ", self.camera.blockAngle, ". Have made ", turn_attempts, " turn attempt(s)."
 					turn_attempts += 1
@@ -32,12 +34,10 @@ class TurnToBlockState(state):
 						self.turnNDegreesSlowly(self.sensors.camera.blockAngle)
 					else:
 						print "Giving up. Turning failed!" #TODO: this should hopefully never happen. If it does, it means our PID needs tuning!
-						return breakFreeState(self.sensors,self.actuators,self.motorController,self.timer)
+						return BreakFreeState(self.sensors,self.actuators,self.motorController,self.timer)
 
 						#while robot is seeing block and turning, code does nothing, just lets robot turn
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()
 				self.timer.reset()
-
-			return startState(self.sensors, self.actuators)

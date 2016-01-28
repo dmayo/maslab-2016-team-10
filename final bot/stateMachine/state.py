@@ -19,7 +19,7 @@ class state(object):
 		return False
 
 	def isFinishedTurning(self):
-		if(abs(self.motorController.desiredAngle-self.sensors.gyro.gyroCAngle)<self.ANGLE_EPSILON ans self.sensors.encoders.isRobotMoving==False):
+		if(abs(self.motorController.desiredAngle-self.sensors.gyro.gyroCAngle)<self.ANGLE_EPSILON and self.sensors.encoders.isRobotMoving==False):
 			return True
 		else:
 			return False

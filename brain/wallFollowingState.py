@@ -27,8 +27,8 @@ class wallFollowingState(state):
 
 				if self.sensors.camera.detectBlock:
 					return TurnToBlockState(slef.sensors, slef.actuators, slef.motorController, slef.timer)
-				elif (time.time()-self.startStateTime)>=WALL_FOLLOW_TIME:
-					return lookingForBlocksState(slef.sensors, slef.actuators, slef.motorController, slef.timer)
+				elif (time.time()-self.startStateTime)>=self.WALL_FOLLOW_TIME:
+					return LookingForBlocksState(slef.sensors, slef.actuators, slef.motorController, slef.timer)
 				else:
 					self.turnConstantRate(self.SCAN_SPEED)
 

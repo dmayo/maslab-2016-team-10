@@ -177,9 +177,26 @@ void ImageProcessor::doStuff() {
 
 }
 void ImageProcessor::clearCameraCache() {
+    // hack to clean cache from the camera to avoid weird bug in the beginning
     for(int i = 0; i < 1; i++) {
         vid_cap.grab(); // get a new frame from camera
     }
+}
+
+// for debug
+void ImageProcessor::debugStuff() {
+
+    //frame_raw = cv::imread("images/test_final/blocks_2.jpg", CV_LOAD_IMAGE_COLOR ); // bgr
+    vid_cap.grab(); // get a new frame from camera
+    vid_cap.retrieve(frame_raw); // get a new frame from camera
+    cv::resize(frame_raw, frame, cv::Size(0,0), 1, 1, cv::INTER_LINEAR);
+    clock_t start = clock();
+    WallDetection::detectWall(frame, local_map);
+    BlockDetection::detectBlocks(frame, nearestBlockInfo);
+    TerritoryDetection::detectPurpleLine(frame, local_map);
+    clock_t end = clock();
+    double dd = ((double) (end - start)) / CLOCKS_PER_SEC;
+
 }
 
 void ImageProcessor::run(ImageProcessor *ImageProcessorPointer) {

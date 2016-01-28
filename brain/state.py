@@ -91,12 +91,17 @@ class state(object):
 		#desiredPosition = getNewPosition() +radiusInInches;
 		pass
 
+	#returns TRUE if a block was found, FALSE if not
 	def sortBlock(self):
 		if self.sensors.color.c > 800 and self.actuators.sorter.sorterState=="None":
 			if self.sensors.color.r > self.sensors.color.g:
 				self.actuators.sorter.moveSorterLeft()
 			else:
 				self.actuators.sorter.moveSorterRight()
+			return True
+		else:
+			return False
+
 
 	def wallFollow(self, side):
 		self.motorController.motorState="wallFollow"

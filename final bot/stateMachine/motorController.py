@@ -18,7 +18,7 @@ class MotorController:
 		self.turnConstantRate=0
 
 		self.motorState="turnToAngle"
-
+	#fix this
 	def stop(self):
 		self.actuators.motorL.write(1,0)
 		self.actuators.motorR.write(1,0)

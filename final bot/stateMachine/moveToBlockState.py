@@ -49,8 +49,6 @@ class MoveToBlockState(state):
 
 				#constantly check to see if we have something to eat
 				if self.sensors.uIR == 0:
-					self.motorController.fwdVel = 0
-					self.turnConstantRate(0)
 					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				#TODO: what if when the state starts, we are closer to the block than the CLOSE_ENOUGH_DISTANCE? That will cause changes needed in the EatBlock state collision code.

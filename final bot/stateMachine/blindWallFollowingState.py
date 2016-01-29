@@ -7,7 +7,7 @@ class BlindWallFollowingState(state):
 	def __init__(self, sensors, actuators, motorController, timer, utils):
 		super(BlindWallFollowingState, self).__init__(sensors, actuators, motorController, timer, utils)
 		print "starting blindWallFollowingState. This state performs 10 seconds of wall following without looking for blocks. It is meant to recover from not being able to move to a block."
-		self.timeout = timeout.Timeout(10)
+		self.timeout = timeout.Timeout(5)
 
 	def run(self):
 		while True:

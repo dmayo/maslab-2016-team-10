@@ -67,53 +67,24 @@ class MoveToBlockState(state):
 					print 'Starting Approach...'
 					self.driveStraight(self.DRIVE_SPEED)
 					if self.sensors.camera.detectBlock == False:
-						print 'Lost sight of block before we expected! Or did not find it after a flank maneuver. Falling back to startState...'
-						return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
-					elif self.isColliding():
-						print 'Too close to a wall. Can attempt flank maneuver?'
-						self.driveStraight(self.DRIVE_SPEED)
-						isManueverPossible = self.calculateFlankManeuver(self.sensors.camera.blockDistance)
-						if isManueverPossible == True:
-							print 'Yes. Starting flank maneuver with angle ', self.flank_first_angle
-							self.turnNDegreesSlowly(self.flank_first_angle)
-							self.flank_maneuver_attempts += 1
-							self.substate = "FlankManeuver"
-						else:
-							print 'Area too cramped to start Flank Maneuver. Perhaps we are in a corner? Fall back to strict wall following...'
-							return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
-					elif self.sensors.camera.blockDistance < self.CLOSE_ENOUGH_DISTANCE:
-						print 'Finished approaching block. Will now try to eat it.'
+						print 'Cannot see block anymore. May be too close. Will try to eat it.'
 						self.substate = "EatBlock"
 						self.driveStraight(self.DRIVE_SPEED)
 						self.sensors.encoders.resetEncoders()
+					elif self.isColliding():
+						canOvercomeCollision = self.dealWithCollision() #dealWithCollision will take care of changing the substate
+						if canOvercomeCollision == False:
+							print 'Area too cramped to overcome collision. Perhaps we are in a corner? Fall back to strict wall following...'
+							return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 					elif abs(self.sensors.camera.blockAngle) > self.ANGLE_EPSILON:
 						print 'Have turned too far from the direction of the block. Will reposition...'
 						return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif self.substate == "EatBlock":
 					if self.isColliding():
-						self.driveStraight(0)
-						print 'Too close to wall. Are we close enough to drag the block with our teeth?'
-						if self.eat_distance_traveled >= self.MIN_DRAG_BLOCK_DISTANCE:
-							if self.drag_attempts < self.DRAG_MAX_ATTEMPTS:
-								print 'Yes. Starting drag...'
-								self.drag_attempts += 1
-								self.turnConstantRate(self.DRAG_TURN_RATE)
-								self.substate = "DragBlock"
-								self.start_gyro_angle = self.sensors.gyro.gyroCAngle
-							else:
-								print 'After serveral drag attempts, it appears we are in a space too cramped to eat the block. Fall back to blind wall following...'
-								return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
-						else:
-							print 'Too close to a wall. Can attempt flank maneuver?'
-							isManueverPossible = self.calculateFlankManeuver(self.CLOSE_ENOUGH_DISTANCE-self.eat_distance_traveled)
-							if isManueverPossible == True:
-								print 'Yes. Starting flank maneuver with first angle ', self.flank_first_angle, ' distance ', self.flank_target_distance, ' and second angle', self.flank_second_angle
-								self.turnNDegreesSlowly(self.flank_first_angle)
-								self.flank_maneuver_attempts += 1
-								self.substate = "FlankManeuver"
-							else:
-								print 'Area too cramped to start Flank Maneuver. Perhaps we are in a corner? Fall back to blind wall following...'
-								return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+						canDealWithCollision = self.eatSubstateDealWithCollision()
+						if canDealWithCollision == False:
+							print 'Area too cramped to overcome collision. Perhaps we are in a corner? Fall back to strict wall following...'
+							return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 					elif self.eat_distance_traveled >= self.EAT_DISTANCE:
 						print 'Finished attempt to eat block. Break beam did not go off.'
 						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
@@ -140,12 +111,12 @@ class MoveToBlockState(state):
 	#collision detection avoids 1 inch of space on the sides. Trig was used to determine the lenght of the 30-degree angled sensors.
 	#for the front sensors, we seek to avoid the worst case of a 90-degree angle, comes out to 2.9+.59 = about 3.5
 	def isColliding(self):
-		if self.sensors.irArray.ir_value[0] < 1 or self.sensors.irArray.ir_value[5] < 1:
+		"""if self.sensors.irArray.ir_value[0] < 1 or self.sensors.irArray.ir_value[5] < 1:
 			return True
 		elif self.sensors.irArray.ir_value[1] < 2.32 or self.sensors.irArray.ir_value[4] < 2.32:
 			return True
 		elif self.sensors.irArray.ir_value[2] < 3.5 or self.sensors.irArray.ir_value[3] < 3.5:
-			return True
+			return True"""
 		return False
 
 	def isLeftClear(self):
@@ -154,6 +125,33 @@ class MoveToBlockState(state):
 	def isRightClear(self):
 		return (self.sensors.irArray.ir_value[5] < 1 and self.sensors.irArray.ir_value[4] < 2.32)
 
+	def dealWithCollision(self):
+		print 'Too close to a wall. Can attempt flank maneuver?'
+		isManueverPossible = self.calculateFlankManeuver(self.sensors.camera.blockDistance)
+		if isManueverPossible == True:
+			print 'Yes. Starting flank maneuver with angle ', self.flank_first_angle
+			self.turnNDegreesSlowly(self.flank_first_angle)
+			self.flank_maneuver_attempts += 1
+			self.substate = "FlankManeuver"
+			return True
+		else:
+			return False
+
+	def eatSubstateDealWithCollision(self):
+		self.driveStraight(0)
+		print 'Too close to wall. Are we close enough to drag the block with our teeth?'
+		if self.eat_distance_traveled >= self.MIN_DRAG_BLOCK_DISTANCE:
+			if self.drag_attempts < self.DRAG_MAX_ATTEMPTS:
+				print 'Yes. Starting drag...'
+				self.drag_attempts += 1
+				self.turnConstantRate(self.DRAG_TURN_RATE)
+				self.substate = "DragBlock"
+				self.start_gyro_angle = self.sensors.gyro.gyroCAngle
+				return True
+			else:
+				return False
+		else:
+			return self.dealWithCollision()
 
 	#flank maneuver attempts to calculate parameters that will allow us to make a triangle motion to the cube such that our turn towards the cube will be 90 degrees
 	#this is somewhat of a simple algorithm, a more complex one would use our sensor lenght differences to perform more complex geometry. We do not have the time to research or derive such things.

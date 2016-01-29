@@ -6,6 +6,7 @@ import time
 import timeout
 import startState
 import random
+import breakFreeState
 
 #substates: RandomTraveling, Turning, Scanning
 #this state is NOT meant to be used if we are jammed. It will likely stay jammed when we turn. Use breakFreeState instead.

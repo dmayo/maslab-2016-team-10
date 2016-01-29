@@ -150,7 +150,7 @@ class state(object):
 				wfPID.resetPID()
 				return #noPID
 
-		pidResult=self.followWall(side,avg)
+		pidResult=self.followWall(side,avg,wfPID)
 		self.motorController.wallFollowPIDResult = pidResult
 		self.motorController.fwdVel=speed
 
@@ -220,8 +220,8 @@ class state(object):
 	def rotateWithWall(self):
 		pass
 
-	def followWall(self,side,avg):
-		pidResult=-self.IRPID.valuePID(4, avg)
+	def followWall(self,side,avg,wfPID):
+		pidResult=-wfPID.valuePID(4, avg)
 		if(side=="Right"):
 			pidResult*=-1
 		return pidResult

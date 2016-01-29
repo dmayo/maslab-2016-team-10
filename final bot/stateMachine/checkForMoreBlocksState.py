@@ -4,6 +4,7 @@ import time
 import pickUpBlockState
 import turnToBlockState
 import timeout
+import breakFreeState
 
 class CheckForMoreBlocksState(state):
 	#substates: moveForward, moveBack

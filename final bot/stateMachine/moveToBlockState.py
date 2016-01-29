@@ -7,6 +7,7 @@ import startState
 import blindWallFollowingState
 import timeout
 import eatBlockState
+import breakFreeState
 
 class MoveToBlockState(state):
 	#substates: ApproachBlock, EatBlock, FlankManeuverTurn1, FlankManeuverTravel, FlankManeuverTurn2, FlankManeuverReturn, DragBlock

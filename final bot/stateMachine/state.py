@@ -25,7 +25,7 @@ class state(object):
 			return False
 
 	def turnNDegreesSlowly(self, turnAngle):
-		self.motorState="turnToAngle"
+		self.motorController.motorState="turnToAngle"
 		self.motorController.fwdVel=0
 		self.motorController.desiredAngle=self.sensors.gyro.gyroCAngle+turnAngle
 		'''
@@ -183,5 +183,9 @@ class state(object):
 	def turnConstantRate(self,turnSpeed):
 		self.motorController.turnConstantRate=turnSpeed
 		self.motorController.motorState="turnConstantRate"
+
+	def driveStraight(self,speed):
+		self.motorController.fwdVel=speed
+		self.motorController.motorState=="driveStraight"
 
 

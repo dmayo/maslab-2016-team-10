@@ -15,9 +15,9 @@ class LookingForBlocksState(state):
 	def __init__(self, sensors, actuators, motorController, timer, utils):
 		super(LookingForBlocksState, self).__init__(sensors, actuators, motorController, timer, utils)
 		print "Looking For Blocks State"
-		self.SCAN_SPEED=40
+		self.SCAN_SPEED=20
 		self.initialAngle=self.sensors.gyro.gyroCAngle
-		self.timeout = timeout.Timeout(10)
+		self.timeout = timeout.Timeout(20)
 
 	def run(self):
 		while True:
@@ -25,14 +25,14 @@ class LookingForBlocksState(state):
 
 			if self.timer.millis() > 100:
 				self.sensors.update()
-				'''
+				
 				if self.timeout.isTimeUp() == True:
 					print 'State Timeout has timed out. Going to Random Travel State...'
 					return randomTravelingState.RandomTravelingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				if self.sensors.uIR == 0:
 					print 'Break beam has sensed a block. Going to Pick Up Block State...'
 					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
-				'''
+
 				if self.sensors.camera.detectBlock:
 					print "Found Block"
 					return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)

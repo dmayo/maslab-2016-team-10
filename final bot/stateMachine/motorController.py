@@ -62,6 +62,8 @@ class MotorController:
 		self.actuators.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
 
 	def updateDriveStraight(self):
+		pidResult=self.PID.valuePID(self.sensors.gyro.gyroCAngle, self.desiredAngle)
+
 		self.motorLdrive = self.fwdVel - pidResult
 		self.motorRdrive = self.fwdVel + pidResult
 

@@ -69,18 +69,7 @@ class MoveToBlockState(state):
 					if self.sensors.camera.detectBlock == False:
 						print 'Lost sight of block before we expected! Or did not find it after a flank maneuver. Falling back to startState...'
 						return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
-					elif self.isColliding():
-						print 'Too close to a wall. Can attempt flank maneuver?'
-						self.driveStraight(self.DRIVE_SPEED)
-						isManueverPossible = self.calculateFlankManeuver(self.sensors.camera.blockDistance)
-						if isManueverPossible == True:
-							print 'Yes. Starting flank maneuver with angle ', self.flank_first_angle
-							self.turnNDegreesSlowly(self.flank_first_angle)
-							self.flank_maneuver_attempts += 1
-							self.substate = "FlankManeuver"
-						else:
-							print 'Area too cramped to start Flank Maneuver. Perhaps we are in a corner? Fall back to strict wall following...'
-							return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+						
 					elif self.sensors.camera.blockDistance < self.CLOSE_ENOUGH_DISTANCE:
 						print 'Finished approaching block. Will now try to eat it.'
 						self.substate = "EatBlock"

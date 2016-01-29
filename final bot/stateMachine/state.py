@@ -186,6 +186,6 @@ class state(object):
 
 	def driveStraight(self,speed):
 		self.motorController.fwdVel=speed
-		self.motorController.motorState=="driveStraight"
+		self.motorController.motorState="driveStraight"
 
 

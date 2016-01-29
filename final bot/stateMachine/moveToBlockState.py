@@ -5,7 +5,7 @@ import pickUpBlockState
 import math
 import startState
 import blindWallFollowingState
-from Timeout import *
+import timeout
 
 class MoveToBlockState(state):
 	#substates: ApproachBlock, EatBlock, FlankManeuverTurn1, FlankManeuverTravel, FlankManeuverTurn2, FlankManeuverReturn, DragBlock
@@ -14,7 +14,7 @@ class MoveToBlockState(state):
 		super(MoveToBlockState, self).__init__(sensors, actuators, motorController, timer, self.utils)
 
 		print "beginning MoveToBlockState"
-		self.timeout = Timeout(30)
+		self.timeout = timeout.Timeout(30)
 		
 		self.CLOSE_ENOUGH_DISTANCE = 4 #make this such that the forward sensors will not detect a potential 90-degree corner while in approach mode
 		self.ANGLE_EPSILON = 10
@@ -75,7 +75,7 @@ class MoveToBlockState(state):
 							self.flank_maneuver_attempts += 1
 							self.substate = "FlankManeuverTurn1"
 						else:
-							print 'Area too cramped to start Flank Maneuver. Perhaps we are in a corner? Fall back to blind wall following...'
+							print 'Area too cramped to start Flank Maneuver. Perhaps we are in a corner? Fall back to strict wall following...'
 							return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 					elif self.sensors.camera.blockDistance < self.CLOSE_ENOUGH_DISTANCE:
 						print 'Finished approaching block. Will now try to eat it.'

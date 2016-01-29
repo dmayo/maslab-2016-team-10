@@ -10,6 +10,7 @@ import startState
 
 class RandomTravelingState(state):
 	def __init__(self, sensors, actuators, motorController, timer, utils):
+		super(RandomTravelingState, self).__init__(sensors, actuators, motorController, timer, utils)
 		print "Starting RandomtTravelingState..."
 		self.timeout = timeout.Timeout(30)
 		self.substate = "RandomTraveling"

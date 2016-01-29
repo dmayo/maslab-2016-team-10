@@ -2,6 +2,8 @@ from state import state
 import turnToBlockState
 import checkForMoreBlocksState
 import wallFollowingState
+import randomTravelingState
+import pickUpBlockState
 
 
 #if it sees a block -> turnToBlockState
@@ -14,6 +16,7 @@ class LookingForBlocksState(state):
 		print "Looking For Blocks State"
 		self.SCAN_SPEED=20
 		self.initialAngle=self.sensors.gyro.gyroCAngle
+		self.timeout = Timeout(10)
 
 	def run(self):
 		while True:
@@ -21,7 +24,14 @@ class LookingForBlocksState(state):
 
 			if self.timer.millis() > 100:
 				self.sensors.update()
-				
+
+				if self.timeout.isTimeUp() == True:
+					print 'State Timeout has timed out. Going to Random Travel State...'
+					return randomTravelingState.RandomTravelingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+				if self.sensors.uIR == 0:
+					print 'Break beam has sensed a block. Going to Pick Up Block State...'
+					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+
 				if self.sensors.camera.detectBlock:
 					return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif self.sensors.gyro.gyroCAngle>self.initialAngle+360:

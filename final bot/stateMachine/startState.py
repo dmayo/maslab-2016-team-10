@@ -28,6 +28,7 @@ class startState(state):
 					if self.sensors.camera.detectBlock:
 						return turnToBlockState.TurnToBlockState(self.sensors,self.actuators,self.motorController,self.timer, self.utils)
 					else:
+						utils.navTimeout.reset()
 						return lookingForBlocksState.LookingForBlocksState(self.sensors,self.actuators,self.motorController,self.timer, self.utils)
 
 				self.actuators.update()

@@ -5,12 +5,16 @@ import pickUpBlockState
 import math
 import startState
 import blindWallFollowingState
+from Timeout import *
 
 class MoveToBlockState(state):
 	#substates: ApproachBlock, EatBlock, FlankManeuverTurn1, FlankManeuverTravel, FlankManeuverTurn2, FlankManeuverReturn, DragBlock
 
 	def __init__(self, sensors, actuators, motorController, timer, utils):
 		super(MoveToBlockState, self).__init__(sensors, actuators, motorController, timer, self.utils)
+
+		print "beginning MoveToBlockState"
+		self.timeout = Timeout(30)
 		
 		self.CLOSE_ENOUGH_DISTANCE = 4 #make this such that the forward sensors will not detect a potential 90-degree corner while in approach mode
 		self.ANGLE_EPSILON = 10
@@ -36,7 +40,6 @@ class MoveToBlockState(state):
 		self.DRAG_MAX_ATTEMPTS = 3
 		self.drag_attempts = 0
 
-		print "beginning MoveToBlockState"
 		self.substate = "ApproachBlock"
 		
 
@@ -47,8 +50,12 @@ class MoveToBlockState(state):
 			if self.timer.millis() > 100:
 				self.sensors.update()
 
-				#constantly check to see if we have something to eat
+				#State Timeout and break-beam detection
+				if self.timeout.isTimeUp() == True:
+					print 'State Timeout has timed out. Going to BreakFreeState...'
+					return breakFreeState.BreakFreeState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				if self.sensors.uIR == 0:
+					print 'Break beam has sensed a block. Going to Pick Up Block State...'
 					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				#TODO: what if when the state starts, we are closer to the block than the CLOSE_ENOUGH_DISTANCE? That will cause changes needed in the EatBlock state collision code.

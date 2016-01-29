@@ -30,7 +30,7 @@ class MoveToBlockState(state):
 		self.flank_first_angle = 0
 		self.flank_second_angle = 0
 		self.flank_target_distance = 0
-		self.flank_is_left
+		self.flank_is_left = False
 		self.flank_maneuver_attempts = 0
 		self.flank_distance_traveled = 0
 		self.flank_initial_distance_from_block = 0

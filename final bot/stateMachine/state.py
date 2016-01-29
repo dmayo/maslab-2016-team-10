@@ -184,4 +184,8 @@ class state(object):
 		self.motorController.turnConstantRate=turnSpeed
 		self.motorController.motorState="turnConstantRate"
 
+	def driveStraight(self,speed):
+		self.motorController.fwdVel=speed
+		self.motorController.motorState=="driveStraight"
+
 

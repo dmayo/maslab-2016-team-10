@@ -30,6 +30,8 @@ class MotorController:
 		elif(self.motorState=="wallFollow"):
 			self.updateWallFollow()
 		elif(self.motorState=="turnConstantRate"):
+			self.updateTurnConstantRate()
+		elif(self.motorState=="driveStraight"):
 			self.updateTurnConstantRate()  
 
 	def updateTurnToAngle(self):
@@ -39,8 +41,8 @@ class MotorController:
 		# print 'Encoders:\tR: ' + str(self.encoderR.val) + '\tL: ' + str(self.encoderL.val)
 		# print 'AVG: ' + str((self.encoderR.val + self.encoderL.val)/2.)
 
-		self.motorLdrive = self.fwdVel - pidResult
-		self.motorRdrive = self.fwdVel + pidResult
+		self.motorLdrive = pidResult
+		self.motorRdrive = pidResult
 
 		self.actuators.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
 		self.actuators.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
@@ -55,6 +57,13 @@ class MotorController:
 	def updateTurnConstantRate(self):
 		self.motorLdrive = -self.turnConstantRate
 		self.motorRdrive = self.turnConstantRate
+
+		self.actuators.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
+		self.actuators.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
+
+	def updateDriveStraight(self):
+		self.motorLdrive = self.fwdVel - pidResult
+		self.motorRdrive = self.fwdVel + pidResult
 
 		self.actuators.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
 		self.actuators.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))

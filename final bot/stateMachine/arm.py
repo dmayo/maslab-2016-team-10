@@ -6,7 +6,7 @@ class Arm:
 		self.tamp=tamp
 		self.servo = Servo(self.tamp, 9)
 		self.servo.bottom = 20 #5 for metal
-		self.servo.top = 160
+		self.servo.top = 150
 		self.servo.speed = 30
 		self.servo.write(self.servo.bottom)
 		self.servoval = self.servo.bottom

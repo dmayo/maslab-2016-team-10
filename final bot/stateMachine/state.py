@@ -113,7 +113,7 @@ class state(object):
 		rightAngle = self.sensors.irArray.ir_value[4]
 		rightSide = self.sensors.irArray.ir_value[5]
 
-		elif (side=="Left"):
+		if (side=="Left"):
 			#check: are both left sensors infinite?
 			if math.isinf(leftSide) and math.isinf(leftAngle):
 				#if so, are all the other sensors infinite?

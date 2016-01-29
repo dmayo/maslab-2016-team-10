@@ -44,6 +44,14 @@ class EatBlockState(state):
 				if self.substate == "EatBlock":
 					self.driveStraight(self.DRIVE_SPEED)
 					if self.isColliding():
+						status_line = 'Collision Info: '
+						for x in xrange(6):
+							status_line +='Sensor '
+							status_line += str(x)
+							status_line += " :"
+							status_line += "{:6.2f}".format(self.sensors.irArray.ir_value[x])
+							status_line += " "
+						print status_line
 						self.driveStraight(0)
 						self.eat_distance -= self.sensors.encoders.getDistanceTraveled()
 						self.substate = "DragBlock"

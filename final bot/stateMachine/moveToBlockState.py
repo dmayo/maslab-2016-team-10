@@ -107,6 +107,14 @@ class MoveToBlockState(state):
 		return (self.sensors.irArray.ir_value[5] < 1 and self.sensors.irArray.ir_value[4] < 2.32)
 
 	def dealWithCollision(self):
+		status_line = 'Collision Info: '
+		for x in xrange(6):
+			status_line +='Sensor '
+			status_line += str(x)
+			status_line += " :"
+			status_line += "{:6.2f}".format(self.sensors.irArray.ir_value[x])
+			status_line += " "
+		print status_line
 		print 'Too close to a wall. Can attempt flank maneuver?'
 		isManueverPossible = self.calculateFlankManeuver(self.sensors.camera.blockDistance)
 		if isManueverPossible == True:

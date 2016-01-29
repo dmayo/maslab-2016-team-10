@@ -65,10 +65,7 @@ class MoveToBlockState(state):
 				#TODO: (minor) there is code duplication between collision code sections of ApproachBlock and EatBlock code
 				if self.substate == "ApproachBlock":
 					print 'Starting Approach...'
-					self.turnConstantRate(0)
 					self.driveStraight(self.DRIVE_SPEED)
-					#self.motorController.turnConstantRate(0)
-					self.motorController.driveStraight(self.DRIVE_SPEED)
 					if self.sensors.camera.detectBlock == False:
 						print 'Lost sight of block before we expected! Or did not find it after a flank maneuver. Falling back to startState...'
 						return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
@@ -91,8 +88,6 @@ class MoveToBlockState(state):
 						self.sensors.encoders.resetEncoders()
 					elif abs(self.sensors.camera.blockAngle) > self.ANGLE_EPSILON:
 						print 'Have turned too far from the direction of the block. Will reposition...'
-						self.driveStraight(0)
-						#self.motorController.driveStraight(0)
 						return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif self.substate == "EatBlock":
 					if self.isColliding():

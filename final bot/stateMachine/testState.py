@@ -20,8 +20,18 @@ class TestState(state):
 			if self.timer.millis() > 100:
 				self.sensors.update()
 				
+				status_line = ''
+
 				for x in xrange(6):
-    				print 'Sensor ', x, " :" ,"{:6.2f}".format(self.sensors.irArray.ir_value[x])
+    				status_line +='Sensor '
+    				status_line += x
+    				status_line += " :"
+    				stauts_line += "{:6.2f}".format(self.sensors.irArray.ir_value[x])
+    				status_line += " "
+
+    			print status_line
+
+    			print ""
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()

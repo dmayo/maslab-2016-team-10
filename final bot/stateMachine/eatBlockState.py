@@ -64,7 +64,7 @@ class EatBlockState(state):
 						self.turnConstantRate(0,"Right") #redundant?
 						self.sensors.encoders.resetEncoders()
 						self.substate = "EatBlock"
-					elif self.sensors.gyroCAngle >= (self.start_gyro_angle + 360):
+					elif self.sensors.gyro.gyroCAngle >= (self.start_gyro_angle + 360):
 						print 'After a full 360, could not find a good position about which to turn. Begin blind wall following...'
 						return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 					else:

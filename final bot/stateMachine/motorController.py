@@ -6,7 +6,7 @@ class MotorController:
 		self.actuators=actuators
 
 		#PID
-		self.PID=PID(1, 3, 0.15)
+		self.PID=PID(1, 3, 0.2)
 
 		self.currentAngle=0
 		self.desiredAngle=0

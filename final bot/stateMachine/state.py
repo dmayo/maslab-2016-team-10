@@ -1,4 +1,5 @@
 from PID import PID
+import math
 
 class state(object):
 	def __init__(self, sensors, actuators, motorController, timer, utils):
@@ -8,7 +9,9 @@ class state(object):
 		self.timer=timer
 		self.utils=utils
 		self.ANGLE_EPSILON=1
-		self.MIN_FRONT_WALL_DIST=4
+		self.MIN_FRONT_WALL_DIST=5
+		self.WALL_FOLLOW_SENSOR_CAP = 24
+		self.WALL_FOLLOW_ROTATE_SPEED = 30
 
 	def run(self):
 		raise "run not implemented in state"
@@ -78,14 +81,12 @@ class state(object):
 		else:
 			return False
 
-	def wallFollow(self, side, speed, PID):
+	def wallFollow(self, side, speed, wfPID):
 		self.motorController.motorState="wallFollow"
-		self.IRPID = PID
-		fwdVel=0
-		otherSide=""
 		pidResult=0
+		avg = 0
 
-		ir = self.sensors.irArray.ir_value
+		"""ir = self.sensors.irArray.ir_value
 		if(side=="Left"):
 			otherSide="Right"
 			avg=self.sensors.irArray.getAvgDistanceLeftWall()
@@ -94,7 +95,78 @@ class state(object):
 			otherSide="Left"
 			avg=self.sensors.irArray.getAvgDistanceRightWall()
 			min_val=self.sensors.irArray.getMinDistanceRightWall()
-		assert side=="Left" or side=="Right"
+		assert side=="Left" or side=="Right"""
+
+		#if we are blocked in front, turn in place until we are free to move again:
+		if (self.checkIndividualSensor(2,self.MIN_FRONT_WALL_DIST) or self.checkIndividualSensor(3,self.MIN_FRONT_WALL_DIST)):
+			if side=="Left":
+				self.turnConstantRate(self.WALL_FOLLOW_ROTATE_SPEED,"Right")
+			elif side=="Right":
+				self.turnConstantRate(self.WALL_FOLLOW_ROTATE_SPEED,"Left")
+			wfPID.resetPID()
+			return #nothing else necessary
+
+		leftSide = self.sensors.irArray.ir_value[0]
+		leftAngle = self.sensors.irArray.ir_value[1]
+		leftFront = self.sensors.irArray.ir_value[2]
+		rightFront = self.sensors.irArray.ir_value[3]
+		rightAngle = self.sensors.irArray.ir_value[4]
+		rightSide = self.sensors.irArray.ir_value[5]
+
+		elif (side=="Left"):
+			#check: are both left sensors infinite?
+			if math.isinf(leftSide) and math.isinf(leftAngle):
+				#if so, are all the other sensors infinite?
+				if math.isinf(leftFront) and math.isinf(rightFront) and math.isinf(rightAngle) and math.isinf(rightSide):
+					self.driveStraight(speed)
+				else:
+					self.turnConstantRate(self.WALL_FOLLOW_ROTATE_SPEED,"Left")
+				wfPID.resetPID()
+				return #noPID
+			else:
+				if math.isinf(leftSide):
+					leftSide = self.WALL_FOLLOW_SENSOR_CAP
+				if math.isinf(leftAngle):
+					leftAngle = self.WALL_FOLLOW_SENSOR_CAP
+				avg = (leftSide+leftAngle)/2
+
+		elif (side=="Right"):
+			#check: are both left sensors infinite?
+			if math.isinf(rightSide) and math.isinf(rightAngle):
+				#if so, are all the other sensors infinite?
+				if math.isinf(leftFront) and math.isinf(rightFront) and math.isinf(leftAngle) and math.isinf(leftSide):
+					self.driveStraight(speed)
+				else:
+					self.turnConstantRate(self.WALL_FOLLOW_ROTATE_SPEED,"Right")
+				wfPID.resetPID()
+				return #noPID
+			else:
+				if math.isinf(rightSide):
+					rightSide = self.WALL_FOLLOW_SENSOR_CAP
+				if math.isinf(rightAngle):
+					rightAngle = self.WALL_FOLLOW_SENSOR_CAP
+				avg = (rightSide+rightAngle)/2
+
+		pidResult=self.followWall(side,avg)
+		self.motorController.wallFollowPIDResult = pidResult
+		self.motorController.fwdVel=speed
+
+				
+
+		"""if(side=="Left"):
+			side_sensor = self.sensors.irArray.ir_value[0]
+			if math.isinf(side_sensor):
+				side_sensor = self.WALL_FOLLOW_SENSOR_CAP
+			angle_sensor = self.sensors.irArray.ir_value[1]
+			if math.isinf(angle_sensor):
+				angle_sensor = self.WALL_FOLLOW_SENSOR_CAP
+			otherSide="Right"
+			avg=self.sensors.irArray.getAvgDistanceLeftWall()
+			min_val=self.sensors.irArray.getMinDistanceLeftWall()
+		elif(side=="Right"):
+			otherSide="Left"
+			avg=self.sensors.irArray.getAvgDistanceRightWall()
+			min_val=self.sensors.irArray.getMinDistanceRightWall()
 
 
 		#cases:
@@ -133,10 +205,9 @@ class state(object):
 		#both sensors don't see anything
 		else:
 			lookForWall()
-			#pidResult = -20
+			#pidResult = -20"""
 
-		self.motorController.wallFollowPIDResult = pidResult
-		self.motorController.fwdVel=fwdVel
+
 
 	def lookingForWall(self):
 		self.driveStraight(30)

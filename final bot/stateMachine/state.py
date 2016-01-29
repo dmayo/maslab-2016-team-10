@@ -58,15 +58,20 @@ class state(object):
 
 	#returns TRUE if a block was found, FALSE if not
 	def sortBlock(self):
-		if self.sensors.color.c > 800 and self.actuators.sorter.sorterState=="None":
-			if self.sensors.color.r > self.sensors.color.g:
-				self.actuators.sorter.moveSorterLeft()
-			else:
-				self.actuators.sorter.moveSorterRight()
+		if self.ourBlockColor=="Red":
+			otherBlockColor="Green"
+		elif self.ourBlockColor=="Green":
+			otherBlockColor="Red"
+		assert self.ourBlockColor=="Red" or self.ourBlockColor=="Green"
+
+		if self.sensors.color.getBlockColor()==self.ourBlockColor:
+			self.actuators.sorter.moveSorterLeft()
+			return True
+		elif self.sensors.color.getBlockColor()==otherBlockColor:
+			self.actuators.sorter.moveSorterRight()
 			return True
 		else:
 			return False
-
 
 	def wallFollow(self, side, speed):
 		self.motorController.motorState="wallFollow"

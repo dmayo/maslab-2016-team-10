@@ -105,7 +105,7 @@ class RandomTravelingState(state):
 			return 120
 		elif self.sensors.irArray.ir_value[2] < self.FRONT_COLLISION_DISTANCE:
 			return -160
-		 elif self.sensors.irArray.ir_value[3] < self.FRONT_COLLISION_DISTANCE:
+		elif self.sensors.irArray.ir_value[3] < self.FRONT_COLLISION_DISTANCE:
 			return 160
 		else:
 			return None

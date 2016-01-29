@@ -1,13 +1,13 @@
 from state import state
-import wallFollowingState
+import pickUpBlockState
 import startState
+import timeout
 
-#TODO: this is a stub state. It should be identical
-
-class blindWallFollowingState(state):
+class BlindWallFollowingState(state):
 	def __init__(self, sensors, actuators, motorController, timer):
-		super(blindWallFollowingState, self).__init__(sensors, actuators, motorController, timer)
-		print "starting blindWallFollowingState"
+		super(BlindWallFollowingState, self).__init__(sensors, actuators, motorController, timer)
+		print "starting blindWallFollowingState. This state performs 10 seconds of wall following without looking for blocks. It is meant to recover from not being able to move to a block."
+		self.timeout = timeout.Timeout(10)
 
 	def run(self):
 		while True:
@@ -16,8 +16,15 @@ class blindWallFollowingState(state):
 			if self.timer.millis() > 100:
 				self.sensors.update()
 				
-				#stub: replace with actual code
-				return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer)
+				self.wallFollow("Right")
+
+				#check timeout and block posession
+				if self.timeout.isTimeUp() == True:
+					print 'Done with blind wall following.'
+					return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+				if self.sensors.uIR == 0:
+					print 'Break beam has sensed a block. Going to Pick Up Block State...'
+					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()

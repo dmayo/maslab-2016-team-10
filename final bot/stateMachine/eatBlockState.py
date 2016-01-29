@@ -18,7 +18,7 @@ class EatBlockState(state):
 		print "EatBlockState"
 		self.timeout = timeout.Timeout(30)
 
-		self.DRIVE_SPEED = 75 #needs calibration
+		self.DRIVE_SPEED = 60 #needs calibration
 		self.eat_distance = 16 #distance in inches we will drive forward to eat block
 
 		self.start_gyro_angle = 0

@@ -21,10 +21,9 @@ class PickUpBlockState(state):
 		self.pickUpBlockStartTime = 0
 
 		#start off stationary
-		self.motorController.fwdVel = 0
-		self.motorController.turnConstantRate(0)
+		self.driveStraight(0)
 
-		self.SCAN_SPEED=3
+		self.SCAN_SPEED=30
 		self.JOSTLE_TIMEOUT = 10 
 		self.MIN_SAFE_DISTANCE = 9 #an approximation of the distance in inches we'd need to read from a 90-degree corner pointing at the middle of the robot to life the block safely
 

@@ -37,27 +37,27 @@ class CheckForMoreBlocksState(state):
 				#constantly check to see if we have acquired a block
 				if self.sensors.uIR.val == 0:
 					print 'Detected a block captured! Now picking it up...'
-					self.motorController.fwdVel = 0
+					self.driveStraight(0)
 					self.turnConstantRate(0)
 					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				#constanlty check to see if we have detected a new block
 				if self.sensors.camera.detectBlock == True:
-					self.motorController.fwdVel = 0
+					self.driveStraight(0)
 					self.turnConstantRate(0)
 					return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				if self.substate == "moveForward":
-					self.motorController.fwdVel = self.DRIVE_SPEED
+					self.driveStraight(self.DRIVE_SPEED)
 					if self.sensors.encoders.getDistanceTraveled() >= self.FORWARD_DISTANCE or self.isColliding():
 						print 'Either finished moving forward or about to crash. Now moving backwards.'
 						self.substate == "backUp"
 						self.sensors.encoders.resetEncoders()
 				if self.substate == "backUp":
-					self.motorController.fwdVel = self.BACK_UP_SPEED
+					self.driveStraight(self.BACK_UP_SPEED)
 					if self.sensors.encoders.getDistanceTraveled() <= self.BACKWARD_DISTANCE or self.isCollidingOnSides():
 						print 'Finished backing up or detecting potential collision with slanted wall. Now exiting state.'
-						self.motorController.fwdVel = 0
+						self.driveStraight(0)
 						self.turnConstantRate(0)
 						return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 

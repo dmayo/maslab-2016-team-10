@@ -49,12 +49,12 @@ class RandomTravelingState(state):
 							self.lastTurnNegative = True
 						else:
 							self.lastTurnNegative = False
-						self.motorController.fwdVel = 0
+						self.driveStraight(0)
 						self.turnNDegreesSlowly(random.randrange(angleToTurn - self.RANDOM_ANGLE_RANGE,angleToTurn + self.RANDOM_ANGLE_RANGE))
 						self.substate = "Turning"
 					else:
 						self.turnConstateRate(0)
-						self.motorController.fwdVel = self.DRIVE_SPEED
+						self.driveStraight(self.DRIVE_SPEED)
 						if self.sensors.camera.detectBlock:
 							print 'Block Detected. Turning to it...'
 							return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)

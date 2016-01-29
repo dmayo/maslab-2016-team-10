@@ -32,7 +32,7 @@ class MotorController:
 		elif(self.motorState=="turnConstantRate"):
 			self.updateTurnConstantRate()
 		elif(self.motorState=="driveStraight"):
-			self.updateTurnConstantRate()  
+			self.updateDriveStraight()  
 
 	def updateTurnToAngle(self):
 		pidResult=self.PID.valuePID(self.sensors.gyro.gyroCAngle, self.desiredAngle)

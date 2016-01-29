@@ -8,6 +8,7 @@ class state(object):
 		self.timer=timer
 		self.utils=utils
 		self.ANGLE_EPSILON=1
+		self.MIN_FRONT_WALL_DIST=4
 
 	def run(self):
 		raise "run not implemented in state"
@@ -28,51 +29,6 @@ class state(object):
 		self.motorController.motorState="turnToAngle"
 		self.motorController.fwdVel=0
 		self.motorController.desiredAngle=self.sensors.gyro.gyroCAngle+turnAngle
-		'''
-	    enum turningStates {turning,turned};
-	    static turningStates myState = turning;
-	    static long long int startTimeState;
-	    static double startAngle;
-	    turnedNDegreesSlowly=true;
-
-
-	    if(!turningNDegreesSlowly){
-	        finishedTurningNDegreesSlowly=0;
-	        startTimeState = getTimeMicroseconds();
-	        myState=turning;
-	        startAngle=getAngle();
-	    }
-	    long long int difTime;
-	    double difAngle;
-	    difTime=(getTimeMicroseconds()-startTimeState)/1000;
-	    difAngle= getAngle()- startAngle;
-	    switch(myState){
-	    case turning:
-	        if(!finishedTurningNDegreesSlowly){
-	            if (((difAngle>=angle)&&(angle>=0))||((difAngle<=angle)&&(angle<=0))){
-	                finishedTurningNDegreesSlowly=1;
-	                turnedNDegreesSlowly=0;
-	                myState=turned;
-	                setCarrotPosition(0,0);
-	            }
-	            else if(difTime>TURN_N_DEGREES_SLOWLY_TIMEOUT_MS){
-	                myState=turned;
-	                turnedNDegreesSlowly=0;
-	                finishedTurningNDegreesSlowly=1;
-
-	            }
-	            else{
-	                if(angle>0)
-	                    turnToTheRightSlowly();
-	                else
-	                    turnToTheLeftSlowly();
-	            }
-	        }
-	        break;
-	    case turned:
-	        break;
-	    }
-	    '''
 
 	def turnToTheRightSlowly(self):
 		#setCarrotPosition(0, TURN_SLOWLY_ANGLE)
@@ -116,12 +72,16 @@ class state(object):
 		self.motorController.motorState="wallFollow"
 		self.IRPID = PID(10, 5, .15)
 		fwdVel=0
+		otherSide=""
+		pidResult=0
 
 		ir = self.sensors.irArray.ir_value
 		if(side=="Left"):
+			otherSide="Right"
 			avg=self.sensors.irArray.getAvgDistanceLeftWall()
 			min_val=self.sensors.irArray.getMinDistanceLeftWall()
 		elif(side=="Right"):
+			otherSide="Left"
 			avg=self.sensors.irArray.getAvgDistanceRightWall()
 			min_val=self.sensors.irArray.getMinDistanceRightWall()
 		assert side=="Left" or side=="Right"
@@ -143,24 +103,27 @@ class state(object):
 			if (self.sensors.ir_array.isFlatWall(side)):
 				pidResult=self.followWall(side, avg)
 				fwdVel=speed
+			if (self.sensors.ir_array.getWallInFrontDistance(side)<self.MIN_FRONT_WALL_DIST):
+				#turn to avoid hitting wall in front
+				self.turnConstantRate(30,otherSide)
+
+			'''
 			elif (self.sensors.ir_array.isCorner(side)):
 				pass
 			elif (self.sensors.ir_array.isCliff(side)):
 				pass
+			'''
 		#one sensor sees something
 		elif min_val != float('inf'):
-			pidResult=self.followWall(side,min_val)
+			if (self.sensors.ir_array.getWallInFrontDistance(side)<self.MIN_FRONT_WALL_DIST):
+				#turn to avoid hitting wall in front
+				self.turnConstantRate(30,otherSide)
+			else:
+				pidResult=self.followWall(side,min_val)
 		#both sensors don't see anything
 		else:
 			lookForWall()
 			pidResult = -20
-
-		#move towards front wall?
-		if self.sensors.irArray.ir_value[self.sensors.irArray.IRs[side][2]] < 4:
-			pidResult = 20
-			fwdVel = 0
-		else:
-			fwdVel = 30
 
 		self.motorController.wallFollowPIDResult = pidResult
 		self.motorController.fwdVel=fwdVel
@@ -180,8 +143,9 @@ class state(object):
 	#substates: lookingForWall, rotate, followingWall
 
 
-	def turnConstantRate(self,turnSpeed):
+	def turnConstantRate(self,turnSpeed,direction):
 		self.motorController.turnConstantRate=turnSpeed
+		self.motorController.turnConstantRateDirection=direction
 		self.motorController.motorState="turnConstantRate"
 
 	def driveStraight(self,speed):

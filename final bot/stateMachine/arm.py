@@ -5,7 +5,7 @@ class Arm:
 	def __init__(self,tamp):
 		self.tamp=tamp
 		self.servo = Servo(self.tamp, 9)
-		self.servo.bottom = 20 #5 for metal
+		self.servo.bottom = 10 #5 for metal
 		self.servo.top = 150
 		self.servo.speed = 30
 		self.servo.write(self.servo.bottom)

@@ -9,6 +9,7 @@ class Sorter:
 		self.servo.right = 25
 		self.servo.left = 165
 		self.servo.speed = 15
+		self.servo.jostleSpeed = 40
 		self.servo.rightJostle = 45
 		self.servo.leftJostle = 135
 
@@ -46,7 +47,7 @@ class Sorter:
 	def jostleServoLeft(self):
 		if self.sorterval < self.servo.leftJostle:
 			self.sorterState="LeftJostle"
-			self.dsorter = self.servo.speed
+			self.dsorter = self.servo.jostleSpeed
 		elif self.sorterval >= self.servo.leftJostle:
 			self.sorterState="RightJostle"
 			self.dsorter = 0
@@ -54,7 +55,7 @@ class Sorter:
 	def jostleServoRight(self):
 		if self.sorterval > self.servo.rightJostle:
 			self.sorterState="RightJostle"
-			self.dsorter = -self.servo.speed
+			self.dsorter = -self.servo.jostleSpeed
 		elif self.sorterval <= self.servo.rightJostle:
 			self.sorterState="Center"
 			self.nextSorterState="None"

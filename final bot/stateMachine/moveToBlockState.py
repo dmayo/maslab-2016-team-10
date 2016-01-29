@@ -86,12 +86,11 @@ class MoveToBlockState(state):
 				elif self.substate == "DragBlock":
 					if self.isColliding() == False:
 						print 'Found an opening we can move through.'
-						self.turnConstantRate(0)
+						self.turnConstantRate(0,"Right")
 						self.driveStraight(self.DRIVE_SPEED)
 						self.substate = "EatBlock"
 					elif self.sensors.gyroCAngle >= (self.start_gyro_angle + 360):
 						print 'After a full 360, could not find a good position about which to turn. Begin blind wall following...'
-						self.turnConstantRate(0)
 						return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 					else:
 						self.turnConstantRate(self.DRAG_TURN_RATE,"Right")

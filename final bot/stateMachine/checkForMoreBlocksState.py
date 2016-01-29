@@ -3,6 +3,7 @@ import startState
 import time
 import pickUpBlockState
 import turnToBlockState
+import timeout
 
 class CheckForMoreBlocksState(state):
 	#substates: moveForward, moveBack
@@ -10,8 +11,7 @@ class CheckForMoreBlocksState(state):
 		super(CheckForMoreBlocksState, self).__init__(sensors, actuators, motorController, timer, utils)
 
 		print "starting CheckForMoreBlocksState..."
-		self.STATE_TIMEOUT = 5 #short state, should never take more than 5 sec (most likely backing up into a wall if so)
-		self.state_start_time = time.time()
+		self.timeout = timeout.Timeout(5)
 
 		self.substate = "moveForward"
 		self.sensors.encoders.resetEncoders()
@@ -30,7 +30,7 @@ class CheckForMoreBlocksState(state):
 				self.sensors.update()
 
 				#constantly check to see if our state has timed out
-				if (time.time() - self.state_start_time) > self.STATE_TIMEOUT:
+				if self.timeout.isTimeUp() == True:
 					print 'State has timed out! Exiting to start state...'
 					return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 

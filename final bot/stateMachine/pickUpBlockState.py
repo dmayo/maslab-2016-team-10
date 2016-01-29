@@ -5,6 +5,7 @@ from utils import *
 import time
 import lookingForBlocksState
 import randomTravelingState
+import timeout
 
 #substates: WallDetect,FindSafeAngle,PickUpBlock
 
@@ -13,8 +14,8 @@ class PickUpBlockState(state):
 		super(PickUpBlockState, self).__init__(sensors, actuators, motorController, timer, utils)
 
 		print "PickUpBlockState starting..."
-		self.timeout = Timeout(15)
-		self.pickupTimeout = Timeout(5)
+		self.timeout = timeout.Timeout(15)
+		self.pickupTimeout = timeout.Timeout(5)
 		self.substate = "WallDetect"
 		self.startAngle = 0
 		self.pickUpBlockStartTime = 0

@@ -3,6 +3,7 @@ import turnToBlockState
 import lookingForBlocksState
 import time
 import randomTravelingState
+import timeout
 
 #if it sees a block -> turnToBlockState
 #else -> wall follow

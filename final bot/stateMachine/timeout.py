@@ -4,7 +4,7 @@ class Timeout(object):
 
 	def __init__(self, length):
 		self.timeout_length = length
-		reset()
+		self.reset()
 
 	def reset(self):
 		self.startTime = time.time()

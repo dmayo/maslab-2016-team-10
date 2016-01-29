@@ -15,6 +15,7 @@ class TurnToBlockState(state):
 		print "Turn to block state"
 		self.BLOCK_ANGLE_EPSILON = 5
 		self.timeout = timeout.Timeout(20)
+		self.motorController.fwdVel=0
 
 	def run(self):
 

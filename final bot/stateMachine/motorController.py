@@ -33,7 +33,9 @@ class MotorController:
 		elif(self.motorState=="turnConstantRate"):
 			self.updateTurnConstantRate()
 		elif(self.motorState=="driveStraight"):
-			self.updateDriveStraight()  
+			self.updateDriveStraight()
+		elif(self.motorState=="turnToAngleAndMove"):
+			self.updateTurnToAngleAndMove()
 
 	def updateTurnToAngle(self):
 		pidResult=self.PID.valuePID(self.sensors.gyro.gyroCAngle, self.desiredAngle)
@@ -72,6 +74,19 @@ class MotorController:
 
 		self.motorLdrive = self.fwdVel - pidResult
 		self.motorRdrive = self.fwdVel + pidResult
+
+		self.actuators.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
+		self.actuators.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
+
+	def updateTurnToAngleAndMove(self):
+		pidResult=self.PID.valuePID(self.sensors.gyro.gyroCAngle, self.desiredAngle)
+
+		# print 'Angle Dif: ' + str(cAngle-self.initAngle) + '\tPID RESULT: '+ str(pidResult)
+		# print 'Encoders:\tR: ' + str(self.encoderR.val) + '\tL: ' + str(self.encoderL.val)
+		# print 'AVG: ' + str((self.encoderR.val + self.encoderL.val)/2.)
+
+		self.motorLdrive = -pidResult + self.fwdVel
+		self.motorRdrive = pidResult + self.fwdVel
 
 		self.actuators.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
 		self.actuators.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))

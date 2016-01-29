@@ -16,7 +16,7 @@ class RandomTravelingState(state):
 		print "Starting RandomtTravelingState..."
 		self.timeout = timeout.Timeout(30)
 		self.substate = "RandomTraveling"
-		self.TURN_SPEED = 3
+		self.TURN_SPEED = 40
 		self.DRIVE_SPEED = 40
 		self.SIDE_COLLISION_DISTANCE = 1
 		self.FRONT_COLLISION_DISTANCE = 3.5 #meant to prevent the worst case: we head into a 90-degree angle and it gets inside our front opening, jamming us.

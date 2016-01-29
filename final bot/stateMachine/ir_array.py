@@ -1,4 +1,5 @@
 from ir_sensor import *
+import math
 
 class Ir_array:
     """Ir_array is used to update all IR sensors on the Stack Destroyer robot
@@ -50,8 +51,8 @@ class Ir_array:
     def isFlatWall(self, side):
         return abs(self.ir_value[self.IRs[side][0]]-self.ir_value[self.IRs[side][1]]*math.cos(math.radians(30)))<=self.DISTANCE_EPSILON
 
-    def getWallInFrontDistance(side):
-        return self.sensors.irArray.ir_value[self.sensors.irArray.IRs[side][2]]
+    def getWallInFrontDistance(self,side):
+        return self.ir_value[self.sensors.irArray.IRs[side][2]]
 
 
         

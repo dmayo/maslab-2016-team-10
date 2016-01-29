@@ -68,7 +68,7 @@ class PickUpBlockState(state):
 					isBlockDetected = self.sortBlock()
 					if isBlockDetected == True:
 						print 'Block successfully thrown into funnel!'
-						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+						return lookingForBlocksState.LookingForBlocksState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 					else:
 						if self.pickupTimeout.isTimeUp() == True:
 							if self.actuators.sorter.sorterState == "None":

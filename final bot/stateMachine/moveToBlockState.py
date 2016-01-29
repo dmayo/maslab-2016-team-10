@@ -76,15 +76,10 @@ class MoveToBlockState(state):
 						if canOvercomeCollision == False:
 							print 'Area too cramped to overcome collision. Perhaps we are in a corner? Fall back to strict wall following...'
 							return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
-					"""elif abs(self.sensors.camera.blockAngle) > self.ANGLE_EPSILON:
-						print 'Have turned too far from the direction of the block. Will reposition...'
-						return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)"""
 				elif self.substate == "EatBlock":
 					if self.isColliding():
-						canDealWithCollision = self.eatSubstateDealWithCollision()
-						if canDealWithCollision == False:
-							print 'Area too cramped to overcome collision. Perhaps we are in a corner? Fall back to strict wall following...'
-							return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+						self.driveStraight(0)
+						self.substate = "DragBlock"
 					elif self.sensors.encoders.getDistanceTraveled() >= self.EAT_DISTANCE:
 						print 'Finished attempt to eat block. Break beam did not go off.'
 						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
@@ -98,6 +93,8 @@ class MoveToBlockState(state):
 						print 'After a full 360, could not find a good position about which to turn. Begin blind wall following...'
 						self.turnConstantRate(0)
 						return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+					else:
+						self.turnConstantRate(self.DRAG_TURN_RATE,"Right")
 				elif self.substate == "FlankManeuver":
 					self.performFlankManeuver()
 				elif self.substate == "FlankFailed":
@@ -114,12 +111,12 @@ class MoveToBlockState(state):
 	#collision detection avoids 1 inch of space on the sides. Trig was used to determine the lenght of the 30-degree angled sensors.
 	#for the front sensors, we seek to avoid the worst case of a 90-degree angle, comes out to 2.9+.59 = about 3.5
 	def isColliding(self):
-		"""if self.sensors.irArray.ir_value[0] < 1 or self.sensors.irArray.ir_value[5] < 1:
+		if self.sensors.irArray.ir_value[0] < 1 or self.sensors.irArray.ir_value[5] < 1:
 			return True
 		elif self.sensors.irArray.ir_value[1] < 2.32 or self.sensors.irArray.ir_value[4] < 2.32:
 			return True
-		elif self.sensors.irArray.ir_value[2] < 3.5 or self.sensors.irArray.ir_value[3] < 3.5:
-			return True"""
+		elif self.sensors.irArray.ir_value[2] < 1.1 or self.sensors.irArray.ir_value[3] < 1.1:
+			return True
 		return False
 
 	def isLeftClear(self):

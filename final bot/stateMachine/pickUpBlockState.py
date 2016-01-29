@@ -17,6 +17,10 @@ class PickUpBlockState(state):
 		self.startAngle = 0
 		self.pickUpBlockStartTime = 0
 
+		#start off stationary
+		self.motorController.fwdVel = 0
+		self.motorController.turnConstantRate(0)
+
 		self.SCAN_SPEED=3
 		self.PICKUP_TIMEOUT = 5 
 		self.JOSTLE_TIMEOUT = 10 

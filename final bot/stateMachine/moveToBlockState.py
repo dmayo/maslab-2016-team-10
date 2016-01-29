@@ -113,6 +113,7 @@ class MoveToBlockState(state):
 			self.eat_distance -= self.sensors.encoders.getDistanceTraveled()
 			self.sensors.encoders.resetEncoders()
 			self.substate = "FlankManeuver"
+			self.flankManeuverStage = "Turn1"
 			return True
 		else:
 			return False
@@ -200,7 +201,7 @@ class MoveToBlockState(state):
 				self.driveStraight(0)
 				#self.turnNDegreesSlowly(self.calculateRecoveryAngle())
 				self.substate = "FlankFailed"
-			elif self.sensors.encoders.resetEncoders() >= self.flank_target_distance:
+			elif self.sensors.encoders.getDistanceTraveled() >= self.flank_target_distance:
 				print 'Finished flank maneuver travel. Performing second turn...'
 				self.driveStraight(0)
 				self.turnNDegreesSlowly(self.flank_second_angle)

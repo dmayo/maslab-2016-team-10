@@ -262,6 +262,6 @@ class state(object):
 		return False
 
 	def checkIndividualSensor(self,pos,threshold):
-		return (self.sensors.irArray.ir_value[pos] < threshold and self.sensors.irArray.ir_value[pos] > -1.0)
+		return (self.sensors.irArray.ir_value[pos] < threshold and self.sensors.irArray.ir_value[pos] > 0)
 
 

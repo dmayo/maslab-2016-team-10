@@ -64,13 +64,15 @@ class MoveToBlockState(state):
 				#TODO: what if when the state starts, we are closer to the block than the CLOSE_ENOUGH_DISTANCE? That will cause changes needed in the EatBlock state collision code.
 				#TODO: (minor) there is code duplication between collision code sections of ApproachBlock and EatBlock code
 				if self.substate == "ApproachBlock":
-					self.motorController.fwdVel = self.DRIVE_SPEED
+					print 'Starting Approach...'
+					self.motorController.turnConstantRate(0)
+					self.motorController.driveStraight(self.DRIVE_SPEED)
 					if self.sensors.camera.detectBlock == False:
 						print 'Lost sight of block before we expected! Or did not find it after a flank maneuver. Falling back to startState...'
 						return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 					elif self.isColliding():
 						print 'Too close to a wall. Can attempt flank maneuver?'
-						self.motorController.fwdVel = 0
+						self.motorController.driveStraight(self.DRIVE_SPEED)
 						isManueverPossible = self.calculateFlankManeuver(self.sensors.camera.blockDistance)
 						if isManueverPossible == True:
 							print 'Yes. Starting flank maneuver with angle ', self.flank_first_angle
@@ -83,15 +85,15 @@ class MoveToBlockState(state):
 					elif self.sensors.camera.blockDistance < self.CLOSE_ENOUGH_DISTANCE:
 						print 'Finished approaching block. Will now try to eat it.'
 						self.substate = "EatBlock"
-						self.motorController.fwdVel = self.DRIVE_SPEED
+						self.motorController.driveStraight(self.DRIVE_SPEED)
 						self.sensors.encoders.resetEncoders()
 					elif abs(self.sensors.camera.blockAngle) > self.ANGLE_EPSILON:
 						print 'Have turned too far from the direction of the block. Will reposition...'
-						self.motorController.fwdVel = 0
+						self.motorController.driveStraight(0)
 						return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif self.substate == "EatBlock":
 					if self.isColliding():
-						self.motorController.fwdVel = 0
+						self.motorController.driveStraight(0)
 						print 'Too close to wall. Are we close enough to drag the block with our teeth?'
 						if self.eat_distance_traveled >= self.MIN_DRAG_BLOCK_DISTANCE:
 							if self.drag_attempts < self.DRAG_MAX_ATTEMPTS:
@@ -121,7 +123,7 @@ class MoveToBlockState(state):
 					if self.isColliding() == False:
 						print 'Found an opening we can move through.'
 						self.turnConstantRate(0)
-						self.motorController.fwdVel = DRIVE_SPEED
+						self.motorController.driveStraight(self.DRIVE_SPEED)
 						self.substate = "EatBlock"
 					elif self.sensors.gyroCAngle >= (self.start_gyro_angle + 360):
 						print 'After a full 360, could not find a good position about which to turn. Begin blind wall following...'
@@ -230,18 +232,18 @@ class MoveToBlockState(state):
 		if self.FlankManeuverStage == "Turn1":
 			if self.isFinishedTurning() == True:
 				print 'Finished first Flank Maneuver turn. Now going straight'
-				self.motorController.fwdVel = self.DRIVE_SPEED
+				self.motorController.driveStraight(self.DRIVE_SPEED)
 				self.FlankManeuverStage = "Travel"
 				self.flank_distance_traveled = 0
 		elif self.FlankManeuverStage == "Travel":
 			if self.isColliding():
 				print 'No room while in Flank Maneuver travel. Calculating recovery angle and exiting flank maneuver. Have attempted maneuver ', self.flank_maneuver_attempts, ' time(s).'
-				self.motorController.fwdVel = 0
+				self.motorController.driveStraight(0)
 				self.turnNDegreesSlowly(self.calculateRecoveryAngle())
 				self.FlankManeuverStage = "Return"
 			elif self.flank_distance_traveled >= self.flank_target_distance:
 				print 'Finished flank maneuver travel. Performing second turn...'
-				self.motorController.fwdVel = 0
+				self.motorController.driveStraight(0)
 				self.turnNDegreesSlowly(self.flank_second_angle)
 				self.FlankManeuverStage = "Turn2"
 		elif self.FlankManeuverStage == "Turn2":

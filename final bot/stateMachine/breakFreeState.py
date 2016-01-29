@@ -5,9 +5,6 @@ import lookingForBlocksState
 import time
 import startState
 
-#if it sees a block -> get block
-#else -> scan for blocks
-
 class BreakFreeState(state):
 	def __init__(self, sensors, actuators, motorController, timer, utils):
 		super(BreakFreeState, self).__init__(sensors, actuators, motorController, timer, utils)

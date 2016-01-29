@@ -32,7 +32,7 @@ class CheckForMoreBlocksState(state):
 				#constantly check to see if our state has timed out
 				if self.timeout.isTimeUp() == True:
 					print 'State has timed out! Exiting to start state...'
-					return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+					return startState.startState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				#constantly check to see if we have acquired a block
 				if self.sensors.uIR.val == 0:
@@ -59,7 +59,7 @@ class CheckForMoreBlocksState(state):
 						print 'Finished backing up or detecting potential collision with slanted wall. Now exiting state.'
 						self.driveStraight(0)
 						self.turnConstantRate(0)
-						return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+						return startState.startState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()

@@ -19,7 +19,11 @@ class Bot(SyncedSketch):
         self.myState = startState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
     def loop(self):
-        self.myState=self.myState.run() #run current state and return next state
+        try:
+            self.myState=self.myState.run() #run current state and return next state
+        except:
+            print "cought an error, back to start state"
+            self.myState=startState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
         self.timer.reset()
             
 if __name__ == "__main__":

@@ -57,7 +57,7 @@ class MoveToBlockState(state):
 				if self.timeout.isTimeUp() == True:
 					print 'State Timeout has timed out. Going to BreakFreeState...'
 					return breakFreeState.BreakFreeState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
-				if self.sensors.uIR == 0:
+				if self.sensors.uIR.val == 0:
 					print 'Break beam has sensed a block. Going to Pick Up Block State...'
 					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 

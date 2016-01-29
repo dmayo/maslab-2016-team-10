@@ -11,7 +11,7 @@ class MoveToBlockState(state):
 	#substates: ApproachBlock, EatBlock, FlankManeuverTurn1, FlankManeuverTravel, FlankManeuverTurn2, FlankManeuverReturn, DragBlock
 
 	def __init__(self, sensors, actuators, motorController, timer, utils):
-		super(MoveToBlockState, self).__init__(sensors, actuators, motorController, timer, self.utils)
+		super(MoveToBlockState, self).__init__(sensors, actuators, motorController, timer, utils)
 
 		print "beginning MoveToBlockState"
 		self.timeout = timeout.Timeout(30)

@@ -10,10 +10,10 @@ class Timeout(object):
 		self.startTime = time.time()
 		self.isExpired = False
 
-	def isTimeUp():
+	def isTimeUp(self):
 		return ((time.time() - self.startTime) >= self.timeout_length)
 
-	def setExpired():
+	def setExpired(self):
 		self.isExpired = True
 
 

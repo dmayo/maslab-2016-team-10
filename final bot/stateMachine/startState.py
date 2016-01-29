@@ -20,15 +20,15 @@ class startState(state):
 			if self.timer.millis() > 100:
 				self.sensors.update()
 				
-				if self.sensors.button.val==1 and self.isGameStarted==False:
-					self.isGameStarted=True
+				if self.sensors.button.val==1 and self.utils.isGameStarted==False:
+					self.utils.isGameStarted=True
 					self.utils.startTime=time.time()
 
 				if(self.utils.isGameStarted==True and time.time()-self.utils.startTime>self.START_GAME_DELAY):
 					if self.sensors.camera.detectBlock:
 						return turnToBlockState.TurnToBlockState(self.sensors,self.actuators,self.motorController,self.timer, self.utils)
 					else:
-						utils.navTimeout.reset()
+						self.utils.navTimeout.reset()
 						return lookingForBlocksState.LookingForBlocksState(self.sensors,self.actuators,self.motorController,self.timer, self.utils)
 
 				self.actuators.update()

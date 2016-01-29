@@ -23,7 +23,7 @@ class EatBlockState(state):
 		self.start_gyro_angle = 0
 
 		self.substate = "EatBlock"
-		self.encoders.resetEncoders()
+		self.sensors.encoders.resetEncoders()
 		
 
 	def run(self):

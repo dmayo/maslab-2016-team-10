@@ -110,22 +110,22 @@ class state(object):
 
 		#both sensors see something
 		if avg != float('inf'):
-			if (self.sensors.ir_array.isFlatWall(side)):
+			if (self.sensors.irArray.isFlatWall(side)):
 				pidResult=self.followWall(side, avg)
 				fwdVel=speed
-			if (self.sensors.ir_array.getWallInFrontDistance(side)<self.MIN_FRONT_WALL_DIST):
+			if (self.sensors.irArray.getWallInFrontDistance(side)<self.MIN_FRONT_WALL_DIST):
 				#turn to avoid hitting wall in front
 				self.turnConstantRate(30,otherSide)
 
 			'''
-			elif (self.sensors.ir_array.isCorner(side)):
+			elif (self.sensors.irArray.isCorner(side)):
 				pass
-			elif (self.sensors.ir_array.isCliff(side)):
+			elif (self.sensors.irArray.isCliff(side)):
 				pass
 			'''
 		#one sensor sees something
 		elif min_val != float('inf'):
-			if (self.sensors.ir_array.getWallInFrontDistance(side)<self.MIN_FRONT_WALL_DIST):
+			if (self.sensors.irArray.getWallInFrontDistance(side)<self.MIN_FRONT_WALL_DIST):
 				#turn to avoid hitting wall in front
 				self.turnConstantRate(30,otherSide)
 			else:

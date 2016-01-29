@@ -8,6 +8,7 @@ class ColorDetector(Color):
 		self.gb = 0
 
 	def getBlockColor(self):
+		""" Returns 'GREEN', 'RED' or 'NONE'"""
             self.rb = (self.color.r+self.color.b)/2.
             self.gb = (self.color.g+self.color.b)/2.
 
@@ -17,7 +18,7 @@ class ColorDetector(Color):
             print "r2g" + str(r2g)
             print "g2r" + str(g2r)
             
-            if r2g > 2 and g2r < 1:
+            if r2g > 1.5 and g2r < 1:
                 return "RED"
             elif g2r > 1 and r2g < 1:
                 return "GREEN"

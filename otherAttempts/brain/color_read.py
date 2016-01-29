@@ -113,7 +113,7 @@ class ColorRead(SyncedSketch):
             print "r2g" + str(r2g)
             print "g2r" + str(g2r)
             
-            if r2g > 2 and g2r < 1:
+            if r2g > 1.5 and g2r < 1:
                 self.screen.fill((255, 0, 0))
             elif g2r > 1 and r2g < 1:
                 self.screen.fill((0, 255, 0))

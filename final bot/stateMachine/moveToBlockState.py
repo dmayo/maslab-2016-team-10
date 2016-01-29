@@ -21,7 +21,7 @@ class MoveToBlockState(state):
 		self.CLOSE_ENOUGH_DISTANCE = 4 #make this such that the forward sensors will not detect a potential 90-degree corner while in approach mode
 		self.ANGLE_EPSILON = 10
 
-		self.DRIVE_SPEED = 70 #needs calibration
+		self.DRIVE_SPEED = 60 #needs calibration
 		self.EAT_DISTANCE = 7.1 #distance in inches we will drive forward to eat block
 
 		self.ROBOT_RADIUS = 7.5

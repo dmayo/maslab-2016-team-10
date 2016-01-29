@@ -76,9 +76,9 @@ class MoveToBlockState(state):
 						if canOvercomeCollision == False:
 							print 'Area too cramped to overcome collision. Perhaps we are in a corner? Fall back to strict wall following...'
 							return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
-					elif abs(self.sensors.camera.blockAngle) > self.ANGLE_EPSILON:
+					"""elif abs(self.sensors.camera.blockAngle) > self.ANGLE_EPSILON:
 						print 'Have turned too far from the direction of the block. Will reposition...'
-						return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+						return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)"""
 				elif self.substate == "EatBlock":
 					if self.isColliding():
 						canDealWithCollision = self.eatSubstateDealWithCollision()

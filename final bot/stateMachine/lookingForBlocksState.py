@@ -15,7 +15,7 @@ class LookingForBlocksState(state):
 	def __init__(self, sensors, actuators, motorController, timer, utils):
 		super(LookingForBlocksState, self).__init__(sensors, actuators, motorController, timer, utils)
 		print "Looking For Blocks State"
-		self.SCAN_SPEED=20
+		self.SCAN_SPEED=30
 		self.initialAngle=self.sensors.gyro.gyroCAngle
 		self.timeout = timeout.Timeout(20)
 

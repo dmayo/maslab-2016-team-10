@@ -41,7 +41,7 @@ class MotorController:
 		# print 'Encoders:\tR: ' + str(self.encoderR.val) + '\tL: ' + str(self.encoderL.val)
 		# print 'AVG: ' + str((self.encoderR.val + self.encoderL.val)/2.)
 
-		self.motorLdrive = pidResult
+		self.motorLdrive = -pidResult
 		self.motorRdrive = pidResult
 
 		self.actuators.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))

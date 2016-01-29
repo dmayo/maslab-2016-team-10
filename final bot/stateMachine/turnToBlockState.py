@@ -13,7 +13,7 @@ class TurnToBlockState(state):
 	def __init__(self, sensors, actuators, motorController, timer, utils):
 		super(TurnToBlockState, self).__init__(sensors, actuators, motorController, timer, utils)
 		print "Turn to block state"
-		self.BLOCK_ANGLE_EPSILON = 5
+		self.BLOCK_ANGLE_EPSILON = 3
 		self.timeout = timeout.Timeout(20)
 		self.motorController.fwdVel=0
 
@@ -38,11 +38,12 @@ class TurnToBlockState(state):
 					return lookingForBlocksState.LookingForBlocksState(self.sensors,self.actuators,self.motorController,self.timer, self.utils)
 				elif self.sensors.camera.detectBlock == True:
 					if abs(self.sensors.camera.blockAngle)<self.BLOCK_ANGLE_EPSILON:
+						print "MOVE TO BLOCK"
 						return moveToBlockState.MoveToBlockState(self.sensors,self.actuators,self.motorController,self.timer, self.utils)
 					else: 
 						print "turning to block"
 						print self.sensors.camera.blockAngle
-						print self.motorController.motorState
+						#print self.motorController.motorState
 						self.turnNDegreesSlowly(self.sensors.camera.blockAngle)
 
 				self.actuators.update()

@@ -55,9 +55,9 @@ class RandomTravelingState(state):
 					else:
 						self.turnConstateRate(0)
 						self.motorController.fwdVel = self.DRIVE_SPEED
-					if self.sensors.camera.detectBlock:
-						print 'Block Detected. Turning to it...'
-						return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
+						if self.sensors.camera.detectBlock:
+							print 'Block Detected. Turning to it...'
+							return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif self.substate == "Turning":
 					if self.hasFinishedTurning():
 						if self.isStillColliding():

@@ -26,7 +26,7 @@ class MoveToBlockState(state):
 		self.flank_first_angle = 0
 		self.flank_second_angle = 0
 		self.flank_target_distance = 0
-		self.flank_isleftflank = False
+		self.flank_is_left
 		self.flank_maneuver_attempts = 0
 		self.flank_distance_traveled = 0
 		self.flank_initial_distance_from_block = 0
@@ -174,29 +174,44 @@ class MoveToBlockState(state):
 	#this is somewhat of a simple algorithm, a more complex one would use our sensor lenght differences to perform more complex geometry. We do not have the time to research or derive such things.
 	#returns True if our surroundings will let us start the flank maneuver, false if not
 	def calculateFlankManeuver(self,distanceFromBlock):
-		if distanceFromBlock < 0:
-			return False #dont even know why this would happen
-
 		dist_to_block = self.ROBOT_RADIUS + distanceFromBlock - self.CAMERA_OFFSET
 		approach_dist = self.ROBOT_RADIUS + self.FLANK_APPROACH_LENGHT
+
+		if dist_to_block < 0:
+			return False
 
 		self.flank_initial_distance_from_block = dist_to_block
 
 		abs_first_angle = 90
 		abs_second_angle = 90
 		if approach_dist > dist_to_block:
-			abs_second_angle = math.degrees(math.asin(dist_to_block/approach_dist))
+			abs_second_angle = 180-math.degrees(math.asin(dist_to_block/approach_dist))
 			self.flank_target_distance = math.sqrt(approach_dist**2-dist_to_block**2)
 		elif dist_to_block > approach_dist:
 			abs_first_angle = math.degrees(math.asin(approach_dist/dist_to_block))
 			self.flank_target_distance = math.sqrt(dist_to_block**2-approach_dist**2)
-		angle = math.asin(opp/hyp)
+		else:
+			#special case: both sides same, make equilateral triangle
+			if self.isLeftClear() == True:
+				self.flank_first_angle = 60
+				self.flank_second_angle = -120
+				self.flank_target_distance = approach_dist
+				self.flank_is_left = True
+				return True
+			elif self.isRightClear() == True:
+				self.flank_first_angle = -60
+				self.flank_second_angle = 120
+				self.flank_target_distance = approach_dist
+				self.flank_is_left = False
+				return True
+			else:
+				return False
 
-		if isLeftClear() == True:
+		if self.isLeftClear() == True:
 			self.flank_first_angle = abs_first_angle
 			self.flank_second_angle = -abs_second_angle
 			self.flank_is_left = True
-		elif isRightClear() == True:
+		elif self.isRightClear() == True:
 			self.flank_first_angle = -abs_first_angle
 			self.flank_second_angle = abs_second_angle
 			self.flank_is_left = False
@@ -206,7 +221,8 @@ class MoveToBlockState(state):
 		return True
 
 	#if we collide during the travel phase of the Flank Maneuver, this calculates the angle we need to turn to point the robot back at the block
-	def calculateRecoveryAngle(self,distance_traveled):
+	#the calculateRecoveryAngle function needs work! Does not currently work! Will leave for later when less urgent stuff is taken care of.
+	def calculateRecoveryAngle(self):
 		#We want to calculate a recovery angle that forms part of a triangle (not necessarily a right triangle).
 		#We know two sides: the side we traveled "b", and the side that represented how far we were from the block to being with "a"
 		#We know the angle we turned, "C"
@@ -215,15 +231,15 @@ class MoveToBlockState(state):
 		angle_radians_C = math.radians(self.flank_first_angle)
 
 		#Let's use the law of cosines to caculate the third side of the triangle "c"
-		side_c = math.sqrt(side_a**2 + side_b**2 -2*side_a*side_b*math.cos(angle_radians_C)
+		side_c = math.sqrt(side_a**2 + side_b**2 -2*side_a*side_b*math.cos(angle_radians_C))
 
 		#Now let's use law of sines to get the angle we want to turn,
 		angle_A = math.degrees(math.asin(side_a*math.sin(angle_radians_C)/side_c))
 
-		if self.flank_isleftflank:
-			return -angle_A
+		if self.flank_is_left:
+			return 180-(-angle_A)
 		else:
-			return angle_A
+			return 180-angle_A
 
 
 

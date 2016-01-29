@@ -8,7 +8,7 @@ import startState
 
 #substates: RandomTraveling, Turning, Scanning
 
-class RandomtTravelingState(state):
+class RandomTravelingState(state):
 	def __init__(self, sensors, actuators, motorController, timer, utils):
 		print "Starting RandomtTravelingState..."
 		self.timeout = timeout.Timeout(30)

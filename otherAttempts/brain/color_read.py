@@ -34,7 +34,10 @@ class ColorRead(SyncedSketch):
         self.max_lux = 1
         self.max_opacity = 1
         self.max_dif = 1
-
+        self.max_rb_dif = 1
+        self.max_gb_dif = 1
+        self.rb = 1
+        self.gb = 1
         self.r_values = []
         self.g_values = []
 
@@ -53,10 +56,12 @@ class ColorRead(SyncedSketch):
             r, g, b = 255*self.color.r/color_sum, 255*self.color.g/color_sum, 255*self.color.b/color_sum
             c = min(255*self.color.c/1000, 255)
 
-            self.max_dif = max(self.max_dif, (r-g)**2)
+
             self.max_temp = max(self.max_temp, self.color.colorTemp)
             self.max_lux = max(self.max_lux, self.color.lux)
             self.max_opacity = max(self.max_opacity, self.color.c)
+
+
 
             maxes = [1, 1, 1, self.max_temp, self.max_lux, self.max_opacity, self.max_dif]
 
@@ -65,7 +70,12 @@ class ColorRead(SyncedSketch):
             lux = 255*self.color.lux/self.max_lux
             opacity = 255*self.color.c/self.max_opacity
             dif = (r-g)**2
+            rb_dif = (r-b)**2
+            gb_dif = (g-b)**2
 
+            self.max_dif = max(self.max_dif, dif)
+            self.max_rb_dif = max(self.max_rb_dif, rb_dif)
+            self.max_gb_dif = max(self.max_gb_dif, gb_dif)
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_r:
@@ -84,10 +94,31 @@ class ColorRead(SyncedSketch):
             pygame.draw.rect(self.screen, (255, 0, 0), (10, 300-r, 5, 5))
             pygame.draw.rect(self.screen, (0, 255, 0), (20, 300-g, 5, 5))
             pygame.draw.rect(self.screen, (0, 0, 255), (30, 300-b, 5, 5))
-            pygame.draw.rect(self.screen, (255, 255, 0), (40, 300-temp, 5, 5))
-            pygame.draw.rect(self.screen, (0, 255, 255), (50, 300-lux, 5, 5))
-            pygame.draw.rect(self.screen, (255, 0, 255), (60, 300-opacity, 5, 5))
-            pygame.draw.rect(self.screen, (255, 255, 255), (70, 300-255*dif/self.max_dif, 5, 5))
+            
+            pygame.draw.rect(self.screen, (255, 255, 0), (50, 300-temp, 5, 5))
+            pygame.draw.rect(self.screen, (0, 255, 255), (60, 300-lux, 5, 5))
+            pygame.draw.rect(self.screen, (255, 0, 255), (70, 300-opacity, 5, 5))
+            
+            pygame.draw.rect(self.screen, (255, 255, 255), (90, 300-255*dif/self.max_dif, 5, 5))
+
+            pygame.draw.rect(self.screen, (255, 0, 255), (110, 300-255*rb_dif/self.max_rb_dif, 5, 5))
+            pygame.draw.rect(self.screen, (0, 255, 255), (120, 300-255*gb_dif/self.max_gb_dif, 5, 5))
+
+            self.rb = (self.color.r+self.color.b)/2.
+            self.gb = (self.color.g+self.color.b)/2.
+
+            r2g = self.color.r/(self.gb+1)
+            g2r = self.color.g/(self.rb+1)
+
+            print "r2g" + str(r2g)
+            print "g2r" + str(g2r)
+            
+            if r2g > 2 and g2r < 1:
+                self.screen.fill((255, 0, 0))
+            elif g2r > 1 and r2g < 1:
+                self.screen.fill((0, 255, 0))
+            else:
+                self.screen.fill((0, 0, 0))
 
             pygame.display.flip()
 

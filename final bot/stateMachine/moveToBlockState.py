@@ -89,17 +89,6 @@ class MoveToBlockState(state):
 				self.motorController.updateMotorSpeeds()
 				self.timer.reset()
 
-	#collision detection avoids 1 inch of space on the sides. Trig was used to determine the lenght of the 30-degree angled sensors.
-	#for the front sensors, we seek to avoid the worst case of a 90-degree angle, comes out to 2.9+.59 = about 3.5
-	def isColliding(self):
-		if self.sensors.irArray.ir_value[0] < .5 or self.sensors.irArray.ir_value[5] < .5:
-			return True
-		elif self.sensors.irArray.ir_value[1] < 1 or self.sensors.irArray.ir_value[4] < 1:
-			return True
-		elif self.sensors.irArray.ir_value[2] < .7 or self.sensors.irArray.ir_value[3] < .7:
-			return True
-		return False
-
 	def isLeftClear(self):
 		return (self.sensors.irArray.ir_value[0] < 1 and self.sensors.irArray.ir_value[1] < 2.32)
 

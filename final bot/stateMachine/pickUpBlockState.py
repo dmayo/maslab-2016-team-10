@@ -53,6 +53,7 @@ class PickUpBlockState(state):
 						self.initialAngle = self.sensors.gyro.gyroCAngle
 				elif self.substate =="FindSafeAngle":
 					if self.isItSafeToLiftArm() == True:
+						print 'Collision Info: Sensor 2', self.sensors.irArray.ir_value[2], ' sensor 3: ',self.sensors.irArray.ir_value[3]
 						print 'Found a good angle! Beginning pickup.'
 						#self.turnConstantRate(0)
 						self.pickupTimeout.reset() #this limits how long we wait before we start jostling
@@ -80,5 +81,9 @@ class PickUpBlockState(state):
 				self.timer.reset()
 
 	def isItSafeToLiftArm(self):
-		return self.checkIndividualSensor(2,self.MIN_SAFE_DISTANCE) and self.checkIndividualSensor(3,self.MIN_SAFE_DISTANCE)
+		if self.checkIndividualSensor(2,self.MIN_SAFE_DISTANCE):
+			return False
+		if self.checkIndividualSensor(3,self.MIN_SAFE_DISTANCE):
+			return False
+		return True
 

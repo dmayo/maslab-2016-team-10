@@ -19,8 +19,8 @@ class ColorDetector(Color):
 		print "g2r" + str(g2r)
 
 		if r2g > 1.5 and g2r < 1:
-			return "RED"
+			return "Red"
 		elif g2r > 1 and r2g < 1:
-			return "GREEN"
+			return "Green"
 		else:
-			return "NONE"
+			return "None"

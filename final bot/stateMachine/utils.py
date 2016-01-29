@@ -7,6 +7,7 @@ class Utils:
 		self.totalGameTime = totalGameTime #in seconds
 		self.isGameStarted=False
 		self.navTimeout = timeout.Timeout(60) #timeout for navigation states, i.e. WallFollowingState and LookingForBlockState
+		self.ourBlockColor="Red"
 
 	def gameTimeRemaining():
 		return (self.startTime+(self.totalGameTime))-time.time() #returns time remaining in seconds

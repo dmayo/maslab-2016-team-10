@@ -78,9 +78,9 @@ class state(object):
 		else:
 			return False
 
-	def wallFollow(self, side, speed):
+	def wallFollow(self, side, speed, PID):
 		self.motorController.motorState="wallFollow"
-		self.IRPID = PID(10, 5, .15)
+		self.IRPID = PID
 		fwdVel=0
 		otherSide=""
 		pidResult=0
@@ -133,13 +133,13 @@ class state(object):
 		#both sensors don't see anything
 		else:
 			lookForWall()
-			pidResult = -20
+			#pidResult = -20
 
 		self.motorController.wallFollowPIDResult = pidResult
 		self.motorController.fwdVel=fwdVel
 
 	def lookingForWall(self):
-		pass
+		self.driveStraight(30)
 
 	def rotateWithWall(self):
 		pass

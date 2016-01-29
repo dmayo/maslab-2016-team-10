@@ -17,6 +17,8 @@ class WallFollowingState(state):
 		self.initialAngle=self.sensors.gyro.gyroCAngle
 		self.startStateTime=time.time()
 		self.WALL_FOLLOW_TIME=10 #time before looking around in seconds
+		self.WALL_FOLLOW_SPEED=40
+		self.wallFollowPID=PID(10, 5, .15)
 
 	def run(self):
 		while True:
@@ -33,7 +35,7 @@ class WallFollowingState(state):
 					print 'Break beam has sensed a block. Going to Pick Up Block State...'
 					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
-				self.wallFollow("Right")
+				self.wallFollow("Right",self.WALL_FOLLOW_SPEED,self.wallFollowPID)
 
 				if self.sensors.camera.detectBlock:
 					return turnToBlockState.TurnToBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)

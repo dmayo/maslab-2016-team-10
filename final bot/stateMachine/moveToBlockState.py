@@ -66,7 +66,8 @@ class MoveToBlockState(state):
 				#TODO: (minor) there is code duplication between collision code sections of ApproachBlock and EatBlock code
 				if self.substate == "ApproachBlock":
 					print 'Starting Approach...'
-					self.driveStraight(self.DRIVE_SPEED)
+					#self.driveStraight(self.DRIVE_SPEED)
+					self.turnNDegreesAndMove(self.sensors.camera.blockAngle,self.DRIVE_SPEED)
 					if self.sensors.camera.detectBlock == False:
 						print 'Cannot see block anymore. May be too close. Will try to eat it.'
 						return eatBlockState.EatBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)

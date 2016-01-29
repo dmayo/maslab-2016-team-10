@@ -23,15 +23,15 @@ class TestState(state):
 				status_line = ''
 
 				for x in xrange(6):
-    				status_line +='Sensor '
-    				status_line += x
-    				status_line += " :"
-    				stauts_line += "{:6.2f}".format(self.sensors.irArray.ir_value[x])
-    				status_line += " "
+					status_line +='Sensor '
+					status_line += str(x)
+					status_line += " :"
+					status_line += "{:6.2f}".format(self.sensors.irArray.ir_value[x])
+					status_line += " "
 
-    			print status_line
+				print status_line
 
-    			print ""
+				print ""
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()

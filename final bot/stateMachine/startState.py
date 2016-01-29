@@ -3,6 +3,7 @@ import wallFollowingState
 import turnToBlockState
 import lookingForBlocksState
 import time
+import testState
 
 #if it sees a block -> get block
 #else -> scan for blocks

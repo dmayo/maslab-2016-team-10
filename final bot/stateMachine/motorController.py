@@ -16,6 +16,7 @@ class MotorController:
 
 		self.wallFollowPIDResult=0
 		self.turnConstantRate=0
+		self.turnConstantRateDirection="Right"
 
 		self.motorState="turnToAngle"
 	#fix this
@@ -55,8 +56,13 @@ class MotorController:
 		self.actuators.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))
 
 	def updateTurnConstantRate(self):
-		self.motorLdrive = -self.turnConstantRate
-		self.motorRdrive = self.turnConstantRate
+		if(self.turnConstantRateDirection=="Left"):
+			direction=-1
+		elif(self.turnConstantRateDirection=="Right"):
+			direction=1
+		assert self.turnConstantRateDirection=="Left" or self.turnConstantRateDirection=="Right"
+		self.motorLdrive = -self.turnConstantRate*direction
+		self.motorRdrive = self.turnConstantRate*direction
 
 		self.actuators.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
 		self.actuators.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))

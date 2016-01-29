@@ -39,7 +39,7 @@ class LookingForBlocksState(state):
 				elif self.sensors.gyro.gyroCAngle>self.initialAngle+360:
 					return wallFollowingState.WallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				else:
-					self.turnConstantRate(self.SCAN_SPEED)
+					self.turnConstantRate(self.SCAN_SPEED,"Right")
 
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()

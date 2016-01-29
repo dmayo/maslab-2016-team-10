@@ -19,12 +19,13 @@ class MoveToBlockState(state):
 		
 		self.CLOSE_ENOUGH_DISTANCE = 4 #make this such that the forward sensors will not detect a potential 90-degree corner while in approach mode
 		self.ANGLE_EPSILON = 10
+
 		self.DRIVE_SPEED = 70 #needs calibration
 		self.EAT_DISTANCE = 7.1 #distance in inches we will drive forward to eat block
+
 		self.ROBOT_RADIUS = 7.5
 		self.CAMERA_OFFSET = 2.96
 		self.start_gyro_angle = 0
-		self.eat_distance_traveled = 0
 
 		self.MIN_DISTANCE_TO_START_FLANK_MANEUVER = 12 #don't even try the flank if we are further than 15 inches away
 		self.FLANK_APPROACH_LENGHT = 2.5 #we hope the Flank Maneuver leaves us in a position straight in front of the block, 2.5 inches away
@@ -34,7 +35,6 @@ class MoveToBlockState(state):
 		self.flank_target_distance = 0
 		self.flank_is_left = False
 		self.flank_maneuver_attempts = 0
-		self.flank_distance_traveled = 0
 		self.flank_initial_distance_from_block = 0
 
 		self.MIN_DRAG_BLOCK_DISTANCE = 1.1
@@ -85,7 +85,7 @@ class MoveToBlockState(state):
 						if canDealWithCollision == False:
 							print 'Area too cramped to overcome collision. Perhaps we are in a corner? Fall back to strict wall following...'
 							return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
-					elif self.eat_distance_traveled >= self.EAT_DISTANCE:
+					elif self.sensors.encoders.getDistanceTraveled() >= self.EAT_DISTANCE:
 						print 'Finished attempt to eat block. Break beam did not go off.'
 						return checkForMoreBlocksState.CheckForMoreBlocksState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif self.substate == "DragBlock":
@@ -100,6 +100,9 @@ class MoveToBlockState(state):
 						return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif self.substate == "FlankManeuver":
 					self.performFlankManeuver()
+				elif self.substate == "FlankFailed":
+					print 'Flank Failed. Going to blind wall follow'
+					return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				else:
 					print 'Error! Substate named ', self.substate, ' was not recognized. Exiting to Start State...'
 					return startState.startState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
@@ -132,6 +135,8 @@ class MoveToBlockState(state):
 			print 'Yes. Starting flank maneuver with angle ', self.flank_first_angle
 			self.turnNDegreesSlowly(self.flank_first_angle)
 			self.flank_maneuver_attempts += 1
+			self.eat_distance -= self.sensors.encoders.getDistanceTraveled()
+			self.sensors.encoders.resetEncoders()
 			self.substate = "FlankManeuver"
 			return True
 		else:
@@ -140,7 +145,7 @@ class MoveToBlockState(state):
 	def eatSubstateDealWithCollision(self):
 		self.driveStraight(0)
 		print 'Too close to wall. Are we close enough to drag the block with our teeth?'
-		if self.eat_distance_traveled >= self.MIN_DRAG_BLOCK_DISTANCE:
+		if self.sensors.encoders.resetEncoders() >= self.MIN_DRAG_BLOCK_DISTANCE:
 			if self.drag_attempts < self.DRAG_MAX_ATTEMPTS:
 				print 'Yes. Starting drag...'
 				self.drag_attempts += 1
@@ -209,7 +214,7 @@ class MoveToBlockState(state):
 		#We want to calculate a recovery angle that forms part of a triangle (not necessarily a right triangle).
 		#We know two sides: the side we traveled "b", and the side that represented how far we were from the block to being with "a"
 		#We know the angle we turned, "C"
-		side_b = self.flank_distance_traveled
+		side_b = self.sensors.encoders.getDistanceTraveled()
 		side_a = self.flank_initial_distance_from_block
 		angle_radians_C = math.radians(self.flank_first_angle)
 
@@ -230,14 +235,13 @@ class MoveToBlockState(state):
 				print 'Finished first Flank Maneuver turn. Now going straight'
 				self.driveStraight(self.DRIVE_SPEED)
 				self.FlankManeuverStage = "Travel"
-				self.flank_distance_traveled = 0
 		elif self.FlankManeuverStage == "Travel":
 			if self.isColliding():
-				print 'No room while in Flank Maneuver travel. Calculating recovery angle and exiting flank maneuver. Have attempted maneuver ', self.flank_maneuver_attempts, ' time(s).'
+				print 'No room while in Flank Maneuver travel. Reporting Failure...'
 				self.driveStraight(0)
-				self.turnNDegreesSlowly(self.calculateRecoveryAngle())
-				self.FlankManeuverStage = "Return"
-			elif self.flank_distance_traveled >= self.flank_target_distance:
+				#self.turnNDegreesSlowly(self.calculateRecoveryAngle())
+				self.substate = "FlankFailed"
+			elif self.sensors.encoders.resetEncoders() >= self.flank_target_distance:
 				print 'Finished flank maneuver travel. Performing second turn...'
 				self.driveStraight(0)
 				self.turnNDegreesSlowly(self.flank_second_angle)
@@ -245,6 +249,7 @@ class MoveToBlockState(state):
 		elif self.FlankManeuverStage == "Turn2":
 			if self.isFinishedTurning() == True:
 				print 'Flank Maneuver complete. Should now be pointing at block from better angle.'
+				self.sensors.encoders.resetEncoders()
 				self.substate == "ApproachBlock"
 		elif self.FlankManeuverStage == "Return":
 			if self.isFinishedTurning() == True:

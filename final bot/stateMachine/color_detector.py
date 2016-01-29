@@ -15,8 +15,8 @@ class ColorDetector:
 		r2g = self.color.r/(self.gb+1)
 		g2r = self.color.g/(self.rb+1)
 
-		print "r2g" + str(r2g)
-		print "g2r" + str(g2r)
+		#print "r2g" + str(r2g)
+		#print "g2r" + str(g2r)
 
 		if r2g > 1.5 and g2r < 1:
 			return "Red"

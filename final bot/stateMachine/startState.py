@@ -26,12 +26,13 @@ class startState(state):
 					self.utils.startTime=time.time()
 
 				if(self.utils.isGameStarted==True and time.time()-self.utils.startTime>self.START_GAME_DELAY):
+					#return testState.TestState(self.sensors,self.actuators,self.motorController,self.timer, self.utils)
 					if self.sensors.camera.detectBlock:
 						return turnToBlockState.TurnToBlockState(self.sensors,self.actuators,self.motorController,self.timer, self.utils)
 					else:
 						self.utils.navTimeout.reset()
 						return lookingForBlocksState.LookingForBlocksState(self.sensors,self.actuators,self.motorController,self.timer, self.utils)
-
+				
 				self.actuators.update()
 				self.motorController.updateMotorSpeeds()
 				self.timer.reset()

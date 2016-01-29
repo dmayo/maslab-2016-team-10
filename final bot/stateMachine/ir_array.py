@@ -14,12 +14,12 @@ class Ir_array:
     def __init__(self,tamp,pin0,pin1,pin2,pin3,pin4,pin5):
         self.sensors = [Ir_sensor(tamp,pin0),Ir_sensor(tamp,pin1),Ir_sensor(tamp,pin2,"Long"),Ir_sensor(tamp,pin3,"Long"),Ir_sensor(tamp,pin4),Ir_sensor(tamp,pin5)]
 
-        self.ir_offset[0] = 1.61
-        self.ir_offset[1] = 1.61
+        self.ir_offset[0] = 1.1 #error: 1.61-.5 = 1.1
+        self.ir_offset[1] = 1.1 #error: 1.61 - .5 = 1.1
         self.ir_offset[2] = 3.735
         self.ir_offset[3] = 3.735
-        self.ir_offset[4] = 1.61
-        self.ir_offset[5] = 1.61
+        self.ir_offset[4] = 1.1 #error: 1.61 - .5 = 1.1
+        self.ir_offset[5] = 1.1 #error 1.61 - .5 = 1.1
 
         self.IRs = {'Left': [0, 1, 2], 'Right': [5, 4, 3]}
 

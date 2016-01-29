@@ -47,7 +47,7 @@ class EatBlockState(state):
 						self.driveStraight(0)
 						self.eat_distance -= self.sensors.encoders.getDistanceTraveled()
 						self.substate = "DragBlock"
-					elif self.sensors.encoders.getDistanceTraveled() >= self.EAT_DISTANCE:
+					elif self.sensors.encoders.getDistanceTraveled() >= self.eat_distance:
 						print 'Finished attempt to eat block. Break beam did not go off.'
 						return lookingForBlocksState.LookingForBlocksState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 				elif self.substate == "DragBlock":

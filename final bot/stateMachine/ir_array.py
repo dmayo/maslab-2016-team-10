@@ -52,7 +52,7 @@ class Ir_array:
         return abs(self.ir_value[self.IRs[side][0]]-self.ir_value[self.IRs[side][1]]*math.cos(math.radians(30)))<=self.DISTANCE_EPSILON
 
     def getWallInFrontDistance(self,side):
-        return self.ir_value[self.sensors.irArray.IRs[side][2]]
+        return self.ir_value[self.IRs[side][2]]
 
 
         

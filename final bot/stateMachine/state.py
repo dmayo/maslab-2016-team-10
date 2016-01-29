@@ -129,7 +129,7 @@ class state(object):
 					leftSide = self.WALL_FOLLOW_SENSOR_CAP
 				if math.isinf(leftAngle):
 					leftAngle = self.WALL_FOLLOW_SENSOR_CAP
-				avg = (leftSide+leftAngle)/2
+				avg = (leftSide+leftAngle*math.cos(math.radians(30)))/2
 
 		elif (side=="Right"):
 			#check: are both left sensors infinite?
@@ -146,7 +146,7 @@ class state(object):
 					rightSide = self.WALL_FOLLOW_SENSOR_CAP
 				if math.isinf(rightAngle):
 					rightAngle = self.WALL_FOLLOW_SENSOR_CAP
-				avg = (rightSide+rightAngle)/2
+				avg = (rightSide+rightAngle*math.cos(math.radians(30)))/2
 
 		pidResult=self.followWall(side,avg)
 		self.motorController.wallFollowPIDResult = pidResult

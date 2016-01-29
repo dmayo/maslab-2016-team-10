@@ -25,7 +25,7 @@ class PickUpBlockState(state):
 
 		self.SCAN_SPEED=30
 		self.JOSTLE_TIMEOUT = 10 
-		self.MIN_SAFE_DISTANCE = 9 #an approximation of the distance in inches we'd need to read from a 90-degree corner pointing at the middle of the robot to life the block safely
+		self.MIN_SAFE_DISTANCE = 4 #an approximation of the distance in inches we'd need to read from a 90-degree corner pointing at the middle of the robot to life the block safely
 		self.motorController.fwdVel=0
 	
 	def run(self):
@@ -47,6 +47,7 @@ class PickUpBlockState(state):
 						self.actuators.arm.pickUpBlock()
 						self.substate = "PickUpBlock"
 					else:
+						print 'Collision Info: Sensor 2', self.sensors.irArray.ir_value[2], ' sensor 3: ',self.sensors.irArray.ir_value[3]
 						print 'Too close to pick up arm. Attempting to find better angle...'
 						self.substate = "FindSafeAngle"
 						self.initialAngle = self.sensors.gyro.gyroCAngle
@@ -79,5 +80,5 @@ class PickUpBlockState(state):
 				self.timer.reset()
 
 	def isItSafeToLiftArm(self):
-		return (self.sensors.irArray.ir_value[2] < self.MIN_SAFE_DISTANCE and self.sensors.irArray.ir_value[3] < self.MIN_SAFE_DISTANCE)
+		return self.checkIndividualSensor(2,self.MIN_SAFE_DISTANCE) and self.checkIndividualSensor(3,self.MIN_SAFE_DISTANCE)
 

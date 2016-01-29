@@ -167,13 +167,13 @@ class state(object):
 	def isColliding(self):
 		if self.checkIndividualSensor(0,1):
 			return True
-		if self.checkIndividualSensor(1,2):
+		if self.checkIndividualSensor(1,2.3):
 			return True
-		if self.checkIndividualSensor(2,1):
+		if self.checkIndividualSensor(2,1.6):
 			return True
-		if self.checkIndividualSensor(3,1):
+		if self.checkIndividualSensor(3,1.6):
 			return True
-		if self.checkIndividualSensor(4,2):
+		if self.checkIndividualSensor(4,2.3):
 			return True
 		if self.checkIndividualSensor(5,1):
 			return True

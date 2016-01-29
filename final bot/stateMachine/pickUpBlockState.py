@@ -25,7 +25,7 @@ class PickUpBlockState(state):
 
 		self.SCAN_SPEED=30
 		self.JOSTLE_TIMEOUT = 10 
-		self.MIN_SAFE_DISTANCE = 4 #an approximation of the distance in inches we'd need to read from a 90-degree corner pointing at the middle of the robot to life the block safely
+		self.MIN_SAFE_DISTANCE = 5 #an approximation of the distance in inches we'd need to read from a 90-degree corner pointing at the middle of the robot to life the block safely
 		self.motorController.fwdVel=0
 	
 	def run(self):

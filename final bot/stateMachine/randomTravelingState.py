@@ -53,7 +53,7 @@ class RandomTravelingState(state):
 						self.turnNDegreesSlowly(random.randrange(angleToTurn - self.RANDOM_ANGLE_RANGE,angleToTurn + self.RANDOM_ANGLE_RANGE))
 						self.substate = "Turning"
 					else:
-						self.turnConstateRate(0)
+						self.turnConstateRate(0,"Right")
 						self.driveStraight(self.DRIVE_SPEED)
 						if self.sensors.camera.detectBlock:
 							print 'Block Detected. Turning to it...'
@@ -65,19 +65,19 @@ class RandomTravelingState(state):
 							self.substate = "Scanning"
 							self.intialGyroAngle = self.sensors.gyro.gyroCAngle
 							if self.lastTurnNegative:
-								self.turnConstateRate(-TURN_SPEED)
+								self.turnConstateRate(self.TURN_SPEED,"Right")
 							else:
-								self.turnConstateRate(TURN_SPEED)
+								self.turnConstateRate(self.TURN_SPEED,"Left")
 						else:
 							print 'Not colliding anymore...'
-							self.turnConstateRate(0)
-							self.fwdVel = self.DRIVE_SPEED
+							self.turnConstateRate(0,"Right")
+							self.driveStraight(self.DRIVE_SPEED)
 							self.substate = "RandomTraveling"
 				elif self.substate == "Scanning":
 					if self.isStillColliding() == False:
 						print 'Finally found an open spot...'
-						self.fwdVel = self.DRIVE_SPEED
-						self.turnConstateRate(0)
+						self.driveStraight(self.DRIVE_SPEED)
+						self.turnConstateRate(0,"Right")
 						self.substate = "RandomTraveling"
 					elif (self.lastTurnNegative) and (self.sensors.gyro.gyroCAngle < (self.intialGyroAngle - 360)):
 						print 'Not good. After full rotation, we cannot find an open spot. I guess we can go to start state and see what wall following can do? (We made a full rotation, so we are not jammed.)'
@@ -95,26 +95,32 @@ class RandomTravelingState(state):
 
 	#this is meant to serve as the mean of the random distro we will use to choose a rotation angle, to create a "bouncing" effect.
 	def checkCollisionAngle(self):
-		if self.sensors.irArray.ir_value[0] < self.SIDE_COLLISION_DISTANCE:
+		if self.checkIndividualSensor(0,self.SIDE_COLLISION_DISTANCE):
 			return -90
-		elif self.sensors.irArray.ir_value[5] < self.SIDE_COLLISION_DISTANCE:
+		elif self.checkIndividualSensor(5,self.SIDE_COLLISION_DISTANCE):
 			return 90
-		elif self.sensors.irArray.ir_value[1] < self.SIDE_COLLISION_DISTANCE:
+		elif self.checkIndividualSensor(1,self.SIDE_COLLISION_DISTANCE):
 			return -120
-		elif self.sensors.irArray.ir_value[4] < self.SIDE_COLLISION_DISTANCE:
+		elif self.checkIndividualSensor(4,self.SIDE_COLLISION_DISTANCE):
 			return 120
-		elif self.sensors.irArray.ir_value[2] < self.FRONT_COLLISION_DISTANCE:
+		elif self.checkIndividualSensor(2,self.FRONT_COLLISION_DISTANCE):
 			return -160
-		elif self.sensors.irArray.ir_value[3] < self.FRONT_COLLISION_DISTANCE:
+		elif self.checkIndividualSensor(3,self.FRONT_COLLISION_DISTANCE):
 			return 160
 		else:
 			return None
 
 	def isStillColliding(self):
-		if self.sensors.irArray.ir_value[0] < 1 or self.sensors.irArray.ir_value[5] < 1:
+		if self.checkIndividualSensor(0,self.SIDE_COLLISION_DISTANCE):
 			return True
-		elif self.sensors.irArray.ir_value[1] < 2.32 or self.sensors.irArray.ir_value[4] < 2.32:
+		if self.checkIndividualSensor(1,self.SIDE_COLLISION_DISTANCE):
 			return True
-		elif self.sensors.irArray.ir_value[2] < 3.5 or self.sensors.irArray.ir_value[3] < 3.5:
+		if self.checkIndividualSensor(2,self.FRONT_COLLISION_DISTANCE):
+			return True
+		if self.checkIndividualSensor(3,self.FRONT_COLLISION_DISTANCE):
+			return True
+		if self.checkIndividualSensor(4,self.SIDE_COLLISION_DISTANCE):
+			return True
+		if self.checkIndividualSensor(5,self.SIDE_COLLISION_DISTANCE):
 			return True
 		return False

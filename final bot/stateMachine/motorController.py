@@ -77,8 +77,8 @@ class MotorController:
 		elif(self.turnConstantRateDirection=="Right"):
 			direction=1
 		assert self.turnConstantRateDirection=="Left" or self.turnConstantRateDirection=="Right"
-		self.motorLdrive = fwdVel-self.turnConstantRate*direction
-		self.motorRdrive = fwdVel+self.turnConstantRate*direction
+		self.motorLdrive = self.fwdVel-self.turnConstantRate*direction
+		self.motorRdrive = self.fwdVel+self.turnConstantRate*direction
 
 		self.actuators.motorL.write(self.motorLdrive < 0,abs(self.motorLdrive))
 		self.actuators.motorR.write(self.motorRdrive < 0,abs(self.motorRdrive))

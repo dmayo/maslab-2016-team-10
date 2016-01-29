@@ -1,5 +1,3 @@
-from tamproxy.devices import Color
-from color_detector import ColorDetector
 from tamproxy.devices import DigitalInput
 from color_detector import ColorDetector
 from camera import Camera

@@ -13,6 +13,7 @@ class state(object):
 		self.WALL_FOLLOW_SENSOR_CAP = 24
 		self.WALL_FOLLOW_ROTATE_SPEED = 30
 		self.WALL_FOLLOW_SLOW_SPEED = 10
+		self.MAX_WALL_FOLLOW_TURN_SPEED=40
 
 	def run(self):
 		raise "run not implemented in state"
@@ -129,7 +130,8 @@ class state(object):
 					leftSide = self.WALL_FOLLOW_SENSOR_CAP
 				if math.isinf(leftAngle):
 					leftAngle = self.WALL_FOLLOW_SENSOR_CAP
-				avg = (leftSide+leftAngle*math.cos(math.radians(30)))/2
+				adjusted_left_Angle = (leftAngle*math.cos(math.radians(30))) - 7.5 + 7.5*math.cos(math.radians(30))
+				avg = (leftSide+adjusted_left_Angle)/2
 
 		elif (side=="Right"):
 			#check: are both left sensors infinite?
@@ -146,17 +148,14 @@ class state(object):
 					rightSide = self.WALL_FOLLOW_SENSOR_CAP
 				if math.isinf(rightAngle):
 					rightAngle = self.WALL_FOLLOW_SENSOR_CAP
-				avg = (rightSide+rightAngle*math.cos(math.radians(30)))/2
-
-		pidResult=self.followWall(side,avg)
-		self.motorController.wallFollowPIDResult = pidResult
-		self.motorController.fwdVel=speed
+				adjusted_right_Angle = (rightAngle*math.cos(math.radians(30))) - 7.5 + 7.5*math.cos(math.radians(30))
+				avg = (rightSide+adjusted_right_Angle)/2
 
 		pidResult=self.followWall(side,avg,wfPID)
-		if pidResult < -30:
-			pidResult = -30
-		elif pidResult > 30:
-			pidResult = 30
+		if pidResult < -self.MAX_WALL_FOLLOW_TURN_SPEED:
+			pidResult = -self.MAX_WALL_FOLLOW_TURN_SPEED
+		elif pidResult > self.MAX_WALL_FOLLOW_TURN_SPEED:
+			pidResult = self.MAX_WALL_FOLLOW_TURN_SPEED
 		self.motorController.wallFollowPIDResult = pidResult
 		self.motorController.fwdVel=speed
 		print 'PID result is: ', pidResult

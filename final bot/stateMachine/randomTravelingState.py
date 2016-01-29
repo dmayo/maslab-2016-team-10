@@ -7,6 +7,7 @@ import timeout
 import startState
 import random
 import breakFreeState
+import pickUpBlockState
 
 #substates: RandomTraveling, Turning, Scanning
 #this state is NOT meant to be used if we are jammed. It will likely stay jammed when we turn. Use breakFreeState instead.
@@ -54,7 +55,7 @@ class RandomTravelingState(state):
 						self.turnNDegreesSlowly(random.randrange(angleToTurn - self.RANDOM_ANGLE_RANGE,angleToTurn + self.RANDOM_ANGLE_RANGE))
 						self.substate = "Turning"
 					else:
-						self.turnConstateRate(0,"Right")
+						self.turnConstantRate(0,"Right")
 						self.driveStraight(self.DRIVE_SPEED)
 						if self.sensors.camera.detectBlock:
 							print 'Block Detected. Turning to it...'
@@ -66,19 +67,19 @@ class RandomTravelingState(state):
 							self.substate = "Scanning"
 							self.intialGyroAngle = self.sensors.gyro.gyroCAngle
 							if self.lastTurnNegative:
-								self.turnConstateRate(self.TURN_SPEED,"Right")
+								self.tturnConstantRate(self.TURN_SPEED,"Right")
 							else:
-								self.turnConstateRate(self.TURN_SPEED,"Left")
+								self.turnConstantRate(self.TURN_SPEED,"Left")
 						else:
 							print 'Not colliding anymore...'
-							self.turnConstateRate(0,"Right")
+							self.turnConstantRate(0,"Right")
 							self.driveStraight(self.DRIVE_SPEED)
 							self.substate = "RandomTraveling"
 				elif self.substate == "Scanning":
 					if self.isStillColliding() == False:
 						print 'Finally found an open spot...'
 						self.driveStraight(self.DRIVE_SPEED)
-						self.turnConstateRate(0,"Right")
+						self.turnConstantRate(0,"Right")
 						self.substate = "RandomTraveling"
 					elif (self.lastTurnNegative) and (self.sensors.gyro.gyroCAngle < (self.intialGyroAngle - 360)):
 						print 'Not good. After full rotation, we cannot find an open spot. I guess we can go to start state and see what wall following can do? (We made a full rotation, so we are not jammed.)'

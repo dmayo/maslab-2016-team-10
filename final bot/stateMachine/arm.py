@@ -1,11 +1,12 @@
 from tamproxy.devices import Servo
+import time
 
 class Arm:
 	def __init__(self,tamp):
 		self.tamp=tamp
 		self.servo = Servo(self.tamp, 9)
 		self.servo.bottom = 15
-		self.servo.top = 140
+		self.servo.top = 135
 		self.servo.speed = 30
 		self.servo.write(self.servo.bottom)
 		self.servoval = self.servo.bottom
@@ -22,8 +23,10 @@ class Arm:
 			self.delta = self.servo.speed
 			self.armState="Up"
 		else:
-			self.armState=self.nextArmState
-			self.nextArmState="None"
+			self.setPause(.25)
+			self.armState="Pause"
+			#self.armState=self.nextArmState
+			#self.nextArmState="None"
 
 	def moveArmDown(self):
 		if self.servoval > self.servo.bottom:
@@ -33,12 +36,24 @@ class Arm:
 			self.armState=self.nextArmState
 			self.nextArmState="None"
 
+	def setPause(self,pauseLength):
+		self.startPauseTime=time.time()
+		self.pauseLength=pauseLength
+
+	def pauseArm(self):
+		if(time.time()-self.startPauseTime>self.pauseLength):
+			self.armState=self.nextArmState
+			self.nextArmState="None"
+			self.delta=0
+
 	def update(self):
 		if self.armState!="None":
 			if self.armState=="Up":
 				self.moveArmUp()
 			elif self.armState=="Down":
 				self.moveArmDown()
+			elif(self.armState=="Pause"):
+				self.pauseArm()
 			self.servoval += self.delta
 			if(self.servoval<0):
 				self.servoval=0

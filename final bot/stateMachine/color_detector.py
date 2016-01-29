@@ -4,8 +4,8 @@ class ColorDetector(Color):
 
 	def __init__(self, tamp, integrationTime=Color.INTEGRATION_TIME_101MS,gain=Color.GAIN_1X):
 		super(self.__class__, self).__init__(tamp, integrationTime, gain)
-		self.rb = 0
-		self.gb = 0
+		self.r2g = 0
+		self.g2r = 0
 
 	def getBlockColor(self):
 		""" Returns 'GREEN', 'RED' or 'NONE'"""

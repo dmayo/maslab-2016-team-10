@@ -10,8 +10,8 @@ class Sorter:
 		self.servo.left = 165
 		self.servo.speed = 15
 		self.servo.jostleSpeed = 40
-		self.servo.rightJostle = 45
-		self.servo.leftJostle = 135
+		self.servo.rightJostle = 60
+		self.servo.leftJostle = 120
 
 		self.servo.write(self.servo.center)
 		self.sorterval = self.servo.center

@@ -23,21 +23,32 @@ class Ir_array:
 
         self.IRs = {'Left': [0, 1, 2], 'Right': [5, 4, 3]}
 
+        self.DISTANCE_EPSILON=1 #in inches
+
     def update(self):
         for x in xrange(len(self.ir_value)):
             self.ir_value[x] = self.sensors[x].get_distance() - self.ir_offset[x]
 
     def getAvgDistanceLeftWall(self):
-        return (self.ir_value[self.IRs["Left"][0]]+self.ir_value[self.IRs["Left"][1]]/2)/2
+        return (self.ir_value[self.IRs["Left"][0]]+self.ir_value[self.IRs["Left"][1]]*math.cos(math.radians(30)))/2
 
     def getAvgDistanceRightWall(self):
-        return (self.ir_value[self.IRs["Right"][0]]+self.ir_value[self.IRs["Right"][1]]/2)/2
+        return (self.ir_value[self.IRs["Right"][0]]+self.ir_value[self.IRs["Right"][1]]*math.cos(math.radians(30)))/2
 
     def getMinDistanceLeftWall(self):
-        return min(self.ir_value[self.IRs["Left"][0]], self.ir_value[self.IRs["Left"][1]])
+        return min(self.ir_value[self.IRs["Left"][0]], self.ir_value[self.IRs["Left"][1]]*math.cos(math.radians(30)))
 
     def getMinDistanceRightWall(self):
-        return min(self.ir_value[self.IRs["Right"][0]], self.ir_value[self.IRs["Right"][1]])
+        return min(self.ir_value[self.IRs["Right"][0]], self.ir_value[self.IRs["Right"][1]]*math.cos(math.radians(30)))
+
+    def isCorner(self, side):
+        return (self.ir_value[self.IRs[side][0]]-self.ir_value[self.IRs[side][1]]*math.cos(math.radians(30)))<self.DISTANCE_EPSILON
+
+    def isCliff(self, side):
+        return (self.ir_value[self.IRs[side][0]]-self.ir_value[self.IRs[side][1]]*math.cos(math.radians(30)))>self.DISTANCE_EPSILON
+
+    def isFlatWall(self, side):
+        return abs(self.ir_value[self.IRs[side][0]]-self.ir_value[self.IRs[side][1]]*math.cos(math.radians(30)))<=self.DISTANCE_EPSILON
 
 
         

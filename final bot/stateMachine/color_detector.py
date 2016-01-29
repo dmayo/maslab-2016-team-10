@@ -1,11 +1,11 @@
 from tamproxy.devices import Color
 
-class ColorDetector(Color):
-
-	def __init__(self, tamp, integrationTime=Color.INTEGRATION_TIME_101MS,gain=Color.GAIN_1X):
-		super(self.__class__, self).__init__(tamp, integrationTime, gain)
+class ColorDetector:
+	def __init__(self, tamp):
 		self.r2g = 0
 		self.g2r = 0
+		self.tamp=tamp
+		self.color = Color(self.tamp,integrationTime=Color.INTEGRATION_TIME_101MS,gain=Color.GAIN_1X)
 
 	def getBlockColor(self):
 		""" Returns 'GREEN', 'RED' or 'NONE'"""

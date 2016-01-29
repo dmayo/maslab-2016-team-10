@@ -1,15 +1,15 @@
-from tamproxy.devices import Color
 from tamproxy.devices import DigitalInput
 from camera import Camera
 from ir_array import Ir_array
 from gyroWrap import GyroWrap
 from encoderWrap import EncoderWrap
+from color_detector import ColorDetector
 
 class Sensors:
     def __init__(self, tamp):
         self.tamp=tamp
 		#color sensor
-        self.color = Color(self.tamp,integrationTime=Color.INTEGRATION_TIME_101MS,gain=Color.GAIN_1X)
+        self.color = ColorDetector(self.tamp)
 
         #ultra IR pick up block detector
         self.uIR = DigitalInput(self.tamp, 17)

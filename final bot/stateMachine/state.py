@@ -30,6 +30,11 @@ class state(object):
 		self.motorController.fwdVel=0
 		self.motorController.desiredAngle=self.sensors.gyro.gyroCAngle+turnAngle
 
+	def turnNDegreesAndMove(self, turnAngle, speed):
+		self.motorController.motorState="turnToAngleAndMove"
+		self.motorController.fwdVel=speed
+		self.motorController.desiredAngle=self.sensors.gyro.gyroCAngle+turnAngle
+
 	def turnToTheRightSlowly(self):
 		#setCarrotPosition(0, TURN_SLOWLY_ANGLE)
 		pass
@@ -58,13 +63,13 @@ class state(object):
 
 	#returns TRUE if a block was found, FALSE if not
 	def sortBlock(self):
-		if self.ourBlockColor=="Red":
+		if self.utils.ourBlockColor=="Red":
 			otherBlockColor="Green"
-		elif self.ourBlockColor=="Green":
+		elif self.utils.ourBlockColor=="Green":
 			otherBlockColor="Red"
-		assert self.ourBlockColor=="Red" or self.ourBlockColor=="Green"
+		assert self.utils.ourBlockColor=="Red" or self.utils.ourBlockColor=="Green"
 
-		if self.sensors.color.getBlockColor()==self.ourBlockColor:
+		if self.sensors.color.getBlockColor()==self.utils.ourBlockColor:
 			self.actuators.sorter.moveSorterLeft()
 			return True
 		elif self.sensors.color.getBlockColor()==otherBlockColor:

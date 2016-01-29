@@ -15,3 +15,8 @@ class PID:
 			self.I=0
 		self.errorOld=error
 		return self.kp*P+ self.ki*self.I+ self.kd*D
+
+	def resetPID(self):
+		self.errorOld=0
+		self.timeInterval=0.1
+		self.I=0

@@ -162,4 +162,24 @@ class state(object):
 		self.motorController.fwdVel=speed
 		self.motorController.motorState="driveStraight"
 
+	#collision detection avoids 1 inch of space on the sides. Trig was used to determine the lenght of the 30-degree angled sensors.
+	#for the front sensors, we seek to avoid the worst case of a 90-degree angle, comes out to 2.9+.59 = about 3.5
+	def isColliding(self):
+		if self.checkIndividualSensor(0,1):
+			return True
+		if self.checkIndividualSensor(1,2):
+			return True
+		if self.checkIndividualSensor(2,1):
+			return True
+		if self.checkIndividualSensor(3,1):
+			return True
+		if self.checkIndividualSensor(4,2):
+			return True
+		if self.checkIndividualSensor(5,1):
+			return True
+		return False
+
+	def checkIndividualSensor(self,pos,threshold):
+		return (self.sensors.irArray.ir_value[pos] < threshold and self.sensors.irArray.ir_value[pos] > -1.0)
+
 

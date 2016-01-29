@@ -4,6 +4,7 @@ import lookingForBlocksState
 import moveToBlockState
 import breakFreeState
 import timeout
+import pickUpBlockState
 
 #if it doesn't see a block -> lookForBlockState
 #if the block is centered in the camera view -> moveToBlock
@@ -13,7 +14,7 @@ class TurnToBlockState(state):
 	def __init__(self, sensors, actuators, motorController, timer, utils):
 		super(TurnToBlockState, self).__init__(sensors, actuators, motorController, timer, utils)
 		print "Turn to block state"
-		self.BLOCK_ANGLE_EPSILON = 4
+		self.BLOCK_ANGLE_EPSILON = 2
 		self.timeout = timeout.Timeout(20)
 		self.motorController.fwdVel=0
 

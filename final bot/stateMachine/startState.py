@@ -11,7 +11,7 @@ class startState(state):
 	def __init__(self, sensors, actuators, motorController, timer, utils):
 		super(startState, self).__init__(sensors, actuators, motorController, timer, utils)
 		print "Start State"
-		self.START_GAME_DELAY=3 #in seconds
+		self.START_GAME_DELAY=0 #in seconds
 
 	def run(self):
 		while True:

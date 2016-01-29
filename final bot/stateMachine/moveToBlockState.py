@@ -13,7 +13,7 @@ class MoveToBlockState(state):
 	def __init__(self, sensors, actuators, motorController, timer, utils):
 		super(MoveToBlockState, self).__init__(sensors, actuators, motorController, timer, utils)
 
-		print "beginning MoveToBlockState"
+		print "MoveToBlockState"
 		self.timeout = timeout.Timeout(30)
 		
 		self.CLOSE_ENOUGH_DISTANCE = 4 #make this such that the forward sensors will not detect a potential 90-degree corner while in approach mode

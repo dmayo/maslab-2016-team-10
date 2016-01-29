@@ -9,6 +9,7 @@ import timeout
 
 class MoveToBlockState(state):
 	#substates: ApproachBlock, EatBlock, FlankManeuverTurn1, FlankManeuverTravel, FlankManeuverTurn2, FlankManeuverReturn, DragBlock
+	#flankManeuverStage: Turn1, Travel, Turn2, Return
 
 	def __init__(self, sensors, actuators, motorController, timer, utils):
 		super(MoveToBlockState, self).__init__(sensors, actuators, motorController, timer, utils)
@@ -25,6 +26,7 @@ class MoveToBlockState(state):
 		self.start_gyro_angle = 0
 		self.eat_distance_traveled = 0
 
+		self.MIN_DISTANCE_TO_START_FLANK_MANEUVER = 12 #don't even try the flank if we are further than 15 inches away
 		self.FLANK_APPROACH_LENGHT = 2.5 #we hope the Flank Maneuver leaves us in a position straight in front of the block, 2.5 inches away
 		self.FLANK_MANEUVER_MAX_ATTEMPTS = 3
 		self.flank_first_angle = 0
@@ -41,6 +43,7 @@ class MoveToBlockState(state):
 		self.drag_attempts = 0
 
 		self.substate = "ApproachBlock"
+		self.FlankManeuverStage = "Turn1"
 		
 
 	def run(self):
@@ -73,7 +76,7 @@ class MoveToBlockState(state):
 							print 'Yes. Starting flank maneuver with angle ', self.flank_first_angle
 							self.turnNDegreesSlowly(self.flank_first_angle)
 							self.flank_maneuver_attempts += 1
-							self.substate = "FlankManeuverTurn1"
+							self.substate = "FlankManeuver"
 						else:
 							print 'Area too cramped to start Flank Maneuver. Perhaps we are in a corner? Fall back to strict wall following...'
 							return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
@@ -107,7 +110,7 @@ class MoveToBlockState(state):
 								print 'Yes. Starting flank maneuver with first angle ', self.flank_first_angle, ' distance ', self.flank_target_distance, ' and second angle', self.flank_second_angle
 								self.turnNDegreesSlowly(self.flank_first_angle)
 								self.flank_maneuver_attempts += 1
-								self.substate = "FlankManeuverTurn1"
+								self.substate = "FlankManeuver"
 							else:
 								print 'Area too cramped to start Flank Maneuver. Perhaps we are in a corner? Fall back to blind wall following...'
 								return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
@@ -124,31 +127,8 @@ class MoveToBlockState(state):
 						print 'After a full 360, could not find a good position about which to turn. Begin blind wall following...'
 						self.turnConstantRate(0)
 						return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
-				elif self.substate == "FlankManeuverTurn1":
-					if self.isFinishedTurning() == True:
-						print 'Finished first Flank Maneuver turn. Now going straight'
-						self.motorController.fwdVel = self.DRIVE_SPEED
-						self.substate = "FlankManeuverTravel"
-						self.flank_distance_traveled = 0
-				elif self.substate == "FlankManeuverTravel":
-					if self.isColliding():
-						print 'No room while in Flank Maneuver travel. Calculating recovery angle and exiting flank maneuver. Have attempted maneuver ', self.flank_maneuver_attempts, ' time(s).'
-						self.motorController.fwdVel = 0
-						self.turnNDegreesSlowly(self.calculateRecoveryAngle())
-						self.substate = "FlankManeuverReturn"
-					elif self.flank_distance_traveled >= self.flank_target_distance:
-						print 'Finished flank maneuver travel. Performing second turn...'
-						self.motorController.fwdVel = 0
-						self.turnNDegreesSlowly(self.flank_second_angle)
-						self.substate = "FlankManeuverTurn2"
-				elif self.substate == "FlankManeuverTurn2":
-					if self.isFinishedTurning() == True:
-						print 'Flank Maneuver complete. Should now be pointing at block from better angle.'
-						self.substate == "ApproachBlock"
-				elif self.substate == "FlankManeuverReturn":
-					if self.isFinishedTurning() == True:
-						print 'Recovery complete. Returning to ApproachBlock substate...'
-						self.substate = "ApproachBlock"
+				elif self.substate == "Flankmaneuver":
+					self.performFlankManeuver()
 				else:
 					print 'Error! Substate named ', self.substate, ' was not recognized. Exiting to Start State...'
 					return startState.startState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
@@ -246,6 +226,35 @@ class MoveToBlockState(state):
 		else:
 			return 180-angle_A
 
+	def performFlankManeuver(self):
+		if self.FlankManeuverStage == "Turn1":
+			if self.isFinishedTurning() == True:
+				print 'Finished first Flank Maneuver turn. Now going straight'
+				self.motorController.fwdVel = self.DRIVE_SPEED
+				self.FlankManeuverStage = "Travel"
+				self.flank_distance_traveled = 0
+		elif self.FlankManeuverStage == "Travel":
+			if self.isColliding():
+				print 'No room while in Flank Maneuver travel. Calculating recovery angle and exiting flank maneuver. Have attempted maneuver ', self.flank_maneuver_attempts, ' time(s).'
+				self.motorController.fwdVel = 0
+				self.turnNDegreesSlowly(self.calculateRecoveryAngle())
+				self.FlankManeuverStage = "Return"
+			elif self.flank_distance_traveled >= self.flank_target_distance:
+				print 'Finished flank maneuver travel. Performing second turn...'
+				self.motorController.fwdVel = 0
+				self.turnNDegreesSlowly(self.flank_second_angle)
+				self.FlankManeuverStage = "Turn2"
+		elif self.FlankManeuverStage == "Turn2":
+			if self.isFinishedTurning() == True:
+				print 'Flank Maneuver complete. Should now be pointing at block from better angle.'
+				self.substate == "ApproachBlock"
+		elif self.FlankManeuverStage == "Return":
+			if self.isFinishedTurning() == True:
+				print 'Recovery complete. Returning to ApproachBlock substate...'
+				self.substate = "ApproachBlock"
+		else:
+			print 'Bad Flank Maeuver Stage name: ', self.flankManeuverStage, '. Exiting to ApproachBlock substate...'
+			self.substate = "ApproachBlock"
 
 
 

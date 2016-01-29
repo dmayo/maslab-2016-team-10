@@ -112,9 +112,10 @@ class state(object):
 			return False
 
 
-	def wallFollow(self, side):
+	def wallFollow(self, side, speed):
 		self.motorController.motorState="wallFollow"
 		self.IRPID = PID(10, 5, .15)
+		fwdVel=0
 
 		ir = self.sensors.irArray.ir_value
 		if(side=="Left"):
@@ -125,24 +126,59 @@ class state(object):
 			min_val=self.sensors.irArray.getMinDistanceRightWall()
 		assert side=="Left" or side=="Right"
 
-		#TODO:make this code better
+
+		#cases:
+		#no wall detected
+		#one sensor detects wall
+		#both sensors detect wall
+		#cases of things the sensors could be seeing:
+		#nothing
+		#flat wall
+		#wall corner
+		#sack of blocks
+
+
+		#both sensors see something
 		if avg != float('inf'):
-			pidResult= -self.IRPID.valuePID(4, avg)
+			if (self.sensors.ir_array.isFlatWall(side)):
+				pidResult=self.followWall(side, avg)
+				fwdVel=speed
+			elif (self.sensors.ir_array.isCorner(side)):
+				pass
+			elif (self.sensors.ir_array.isCliff(side)):
+				pass
+		#one sensor sees something
 		elif min_val != float('inf'):
-			pidResult= -self.IRPID.valuePID(4, min_val)
+			pidResult=self.followWall(side,min_val)
+		#both sensors don't see anything
 		else:
+			lookForWall()
 			pidResult = -20
 
+		#move towards front wall?
 		if self.sensors.irArray.ir_value[self.sensors.irArray.IRs[side][2]] < 4:
 			pidResult = 20
-			self.motorController.fwdVel = 0
+			fwdVel = 0
 		else:
-			self.motorController.fwdVel = 30
-
-		if(side=="Right"):
-			pidResult*=-1
+			fwdVel = 30
 
 		self.motorController.wallFollowPIDResult = pidResult
+		self.motorController.fwdVel=fwdVel
+
+	def lookingForWall(self):
+		pass
+
+	def rotateWithWall(self):
+		pass
+
+	def followWall(self,side,avg):
+		pidResult=-self.IRPID.valuePID(4, avg)
+		if(side=="Right"):
+			pidResult*=-1
+		return pidResult
+
+	#substates: lookingForWall, rotate, followingWall
+
 
 	def turnConstantRate(self,turnSpeed):
 		self.motorController.turnConstantRate=turnSpeed

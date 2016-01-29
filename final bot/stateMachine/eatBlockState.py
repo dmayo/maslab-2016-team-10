@@ -6,6 +6,7 @@ import math
 import startState
 import blindWallFollowingState
 import timeout
+import breakFreeState
 
 class EatBlockState(state):
 	#substates: ApproachBlock, EatBlock, FlankManeuverTurn1, FlankManeuverTravel, FlankManeuverTurn2, FlankManeuverReturn, DragBlock
@@ -21,6 +22,8 @@ class EatBlockState(state):
 		self.eat_distance = 16 #distance in inches we will drive forward to eat block
 
 		self.start_gyro_angle = 0
+
+		self.DRAG_TURN_RATE = 30
 
 		self.substate = "EatBlock"
 		self.sensors.encoders.resetEncoders()

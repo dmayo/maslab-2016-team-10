@@ -13,7 +13,7 @@ class TurnToBlockState(state):
 	def __init__(self, sensors, actuators, motorController, timer, utils):
 		super(TurnToBlockState, self).__init__(sensors, actuators, motorController, timer, utils)
 		print "Turn to block state"
-		self.BLOCK_ANGLE_EPSILON = 3
+		self.BLOCK_ANGLE_EPSILON = 4
 		self.timeout = timeout.Timeout(20)
 		self.motorController.fwdVel=0
 

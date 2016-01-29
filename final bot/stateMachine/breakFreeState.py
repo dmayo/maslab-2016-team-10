@@ -15,7 +15,7 @@ class BreakFreeState(state):
 		self.backUpTimeout = timeout.Timeout(random.randrange(3,6))
 		self.stateTimeout = timeout.Timeout(10)
 		self.substate = "backUp"
-		self.BACK_UP_SPEED = -40
+		self.BACK_UP_SPEED = -100
 
 	def run(self):
 		while True:

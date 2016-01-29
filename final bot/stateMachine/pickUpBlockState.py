@@ -75,6 +75,8 @@ class PickUpBlockState(state):
 					else:
 						if self.pickupTimeout.isTimeUp() == True:
 							if self.actuators.sorter.sorterState == "None":
+									#self.actuators.arm.pickUpBlock()
+									#self.pickupTimeout.reset()
 									self.actuators.sorter.jostle()
 
 				self.actuators.update()

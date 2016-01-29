@@ -20,7 +20,7 @@ class startState(state):
 			if self.timer.millis() > 100:
 				self.sensors.update()
 				
-				if self.sensors.button==1 and self.isGameStarted==False:
+				if self.sensors.button.val==1 and self.isGameStarted==False:
 					self.isGameStarted=True
 					self.utils.startTime=time.time()
 

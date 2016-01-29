@@ -57,7 +57,7 @@ class MoveToBlockState(state):
 				if self.timeout.isTimeUp() == True:
 					print 'State Timeout has timed out. Going to BreakFreeState...'
 					return breakFreeState.BreakFreeState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
-				if self.sensors.uIR == 0:
+				if self.sensors.uIR.val == 0:
 					print 'Break beam has sensed a block. Going to Pick Up Block State...'
 					return pickUpBlockState.PickUpBlockState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
@@ -98,7 +98,7 @@ class MoveToBlockState(state):
 						print 'After a full 360, could not find a good position about which to turn. Begin blind wall following...'
 						self.turnConstantRate(0)
 						return blindWallFollowingState.BlindWallFollowingState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
-				elif self.substate == "Flankmaneuver":
+				elif self.substate == "FlankManeuver":
 					self.performFlankManeuver()
 				else:
 					print 'Error! Substate named ', self.substate, ' was not recognized. Exiting to Start State...'

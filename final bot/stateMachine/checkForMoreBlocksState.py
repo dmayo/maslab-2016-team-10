@@ -35,7 +35,7 @@ class CheckForMoreBlocksState(state):
 					return startState.StartState(self.sensors, self.actuators, self.motorController, self.timer, self.utils)
 
 				#constantly check to see if we have acquired a block
-				if self.sensors.uIR == 0:
+				if self.sensors.uIR.val == 0:
 					print 'Detected a block captured! Now picking it up...'
 					self.motorController.fwdVel = 0
 					self.turnConstantRate(0)

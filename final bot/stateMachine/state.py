@@ -253,17 +253,17 @@ class state(object):
 	#collision detection avoids 1 inch of space on the sides. Trig was used to determine the lenght of the 30-degree angled sensors.
 	#for the front sensors, we seek to avoid the worst case of a 90-degree angle, comes out to 2.9+.59 = about 3.5
 	def isColliding(self):
-		if self.checkIndividualSensor(0,1):
+		if self.checkIndividualSensor(0,.5):
 			return True
-		if self.checkIndividualSensor(1,2.3):
+		if self.checkIndividualSensor(1,1):
 			return True
 		if self.checkIndividualSensor(2,1.6):
 			return True
 		if self.checkIndividualSensor(3,1.6):
 			return True
-		if self.checkIndividualSensor(4,2.3):
+		if self.checkIndividualSensor(4,1):
 			return True
-		if self.checkIndividualSensor(5,1):
+		if self.checkIndividualSensor(5,.5):
 			return True
 		return False
 
